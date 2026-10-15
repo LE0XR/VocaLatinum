@@ -1,0 +1,303 @@
+<!-- =========================================
+     VOCALATINUM – VOKABEL-SATZ-TRAINER
+     ========================================= -->
+
+<style>
+  .home-practice-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    padding: 18px;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    background: var(--card-bg, #fff);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+  }
+
+  .home-practice-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .home-card-icon {
+    font-size: 28px;
+  }
+
+  .sentence-trainer-card {
+    margin-top: 18px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    background: var(--card-bg, #fff);
+  }
+
+  .sentence-prompt {
+    margin: 24px 0;
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .sentence-answer {
+    margin: 18px 0;
+    padding: 14px;
+    border-radius: 12px;
+    background: #e8f5e9;
+    color: #205c31;
+    text-align: center;
+    font-size: 1.1rem;
+  }
+
+  .sentence-action {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .sentence-action-primary {
+    background: #3157a4;
+    color: white;
+  }
+
+  .sentence-action-secondary {
+    background: #eeeeee;
+    color: #222;
+  }
+
+  .sentence-muted {
+    color: #777;
+    font-size: 0.9rem;
+  }
+
+  .sentence-info {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #f2f4f8;
+  }
+</style>
+
+<!-- STARTSEITEN-KACHEL
+     An der gewünschten Stelle auf der Startseite einfügen. -->
+<button
+  type="button"
+  class="home-practice-card"
+  onclick="showPage('sentenceTrainer')"
+>
+  <span class="home-card-icon">📝</span>
+  <b>Vokabel-Satz-Trainer</b>
+  <span class="sentence-muted">
+    Lateinische Sätze verstehen und übersetzen
+  </span>
+</button>
+
+
+<!-- SATZ-TRAINER-SEITE
+     Innerhalb der vorhandenen Seitenstruktur einfügen. -->
+<section id="sentenceTrainer" class="page" hidden>
+
+  <div style="display:flex; align-items:center; gap:10px;">
+    <h1 style="margin:0;">📝 Vokabel-Satz-Trainer</h1>
+
+    <button
+      type="button"
+      onclick="toggleSentenceInfo()"
+      aria-label="Informationen zum Satz-Trainer"
+      title="Informationen"
+    >
+      ⓘ
+    </button>
+  </div>
+
+  <div id="sentenceInfo" class="sentence-info" hidden>
+    <b>So funktioniert der Satz-Trainer</b>
+    <p>
+      Übersetze den lateinischen Satz zunächst selbst.
+      Tippe anschließend auf „Lösung anzeigen“, um die
+      deutsche Übersetzung zu sehen. Mit „Nächster Satz“
+      kannst du weiterüben.
+    </p>
+  </div>
+
+  <div class="sentence-trainer-card">
+
+    <div
+      id="sentenceCounter"
+      class="sentence-muted"
+      aria-live="polite"
+    >
+      Satz 1 von 5
+    </div>
+
+    <h2 style="text-align:center;">
+      Übersetze den Satz
+    </h2>
+
+    <div
+      id="sentencePrompt"
+      class="sentence-prompt"
+      lang="la"
+    >
+      Puella aquam portat.
+    </div>
+
+    <button
+      type="button"
+      id="sentenceRevealBtn"
+      class="sentence-action sentence-action-primary"
+      onclick="revealSentenceAnswer()"
+    >
+      Lösung anzeigen
+    </button>
+
+    <div
+      id="sentenceAnswer"
+      class="sentence-answer"
+      aria-live="polite"
+      hidden
+    ></div>
+
+    <button
+      type="button"
+      class="sentence-action sentence-action-secondary"
+      onclick="nextSentence()"
+    >
+      Nächster Satz →
+    </button>
+
+  </div>
+</section>
+
+
+<script>
+  /* =========================================
+     BEISPIELSÄTZE
+     ========================================= */
+
+  const SENTENCE_TRAINER_ITEMS = [
+    {
+      la: "Puella aquam portat.",
+      de: "Das Mädchen trägt Wasser."
+    },
+    {
+      la: "Servus dominum salutat.",
+      de: "Der Sklave begrüßt den Herrn."
+    },
+    {
+      la: "Puer librum legit.",
+      de: "Der Junge liest ein Buch."
+    },
+    {
+      la: "Agricola in villa laborat.",
+      de: "Der Bauer arbeitet auf dem Landgut."
+    },
+    {
+      la: "Magister discipulos laudat.",
+      de: "Der Lehrer lobt die Schüler."
+    }
+  ];
+
+  let sentenceTrainerIndex = 0;
+
+
+  /* =========================================
+     SATZ ANZEIGEN
+     ========================================= */
+
+  function renderSentenceTrainer() {
+    const item =
+      SENTENCE_TRAINER_ITEMS[sentenceTrainerIndex];
+
+    const prompt =
+      document.getElementById("sentencePrompt");
+
+    const answer =
+      document.getElementById("sentenceAnswer");
+
+    const revealButton =
+      document.getElementById("sentenceRevealBtn");
+
+    const counter =
+      document.getElementById("sentenceCounter");
+
+    if (!prompt || !answer || !revealButton || !counter) {
+      return;
+    }
+
+    prompt.textContent = item.la;
+    answer.textContent = item.de;
+
+    answer.hidden = true;
+    revealButton.hidden = false;
+
+    counter.textContent =
+      "Satz " + (sentenceTrainerIndex + 1) +
+      " von " + SENTENCE_TRAINER_ITEMS.length;
+  }
+
+
+  /* =========================================
+     LÖSUNG EINBLENDEN
+     ========================================= */
+
+  function revealSentenceAnswer() {
+    const answer =
+      document.getElementById("sentenceAnswer");
+
+    const revealButton =
+      document.getElementById("sentenceRevealBtn");
+
+    if (!answer || !revealButton) {
+      return;
+    }
+
+    answer.hidden = false;
+    revealButton.hidden = true;
+  }
+
+
+  /* =========================================
+     NÄCHSTER SATZ
+     ========================================= */
+
+  function nextSentence() {
+    sentenceTrainerIndex =
+      (sentenceTrainerIndex + 1) %
+      SENTENCE_TRAINER_ITEMS.length;
+
+    renderSentenceTrainer();
+  }
+
+
+  /* =========================================
+     INFO EIN- UND AUSBLENDEN
+     ========================================= */
+
+  function toggleSentenceInfo() {
+    const info =
+      document.getElementById("sentenceInfo");
+
+    if (!info) {
+      return;
+    }
+
+    info.hidden = !info.hidden;
+  }
+
+
+  /* =========================================
+     SATZ-TRAINER INITIALISIEREN
+     ========================================= */
+
+  renderSentenceTrainer();
+</script>
