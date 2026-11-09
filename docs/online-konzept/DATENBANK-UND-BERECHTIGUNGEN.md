@@ -239,3 +239,14 @@ Vor der SQL-Migration müssen wir noch festlegen, wie doppelte Anzeigenamen in S
 - Die Migration wurde noch nicht auf ein echtes Supabase-Projekt angewendet. Es wurden keine Schlüssel eingerichtet oder gespeichert.
 
 **Wichtige Einschränkung:** Freundschaftsanfragen, Profilsuche, Gruppenoperationen und Chat sind noch absichtlich nicht freigeschaltet. Dafür werden im nächsten Schritt eng begrenzte serverseitige Funktionen und vollständige Zwei-Konten-RLS-Tests benötigt.
+
+
+## 9. Lokale Datenbanktests und CI
+
+- Lokale Supabase-Konfiguration: `supabase/config.toml`.
+- Automatisierter Ablauf: `.github/workflows/supabase-tests.yml`.
+- Bei Änderungen unter `supabase/**` startet GitHub Actions eine kurzlebige lokale Supabase-Instanz, spielt alle Migrationen ein und führt `supabase test db` aus.
+- `supabase/tests/001_privacy_foundation.test.sql` prüft RLS und Rollenrechte.
+- `supabase/tests/002_two_account_access.test.sql` prüft mit zwei künstlichen Testkonten, dass jedes Konto nur das eigene Profil und die eigenen Freigaben lesen und nur den eigenen Anzeigenamen ändern kann.
+- Für diese automatisierten Prüfungen sind keine echten Nutzerkonten, Supabase-Projekt-Schlüssel oder Zugangsdaten erforderlich.
+- Ein erfolgreicher CI-Lauf belegt nur die geprüften Datenbankregeln in der lokalen Testumgebung. Er ersetzt keine späteren Tests der Online-Funktionen und keine Sicherheitsprüfung vor einem öffentlichen Start.
