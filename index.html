@@ -91,6 +91,17 @@
 .dark .level-page-card{background:linear-gradient(180deg,#211d22 0%,#19191f 100%);border-color:#49343a}
 .dark .home-summary{background:#19191f;border-color:#3a3038;color:var(--text)}
 
+
+.weekly-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0 18px}
+.weekly-stat-choice{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--text);text-align:left}
+.weekly-stat-choice.active{border-color:var(--blue);background:var(--soft)}
+.weekly-stat-choice span{font-size:12px;color:var(--muted)}
+.weekly-stat-choice strong{font-size:22px;line-height:1.2}
+.weekly-ranking-title{font-size:16px;margin:8px 0}
+.weekly-missing{color:var(--muted);font-size:12px}
+@media(max-width:390px){.weekly-stat-grid{grid-template-columns:1fr 1fr}.weekly-stat-choice{padding:10px}.weekly-stat-choice strong{font-size:19px}}
+.dark .weekly-stat-choice{background:var(--card);border-color:var(--line)}
+.dark .weekly-stat-choice.active{background:#45252b;border-color:#ff786b}
 </style><style>
 .srs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.srs-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px;text-align:left}.srs-card b{display:block;font-size:18px}.srs-card span{font-size:12px;color:var(--muted)}.goal-wrap{margin-top:12px}.goal-row{display:flex;justify-content:space-between;gap:10px}.goal-bar{height:10px;background:#e6edf1;border-radius:10px;overflow:hidden;margin-top:8px}.goal-bar i{display:block;height:100%;width:0;background:var(--blue)}.status-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--soft);color:var(--blue);font-size:11px;font-weight:750}.register-meta{margin-top:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.lesson-progress{margin-top:7px}.lesson-progress .bar{margin-top:5px}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.mode-btn{min-height:70px;border:1px solid var(--line);border-radius:15px;background:var(--card);padding:10px;text-align:left}.mode-btn b{display:block}.mode-btn span{font-size:12px;color:var(--muted)}.mode-btn.on{border-color:var(--blue);background:var(--soft)}.session-note{margin-top:10px}.dark .goal-bar{background:#2a363e}
 
@@ -734,6 +745,15 @@ h1,h2,h3,.home-title,.home-section-title{font-weight:600!important;letter-spacin
     <button class="secondary full-action" onclick="joinFriendGroup()">Beitreten</button>
   </div>
   <div id="friendsGroups"></div>
+  <div class="friends-card weekly-competition-card" id="friendsCompetition">
+    <h2>🏆 Wochenwettbewerb</h2>
+    <p class="friends-note" id="weeklyCompetitionPeriod"></p>
+    <p class="muted small">Wähle eine Kategorie. Die Werte werden von Montag bis Sonntag gezählt.</p>
+    <div class="weekly-stat-grid" id="weeklyCompetitionStats"></div>
+    <h3 class="weekly-ranking-title" id="weeklyCompetitionTitle">Rangliste · Richtige Antworten</h3>
+    <div id="weeklyCompetitionRanking"></div>
+    <p class="friends-note">Wichtig: Gruppen und Mitglieder sind derzeit nur in diesem Browser gespeichert. Andere Personen und Geräte werden noch nicht online synchronisiert. Deshalb erscheinen nur tatsächlich vorhandene Wochenwerte – fehlende Werte werden nicht geschätzt.</p>
+  </div>
 </div>
 </section>
 
@@ -887,6 +907,46 @@ function selectInviteMode(id,mode){const root=document.getElementById('invite-op
 function shareFriendInvite(group,mode){if(!group)return;const text='🏛️ Einladung zu VocaLatinum: '+group.name+'\nBeitrittscode: '+group.code;const link=location.href.split('#')[0]+'#gruppe='+encodeURIComponent(group.code);if(mode==='link'){if(navigator.share){navigator.share({title:'VocaLatinum Einladung',text:text+'\n'+link,url:link}).catch(()=>{})}else if(navigator.clipboard){navigator.clipboard.writeText(link).then(()=>showToast('Einladungslink kopiert.'))}else{prompt('Einladungslink:',link)}}else{if(navigator.share){navigator.share({title:'VocaLatinum Einladung',text}).catch(()=>{})}else if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>showToast('Einladungstext kopiert.'))}else{prompt('Einladung:',text)}}}
 function renderFriends(){const n=document.getElementById('friendName'),setup=document.getElementById('friendSetupCard'),ready=document.getElementById('friendsReadyCard');if(n)n.value=state.profile.name||'';if(setup)setup.style.display=state.profile.name?'none':'block';if(ready){ready.style.display=state.profile.name?'block':'none';const w=document.getElementById('friendsWelcomeName');if(w)w.textContent=state.profile.name?'👋 '+state.profile.name:''}const st=document.getElementById('friendIdentityStatus');if(st)st.textContent=state.profile.name?'Dein Name ist gespeichert. Änderungen sind nur in den Einstellungen möglich.':'Du bekommst automatisch eine eindeutige interne ID.';const sn=document.getElementById('settingsFriendName');if(sn)sn.value=state.profile.name||'';const root=document.getElementById('friendsGroups');if(!root)return;if(!state.groups.length){root.innerHTML='<div class="friends-card"><b>Noch keine Gruppen</b><p class="friends-note">Lokale Demo: Gruppen und Einladungscodes funktionieren nur in diesem Browser. Für andere Geräte ist eine gemeinsame Online-Datenbank nötig.</p></div>';return}root.innerHTML=state.groups.map(g=>{g.members.forEach(m=>{if(m.id===state.profile.id){m.name=state.profile.name;m.xp=Number(state.xp)||0;m.level=levelFromXp(state.xp||0);m.badges=Object.keys(state.badges||{}).length}});const safeId=esc(g.id);return `<div class="friends-card"><div class="invite-card"><div class="invite-group">${esc(g.name)}</div><div class="muted small">Einladungscode</div><div class="invite-code">${esc(g.code)}</div><div class="friends-actions"><button class="primary" onclick="openInviteOptions('${safeId}')">Einladen</button></div><div id="invite-${safeId}" class="invite-options" style="display:none"><button class="invite-option" onclick="selectInviteMode('${safeId}','name')">👤 Namen des anderen Spielers eingeben</button><button class="invite-option" onclick="selectInviteMode('${safeId}','id')">🔑 User-ID eingeben</button><button class="invite-option" onclick="selectInviteMode('${safeId}','link')">🔗 Einladungslink erstellen</button><div id="invite-${safeId}-name" class="invite-panel"><input class="field" placeholder="Name des Spielers"><button class="secondary full-action" onclick="showToast('Die Namenssuche wird mit der gemeinsamen Online-Datenbank verbunden.')">Spieler auswählen</button></div><div id="invite-${safeId}-id" class="invite-panel"><input class="field" placeholder="User-ID"><button class="secondary full-action" onclick="showToast('Die User-ID wird mit der gemeinsamen Online-Datenbank geprüft.')">Spieler auswählen</button></div><div id="invite-${safeId}-link" class="invite-panel"><div class="friends-note">Link für diese Gruppe</div><div class="share-link">${esc(location.href.split('#')[0]+'#gruppe='+encodeURIComponent(g.code))}</div><button class="secondary full-action" onclick="shareFriendInvite(state.groups.find(x=>x.id==='${safeId}'),'link')">Link teilen</button></div></div></div><p class="friends-note">Mitglieder: ${g.members.length} · Lokal gespeicherte Gruppe · nicht zwischen Geräten synchronisiert.</p><div class="rank-filter"><button class="secondary active" onclick="renderGroupRanking('${safeId}','level',this)">Level</button><button class="secondary" onclick="renderGroupRanking('${safeId}','xp',this)">XP</button><button class="secondary" onclick="renderGroupRanking('${safeId}','badges',this)">Abzeichen</button></div><div id="rank-${safeId}"></div></div>`}).join('');state.groups.forEach(g=>renderGroupRanking(g.id,'level'))}
 function renderGroupRanking(id,sort='level',btn){const g=state.groups.find(x=>x.id===id);const el=document.getElementById('rank-'+id);if(!g||!el)return;g.members.forEach(m=>{if(m.id===state.profile.id){m.name=state.profile.name;m.xp=Number(state.xp)||0;m.level=levelFromXp(state.xp||0);m.badges=Object.keys(state.badges||{}).length}});const arr=[...g.members].sort((a,b)=>Number(b[sort]||0)-Number(a[sort]||0));el.innerHTML='<table class="rank-table"><thead><tr><th>#</th><th>Name</th><th>Level</th><th>XP</th><th>Abzeichen</th></tr></thead><tbody>'+arr.map((m,i)=>`<tr><td>${i+1}</td><td>${esc(m.name)}</td><td>${Number(m.level)||1}</td><td>${Number(m.xp)||0}</td><td>${Number(m.badges)||0}</td></tr>`).join('')+'</tbody></table>';if(btn){btn.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('active'));btn.classList.add('active')}}
+
+let weeklyCompetitionCategory='correctAnswers';
+const WEEKLY_COMPETITION_CATEGORIES=[
+ {key:'correctAnswers',label:'Richtige Antworten',unit:'Antworten'},
+ {key:'accuracy',label:'Trefferquote',unit:'%'},
+ {key:'xp',label:'Gesammelte XP',unit:'XP'},
+ {key:'newBadges',label:'Neue Abzeichen',unit:'Abzeichen'},
+ {key:'learnedCards',label:'Gelernte Karten',unit:'Karten'},
+ {key:'longestStreak',label:'Längste Lernserie',unit:'Tage'},
+ {key:'completedUnits',label:'Abgeschlossene Lerneinheiten',unit:'Einheiten'}
+];
+function weeklyCompetitionValue(value,category){
+ const n=Number(value)||0;
+ return category.key==='accuracy'?n.toLocaleString('de-DE',{maximumFractionDigits:1})+' %':n.toLocaleString('de-DE')+' '+category.unit;
+}
+function renderWeeklyCompetition(categoryKey,button){
+ if(categoryKey)weeklyCompetitionCategory=categoryKey;
+ const root=document.getElementById('friendsCompetition');
+ if(!root)return;
+ const stats=getWeeklyCompetitionStats();
+ const start=new Date(stats.weekStart+'T12:00:00'),end=new Date(stats.weekEnd+'T12:00:00');
+ const period=document.getElementById('weeklyCompetitionPeriod');
+ if(period)period.textContent='Aktuelle Woche: '+start.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})+' – '+end.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+ const grid=document.getElementById('weeklyCompetitionStats');
+ if(grid)grid.innerHTML=WEEKLY_COMPETITION_CATEGORIES.map(c=>'<button type="button" class="weekly-stat-choice '+(c.key===weeklyCompetitionCategory?'active':'')+'" data-weekly-category="'+c.key+'" onclick="renderWeeklyCompetition(\''+c.key+'\')"><span>'+esc(c.label)+'</span><strong>'+esc(weeklyCompetitionValue(stats[c.key],c))+'</strong></button>').join('');
+ const selected=WEEKLY_COMPETITION_CATEGORIES.find(c=>c.key===weeklyCompetitionCategory)||WEEKLY_COMPETITION_CATEGORIES[0];
+ const title=document.getElementById('weeklyCompetitionTitle');
+ if(title)title.textContent='Rangliste · '+selected.label;
+ const table=document.getElementById('weeklyCompetitionRanking');
+ if(!table)return;
+ const group=state.groups&&state.groups[0];
+ const members=group&&Array.isArray(group.members)?group.members:[{id:state.profile.id,name:state.profile.name||'Du'}];
+ const rows=members.map(m=>{
+  const own=m.id===state.profile.id;
+  const value=own?stats[selected.key]:(m.weeklyStats&&Number.isFinite(Number(m.weeklyStats[selected.key]))?Number(m.weeklyStats[selected.key]):null);
+  return {name:own?(state.profile.name||'Du'):(m.name||'Mitglied'),value};
+ }).filter(m=>m.value!==null).sort((a,b)=>b.value-a.value);
+ const missing=members.filter(m=>m.id!==state.profile.id&&!(m.weeklyStats&&Number.isFinite(Number(m.weeklyStats[selected.key])))).length;
+ table.innerHTML='<table class="rank-table"><thead><tr><th>#</th><th>Name</th><th>'+esc(selected.label)+'</th></tr></thead><tbody>'+rows.map((m,i)=>'<tr><td>'+(i+1)+'</td><td>'+esc(m.name)+'</td><td>'+esc(weeklyCompetitionValue(m.value,selected))+'</td></tr>').join('')+'</tbody></table>'+(missing?'<p class="weekly-missing">'+missing+' Gruppenmitglied(er) haben noch keine synchronisierten Wochenwerte.</p>':'');
+}
 function updateHomeProfileName(){const e=document.getElementById('homeProfileName');if(!e)return;e.textContent=state.profile.name||'';e.style.display=state.profile.name?'block':'none'}
 function toggleAreaInfo(id){const e=document.getElementById(id);if(e)e.classList.toggle('on')}
 const SENTENCE_FILTER_OPTIONS={
@@ -1165,7 +1225,7 @@ function checkSentenceAnswer(){if(sentenceAnswered)return;const item=sentenceTra
 function revealSentenceAnswer(){const item=sentenceTrainerItems[sentenceTrainerIndex];if(!item)return;const feedback=document.getElementById('sentenceFeedback'),checkBtn=document.getElementById('sentenceCheckBtn'),revealBtn=document.getElementById('sentenceRevealBtn'),input=document.getElementById('sentenceUserAnswer');if(feedback){feedback.hidden=false;feedback.textContent=`Musterlösung: ${item.de}`}sentenceAnswered=true;if(input)input.disabled=true;if(checkBtn)checkBtn.style.display='none';if(revealBtn)revealBtn.style.display='none'}
 function nextSentence(){if(!sentenceTrainerItems.length)return;if(!sentenceAnswered){showToast('Bitte prüfe deine Übersetzung oder zeige zuerst die Lösung an.');return}const next=generateUniqueSentence();if(!next){showToast('Für diese Einstellungen konnte gerade kein weiterer Satz gebildet werden.');return}sentenceTrainerItems.push(next);sentenceTrainerIndex++;renderSentenceTrainer()}
 function backToSentenceSetup(){sentenceTrainerItems=[];const setup=document.getElementById('sentenceSetup'),learning=document.getElementById('sentenceLearning');if(setup)setup.style.display='block';if(learning)learning.style.display='none';renderSentenceFilters()}
-function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));const p=document.getElementById(id);if(!p)return;p.classList.add('active');document.querySelectorAll('.nav').forEach(x=>{const active=x.dataset.page===id;x.classList.toggle('active',active);if(active)x.setAttribute('aria-current','page');else x.removeAttribute('aria-current')});if(id==='stats'){showLearningStat('details');renderLearningInsights()}if(id==='vocab'){renderSearchDirection();renderVocab()}if(id==='vocabTest'){renderVocabTestSetup()}if(id==='sentenceTrainer'){renderSentenceTrainer()}if(id==='cards'){updateCardModeCounts();renderLessons();renderDirectionButton()}if(id==='settings'){updateStorageStatus();updateOfflineStatus();updateGoalSetting();const sn=document.getElementById('settingsFriendName');if(sn)sn.value=state.profile.name||''}if(id==='forms'){renderFormLessons();syncFormFilters();}if(id==='collection'){renderCollection()}if(id==='friends'){renderFriends()}if(id==='level')updateStats();updateStats();window.scrollTo({top:0,behavior:'smooth'})}
+function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));const p=document.getElementById(id);if(!p)return;p.classList.add('active');document.querySelectorAll('.nav').forEach(x=>{const active=x.dataset.page===id;x.classList.toggle('active',active);if(active)x.setAttribute('aria-current','page');else x.removeAttribute('aria-current')});if(id==='stats'){showLearningStat('details');renderLearningInsights()}if(id==='vocab'){renderSearchDirection();renderVocab()}if(id==='vocabTest'){renderVocabTestSetup()}if(id==='sentenceTrainer'){renderSentenceTrainer()}if(id==='cards'){updateCardModeCounts();renderLessons();renderDirectionButton()}if(id==='settings'){updateStorageStatus();updateOfflineStatus();updateGoalSetting();const sn=document.getElementById('settingsFriendName');if(sn)sn.value=state.profile.name||''}if(id==='forms'){renderFormLessons();syncFormFilters();}if(id==='collection'){renderCollection()}if(id==='friends'){renderFriends();renderWeeklyCompetition()}if(id==='level')updateStats();updateStats();window.scrollTo({top:0,behavior:'smooth'})}
 function xpThreshold(level){if(level<=1)return 0;let t=100;for(let l=2;l<level;l++)t+=100+(l-1)*50;return t}
 function levelFromXp(xp){let level=1;while(xpThreshold(level+1)<=xp)level++;return level}
 function xpProgressInfo(xp){const level=levelFromXp(xp);const cur=xpThreshold(level);const next=xpThreshold(level+1);return {level,current:xp-cur,needed:next-cur,percent:Math.max(0,Math.min(100,((xp-cur)/(next-cur))*100))}}
