@@ -1757,10 +1757,10 @@ function updateAutoBackupStatus(){
 function restoreLatestAutoBackup(){
  const list=readAutoBackups(),latest=list[0];if(!latest||!latest.data||!Array.isArray(latest.data.vocab)){showToast('Keine gültige automatische Sicherung gefunden.');return}
  if(!confirm('Möchtest du die automatische Sicherung vom '+(latest.date||'unbekannten Datum')+' wiederherstellen? Dein aktueller Lernstand wird dabei ersetzt.'))return;
- try{localStorage.setItem(KEY,JSON.stringify(latest.data));showToast('Sicherung wird wiederhergestellt.');location.reload()}catch(_){showToast('Sicherung konnte nicht wiederhergestellt werden.',3500)}
+ try{const current=JSON.parse(localStorage.getItem(KEY)||'null');if(!current||!Array.isArray(current.vocab))throw new Error('Kein gültiger aktueller Lernstand');localStorage.setItem(KEY+'-pre-restore-backup',JSON.stringify({app:'VocaLatinum',schemaVersion:1,exportedAt:new Date().toISOString(),data:current}));localStorage.setItem(KEY,JSON.stringify(latest.data));showToast('Sicherung wird wiederhergestellt.');location.reload()}catch(_){showToast('Wiederherstellung abgebrochen: Der aktuelle Lernstand konnte nicht sicher gesichert werden.',4500)}
 }
 function addRuntimeError(message,source,line){
- try{const key=KEY+'-errors';let entries=[];try{entries=JSON.parse(localStorage.getItem(key)||'[]')}catch(_){entries=[]}if(!Array.isArray(entries))entries=[];entries.push({time:new Date().toISOString(),message:String(message||'Unbekannter Fehler').slice(0,300),source:String(source||'').slice(0,160),line:Number(line)||0});localStorage.setItem(key,JSON.stringify(entries.slice(-30)))}catch(_){}
+ try{const key=KEY+'-errors';let entries=[];try{entries=JSON.parse(localStorage.getItem(key)||'[]')}catch(_){entries=[]}if(!Array.isArray(entries))entries=[];entries.push({time:new Date().toISOString(),message:String(message||'Unbekannter Fehler').slice(0,300),source:String(source||'').slice(0,160),line:Number(line)||0});localStorage.setItem(key,JSON.stringify(entries.slice(-30)));updateRuntimeErrorStatus()}catch(_){}
 }
 function readRuntimeErrors(){try{const value=JSON.parse(localStorage.getItem(KEY+'-errors')||'[]');return Array.isArray(value)?value:[]}catch(_){return[]}}
 function updateRuntimeErrorStatus(){const e=document.getElementById('errorLogStatus');if(e)e.textContent='Lokal gespeicherte Fehler: '+readRuntimeErrors().length+' / 30'}
