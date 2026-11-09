@@ -153,3 +153,53 @@ test('Satztrainer kann eine PC-Konstruktion erzeugen', async ({ page }) => {
   expect(item.la).toMatch(/[.]$/);
   expect(item.de).toMatch(/[.]$/);
 });
+
+test('Gleichwertige Übersetzungen werden als richtig akzeptiert', async ({ page }) => {
+  const feedback = await page.evaluate(() => {
+    sentenceTrainerItems = [{ de: 'Der Junge sieht das Mädchen.', deAlternatives: ['Der Junge erblickt das Mädchen.'] }];
+    sentenceTrainerIndex = 0;
+    sentenceAnswered = false;
+    sentenceCorrectCount = 0;
+    document.getElementById('sentenceUserAnswer').value = 'Der Junge erblickt das Mädchen';
+    checkSentenceAnswer();
+    return { text: document.getElementById('sentenceFeedback').textContent, correct: sentenceCorrectCount };
+  });
+  expect(feedback.correct).toBe(1);
+  expect(feedback.text).toContain('Richtig');
+});
+
+test('Formenlernen stellt Aufgaben bereit', async ({ page }) => {
+  const count = await page.evaluate(() => {
+    showPage('forms');
+    startFormLearning();
+    return formTasks.length;
+  });
+  expect(count).toBeGreaterThan(0);
+  await expect(page.locator('#formLearning')).toBeVisible();
+});
+
+test('Tempora-Quiz zeigt Antwortmöglichkeiten', async ({ page }) => {
+  await page.evaluate(() => startQuiz('tempora'));
+  await expect(page.locator('#quizTitle')).toContainText('Tempora');
+  await expect(page.locator('#options .option')).toHaveCount(4);
+});
+
+test('Excel-Import übernimmt eine Arbeitsmappe', async ({ page }) => {
+  const base64 = await page.evaluate(() => {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([
+      ['Latein', 'Deutsch', 'Formen', 'Lektion'],
+      ['amicus-excel-test', 'Freund Excel', 'amicus, -ī', 97]
+    ]);
+    XLSX.utils.book_append_sheet(wb, ws, 'Vokabeln');
+    return XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+  });
+  await page.evaluate(() => showPage('vocab'));
+  page.once('dialog', dialog => dialog.accept());
+  await page.locator('#fileImport').setInputFiles({
+    name: 'vocalatinum-test.xlsx',
+    mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    buffer: Buffer.from(base64, 'base64')
+  });
+  await expect.poll(() => page.evaluate(() => state.vocab.some(v => v.l === 'amicus-excel-test' && v.g === 'Freund Excel'))).toBeTruthy();
+});
