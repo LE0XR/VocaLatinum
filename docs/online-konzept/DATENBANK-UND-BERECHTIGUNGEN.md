@@ -1,6 +1,6 @@
 # VocaLatinum – Online-Konzept: Datenbank und Berechtigungen
 
-**Status:** Entwurf auf Branch `test` – noch keine Online-Funktionen, keine produktive Datenbank und keine Änderung an `main`.
+**Status:** Supabase ist ausgewählt. Die erste Datenbankmigration und grundlegende Rechteprüfungen liegen auf Branch `test`. Noch keine produktive Datenbank, keine aktiven Online-Funktionen und keine Änderung an `main`.
 
 Dieses Dokument beschreibt die geplante Grundlage für spätere Online-Funktionen. Es ist eine fachliche und technische Spezifikation, keine bereits ausgeführte Datenbankmigration.
 
@@ -19,7 +19,7 @@ Dieses Dokument beschreibt die geplante Grundlage für spätere Online-Funktione
 
 ## 2. Vorgeschlagene Datenbankstruktur
 
-Die spätere Datenbank soll PostgreSQL verwenden. Falls Supabase als Backend gewählt wird, kann dessen Authentifizierung und Row Level Security (RLS) genutzt werden. Die endgültige Plattformentscheidung und die konkrete SQL-Migration erfolgen erst in einem späteren Schritt.
+Die spätere Datenbank soll PostgreSQL verwenden. Falls Supabase als Backend gewählt wird, kann dessen Authentifizierung und Row Level Security (RLS) genutzt werden. Supabase wurde als Plattform ausgewählt. Die erste SQL-Migration bildet zunächst nur Profile, private Freigaben sowie gesperrte Grundtabellen für Freundschaften und Gruppen ab.
 
 | Tabelle | Zweck | Wichtige Felder / Regeln |
 |---|---|---|
@@ -226,3 +226,16 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 ## 8. Entscheidungen für den nächsten Konzeptschritt
 
 Vor der SQL-Migration müssen wir noch festlegen, wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben, und welche festen Auswahlwerte für die vom Gruppenanführer einstellbare Chat-Aufbewahrungsdauer angeboten werden sollen und welche Schwellenwerte für wiederholte Verstöße gelten. Außerdem müssen die genauen Schwellenwerte für Warnungen und automatische Gruppensperren festgelegt werden. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
+
+
+## 8. Stand der ersten Supabase-Migration
+
+- Die Migration `supabase/migrations/20261109190000_initial_privacy_foundation.sql` wurde auf `test` angelegt.
+- Die Migration aktiviert RLS auf allen acht Grundtabellen und erzwingt RLS zusätzlich.
+- Clientrechte sind ausdrücklich begrenzt: Nutzer können nur ihr eigenes Profil und ihre eigenen Freigabeschalter lesen bzw. bearbeiten.
+- Freundschafts- und Gruppentabellen besitzen in dieser ersten Stufe keine direkten Clientrechte. Interne UUIDs werden dadurch nicht über rohe Tabellenabfragen an andere Nutzer ausgegeben.
+- Neue Auth-Konten erhalten serverseitig ein minimales Profil und private Freigaben (alle Schalter zunächst aus).
+- Die pgTAP-Prüfdatei prüft zunächst RLS-Aktivierung und Rechte. Diese Tests müssen noch in einer lokalen Supabase-Umgebung ausgeführt werden.
+- Die Migration wurde noch nicht auf ein echtes Supabase-Projekt angewendet. Es wurden keine Schlüssel eingerichtet oder gespeichert.
+
+**Wichtige Einschränkung:** Freundschaftsanfragen, Profilsuche, Gruppenoperationen und Chat sind noch absichtlich nicht freigeschaltet. Dafür werden im nächsten Schritt eng begrenzte serverseitige Funktionen und vollständige Zwei-Konten-RLS-Tests benötigt.
