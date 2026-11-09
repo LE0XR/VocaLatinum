@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10a9df">
 <title>VocaLatinum</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
 :root{--blue:#964234;--blue2:#7f3429;--bg:#f7f5ef;--card:#fff;--text:#24211e;--muted:#746d64;--green:#4f8b5f;--red:#b64d3e;--line:#e1ddd5;--soft:#f2e3dd}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.app{max-width:600px;margin:auto;min-height:100vh;padding-bottom:88px}header{position:sticky;top:0;z-index:20;background:var(--card);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}.logo{font-size:22px;font-weight:850}.logo span{color:var(--blue)}.icon{background:none;font-size:22px}.page{display:none;padding:18px}.page.active{display:block}h1{font-size:29px;margin:4px 0 18px}h2{font-size:20px;margin:12px 0}.muted{color:var(--muted)}.small{font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.tile,.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 3px 12px #00000008}.tile{min-height:112px}.tile b{display:block;font-size:17px;margin:5px 0}.tile .emoji{font-size:26px}.tile.disabled{opacity:.55;cursor:not-allowed}.stat{display:flex;justify-content:space-between;gap:12px;margin:8px 0}.bar{height:9px;background:#e6edf1;border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--blue);width:0}.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(600px,100%);z-index:30;background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:7px 4px env(safe-area-inset-bottom)}.nav{background:none;color:var(--muted);font-size:11px}.nav.active{color:var(--blue);font-weight:750}.nav div{font-size:21px}.nav-icon{width:22px;height:22px;display:block;margin:0 auto 3px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.home-card-icon svg{width:27px;height:27px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}.nav{font-weight:500;letter-spacing:.01em}.nav.active{font-weight:650}.primary{background:var(--blue);color:white;border-radius:16px;padding:15px 18px;font-weight:800}.secondary{background:var(--soft);color:var(--blue);border-radius:15px;padding:12px 16px;font-weight:750}.danger{background:#fff0f2;color:#c83f4d}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.field{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:6px 0}.select{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.list{margin-top:12px}.word{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.word-main{min-width:0}.word-main b{font-size:16px}.lesson-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}.tag{display:inline-block;padding:5px 9px;border-radius:20px;background:var(--soft);color:#167ea3;font-size:12px}.chip{display:inline-flex;align-items:center;gap:6px;padding:9px 11px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text)}.chip input{accent-color:var(--blue)}.chip.on{border-color:var(--blue);background:var(--soft)}.lesson-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:9px 0 14px}.flash-wrap{height:350px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}.flash{width:100%;max-width:520px;height:390px;background:var(--card);border-radius:24px;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;transition:.2s;box-shadow:0 10px 30px #00000012;padding:20px;text-align:center}.flash .term{font-size:42px;font-weight:850}.flash .hint{color:var(--muted);margin-top:14px;font-size:18px}.answer{margin-top:8px;font-size:20px;font-weight:700}.swipeBtns{display:flex;justify-content:space-between;gap:14px}.swipeBtns button{flex:1;padding:14px;border-radius:15px;font-weight:800}.wrong{background:#ffe9ec;color:#c83f4d}.right{background:#e3f8ef;color:#18895e}.option{padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--card);text-align:left;width:100%;margin:6px 0}.option.correct{border-color:var(--green);background:#eafaf3}.option.bad{border-color:var(--red);background:#fff0f2}.quizbox{margin-top:15px}.big{font-size:25px;font-weight:800;margin:18px 0}.divider{border:0;border-top:1px solid var(--line);margin:16px 0}.checkrow{display:flex;align-items:center;gap:10px;margin:9px 0}.checkrow input{width:19px;height:19px;accent-color:var(--blue)}.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#17212b;color:#fff;padding:10px 14px;border-radius:12px;z-index:50;display:none}.empty{text-align:center;padding:35px 10px;color:var(--muted)}.source-note{font-size:12px;color:var(--muted);line-height:1.45}.status{font-size:12px;margin-top:8px}.ok{color:#18895e}.warn{color:#b07800}.dark{--bg:#10161b;--card:#182128;--text:#edf4f7;--muted:#9cafb9;--line:#2b3942;--soft:#20333d}.dark .option{background:var(--card)}.dark .danger{background:#321d22}.dark .bar{background:#2a363e}.dark header,.dark .bottom{background:var(--card)}
@@ -67,6 +70,10 @@
 .dark a{color:#ff9c93}.dark button:focus-visible,.dark input:focus-visible,.dark select:focus-visible,.dark textarea:focus-visible{outline:2px solid #ff9c93;outline-offset:2px}
 .dark .rank-table th,.dark .rank-table td{border-color:#3a3038;color:#f5f3f4}
 
+
+/* Lernkalender und vertiefte Lernübersicht */
+.insight-panel{margin-top:14px}.insight-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.insight-head h2{margin:0;font-size:19px}.calendar-nav{display:flex;align-items:center;gap:7px}.calendar-nav button{width:32px;height:32px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text)}.calendar-month{font-size:13px;font-weight:700;min-width:112px;text-align:center}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-top:12px}.calendar-weekday{text-align:center;font-size:10px;color:var(--muted);padding:3px 0}.calendar-day{min-height:38px;border:1px solid var(--line);border-radius:9px;background:var(--card);display:grid;place-items:center;position:relative;font-size:12px;color:var(--text)}.calendar-day.empty{border:0;background:transparent}.calendar-day.today{border-color:var(--blue);font-weight:800}.calendar-day.active-day:after{content:"";position:absolute;bottom:4px;width:5px;height:5px;border-radius:50%;background:var(--green)}.calendar-legend{font-size:11px;color:var(--muted);margin-top:9px}.insight-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}.insight-stat{padding:11px;border:1px solid var(--line);border-radius:13px;background:var(--card)}.insight-stat span{display:block;font-size:11px;color:var(--muted)}.insight-stat b{display:block;font-size:19px;margin-top:3px}.insight-row{padding:10px 0;border-bottom:1px solid var(--line)}.insight-row:last-child{border-bottom:0}.insight-row-top{display:flex;justify-content:space-between;gap:10px;font-size:13px}.insight-row .bar{margin-top:7px}.insight-word{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.insight-word:last-child{border-bottom:0}.insight-word b{font-size:14px}.insight-word span{font-size:12px;color:var(--muted);text-align:right}.dark .calendar-day{background:var(--card)}
+@media(max-width:360px){.calendar-grid{gap:3px}.calendar-day{min-height:33px;font-size:11px}.calendar-month{min-width:95px}}
 </style><style>
 .srs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.srs-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px;text-align:left}.srs-card b{display:block;font-size:18px}.srs-card span{font-size:12px;color:var(--muted)}.goal-wrap{margin-top:12px}.goal-row{display:flex;justify-content:space-between;gap:10px}.goal-bar{height:10px;background:#e6edf1;border-radius:10px;overflow:hidden;margin-top:8px}.goal-bar i{display:block;height:100%;width:0;background:var(--blue)}.status-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--soft);color:var(--blue);font-size:11px;font-weight:750}.register-meta{margin-top:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.lesson-progress{margin-top:7px}.lesson-progress .bar{margin-top:5px}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.mode-btn{min-height:70px;border:1px solid var(--line);border-radius:15px;background:var(--card);padding:10px;text-align:left}.mode-btn b{display:block}.mode-btn span{font-size:12px;color:var(--muted)}.mode-btn.on{border-color:var(--blue);background:var(--soft)}.session-note{margin-top:10px}.dark .goal-bar{background:#2a363e}
 
@@ -410,6 +417,11 @@ h1,h2,h3,.home-title,.home-section-title{font-weight:600!important;letter-spacin
       <b>Vokabel-Satz-Trainer</b>
       <span class="muted">Lateinische Sätze verstehen und übersetzen</span>
     </button>
+    <button class="home-practice-card" onclick="showPage('quiz')">
+      <span class="home-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.5 9a2.8 2.8 0 1 1 4.7 2.1c-1.1 1-2.2 1.4-2.2 3"/><path d="M12 18h.01M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/></svg></span>
+      <b>Grammatik-Quiz</b>
+      <span class="muted">Tempora · KNG · Satzbestimmung</span>
+    </button>
 
   </div>
 
@@ -434,6 +446,14 @@ h1,h2,h3,.home-title,.home-section-title{font-weight:600!important;letter-spacin
     <div class="home-goal-bar"><i id="goalBar"></i></div>
     <p class="muted small">Bearbeitete Vokabeln heute</p>
   </div>
+
+  <div class="panel insight-panel">
+    <div class="insight-head"><h2>📅 Lernkalender</h2><div class="calendar-nav"><button type="button" onclick="changeCalendarMonth(-1)" aria-label="Vorheriger Monat">‹</button><span class="calendar-month" id="calendarMonth"></span><button type="button" onclick="changeCalendarMonth(1)" aria-label="Nächster Monat">›</button></div></div>
+    <div id="learningCalendar" aria-label="Monatsübersicht der Lernaktivität"></div><div class="calendar-legend">● Tage mit Lernaktivität · Umrandet ist heute</div>
+  </div>
+  <div class="panel insight-panel"><div class="insight-head"><h2>📊 Detaillierte Statistik</h2></div><div id="detailStats"></div></div>
+  <div class="panel insight-panel"><div class="insight-head"><h2>🎯 Lektionen im Überblick</h2></div><div id="lessonMastery"></div></div>
+  <div class="panel insight-panel"><div class="insight-head"><h2>🔁 Diese Vokabeln brauchen Übung</h2></div><div id="weakVocab"></div></div>
 </section>
 
 <section id="cards" class="page">
@@ -515,6 +535,24 @@ h1,h2,h3,.home-title,.home-section-title{font-weight:600!important;letter-spacin
   <div id="vocabTestRun" hidden></div>
   <div id="vocabTestResult" hidden></div>
   <div id="vocabTestPrint" class="vocab-test-print" hidden></div>
+</section>
+
+
+<section id="quiz" class="page">
+  <div class="page-title-wrap"><h1 class="page-title">Grammatik-Quiz</h1></div>
+  <div id="quizSetup" class="step-card">
+    <p class="muted">Wähle einen Bereich und beantworte die Aufgaben. Dein Lernfortschritt wird gespeichert.</p>
+    <button class="option" type="button" onclick="startQuiz('tempora')"><b>⏳ Tempora</b><span class="muted small">Zeitformen erkennen</span></button>
+    <button class="option" type="button" onclick="startQuiz('kng')"><b>🔤 KNG</b><span class="muted small">Kasus, Numerus und Genus bestimmen</span></button>
+    <button class="option" type="button" onclick="startQuiz('sentence')"><b>📝 Satzbestimmung</b><span class="muted small">Satzglieder erkennen</span></button>
+  </div>
+  <div id="quizPlay" class="step-card" style="display:none">
+    <div class="row" style="justify-content:space-between"><h2 id="quizTitle">Quiz</h2><span class="muted small" id="quizProgress"></span></div>
+    <div id="quizQuestion" class="big"></div>
+    <div id="options" class="quizbox"></div>
+    <div id="quizResult"></div>
+    <button class="secondary full-action" type="button" onclick="resetQuizSetup()">Quizbereich wechseln</button>
+  </div>
 </section>
 
 <section id="vocab" class="page">
@@ -678,7 +716,7 @@ h1,h2,h3,.home-title,.home-section-title{font-weight:600!important;letter-spacin
 <p class="muted small">Level &amp; XP und die Sammlung findest du ausschließlich auf dem Home-Bildschirm. Hier gibt es keinen zweiten Einstieg.</p>
 <hr class="divider">
 <div class="stat"><b>🌙 Dark Mode</b><input type="checkbox" id="dark" onchange="setDark(this.checked)"></div>
-<hr class="divider"><b>🎯 Tagesziel</b><div class="row" style="margin-top:8px"><input id="dailyGoal" class="field" type="number" min="1" max="200" step="1" style="margin:0" onchange="setDailyGoal(this.value)" placeholder="20"></div><p class="muted small">Wie viele Vokabeln möchtest du pro Tag bearbeiten?</p><hr class="divider"><b>💾 Lernstand</b><p class="muted small">Vokabeln, Wiederholungsstufen, XP, Richtung und Lektionen werden lokal gespeichert.</p><div class="row"><button class="secondary" onclick="exportBackup()">Backup exportieren</button><label class="secondary">Backup importieren<input id="backup" type="file" accept="application/json,.json" hidden onchange="importBackup(event)"></label></div><p id="storageStatus" class="status"></p><p id="offlineStatus" class="status"></p>
+<hr class="divider"><b>🎯 Tagesziel</b><div class="row" style="margin-top:8px"><input id="dailyGoal" class="field" type="number" min="1" max="200" step="1" style="margin:0" onchange="setDailyGoal(this.value)" placeholder="20"></div><p class="muted small">Wie viele Vokabeln möchtest du pro Tag bearbeiten?</p><hr class="divider"><b>💾 Lernstand</b><p class="muted small">Vokabeln, Wiederholungsstufen, XP, Richtung und Lektionen werden lokal gespeichert.</p><div class="row"><button class="secondary" onclick="exportBackup()">Backup exportieren</button><label class="secondary">Backup importieren<input id="backup" type="file" accept="application/json,.json" hidden onchange="importBackup(event)"></label></div><p id="storageStatus" class="status"></p><p id="offlineStatus" class="status"></p><p id="autoBackupStatus" class="status"></p><div class="row"><button id="restoreAutoBackupBtn" class="secondary" type="button" onclick="restoreLatestAutoBackup()" disabled>Letzte automatische Sicherung wiederherstellen</button></div><p class="muted small">Die automatische Sicherung bleibt auf diesem Gerät. Eine Cloud-Synchronisierung ist technisch vorbereitet, aber noch nicht mit einem Server verbunden.</p><hr class="divider"><b>🛠 Fehlerprotokoll</b><p id="errorLogStatus" class="status">Lokal gespeicherte Fehler: 0 / 30</p><div class="row"><button class="secondary" type="button" onclick="showRuntimeErrors()">Fehler ansehen</button><button class="secondary" type="button" onclick="clearRuntimeErrors()">Protokoll löschen</button></div>
 <hr class="divider"><button class="secondary danger" onclick="resetProgress()">Lernstand zurücksetzen</button>
 </div></section>
 
@@ -715,7 +753,11 @@ function cleanSourceHeadword(v){
 }
 const defaultVocab=SOURCE_VOCAB.map((v,i)=>({...v,l:cleanSourceHeadword(v),id:v.id||('src-'+i),box:0,next:0,seen:0,correct:0,wrong:0,source:true}));
 function todayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function fresh(){return{vocab:defaultVocab.map(v=>({...v,lessons:[...v.lessons]})),xp:0,streak:0,lastDay:null,direction:'de-la',searchDirection:'la-de',dark:false,selectedLessons:[],dailyGoal:20,dailyDate:todayKey(),dailyCount:0,lastBackup:null,xpDoublerUntil:0,antiCheat:{quickStreak:0,lastAnswerAt:0,warned:false,suspiciousXp:0,violations:0},formProgress:{},formSettings:{lessons:[],types:['Substantiv'],cases:['Nominativ','Genitiv','Dativ','Akkusativ','Ablativ','Vokativ'],tenses:['Präsens','Imperfekt','Futur I','Perfekt','Plusquamperfekt','Futur II'],modes:['Indikativ','Konjunktiv'],voices:['Aktiv','Passiv'],extra:false,mode:'select'},badges:{},xpDoubler:0,rewardClaimed:{},quizProgress:{},profile:{id:'usr-'+cryptoRandomId(),name:''},groups:[]}}
+let calendarCursor=new Date();
+function ensureActivity(){if(!state.activity||typeof state.activity!=='object'||Array.isArray(state.activity))state.activity={};return state.activity}
+function recordStudyActivity(correct,xp){const log=ensureActivity(),day=todayKey(),entry=log[day]||(log[day]={events:0,correct:0,wrong:0,xp:0,cards:0});entry.events=(Number(entry.events)||0)+1;if(correct)entry.correct=(Number(entry.correct)||0)+1;else entry.wrong=(Number(entry.wrong)||0)+1;entry.xp=(Number(entry.xp)||0)+(Number(xp)||0)}
+function recordCardReview(){const log=ensureActivity(),day=todayKey(),entry=log[day]||(log[day]={events:0,correct:0,wrong:0,xp:0,cards:0});entry.cards=(Number(entry.cards)||0)+1}
+function fresh(){return{vocab:defaultVocab.map(v=>({...v,lessons:[...v.lessons]})),activity:{},syncMeta:{deviceId:'device-'+cryptoRandomId(),schemaVersion:1,lastSyncedAt:null},xp:0,streak:0,lastDay:null,direction:'de-la',searchDirection:'la-de',dark:false,selectedLessons:[],dailyGoal:20,dailyDate:todayKey(),dailyCount:0,lastBackup:null,xpDoublerUntil:0,antiCheat:{quickStreak:0,lastAnswerAt:0,warned:false,suspiciousXp:0,violations:0},formProgress:{},formSettings:{lessons:[],types:['Substantiv'],cases:['Nominativ','Genitiv','Dativ','Akkusativ','Ablativ','Vokativ'],tenses:['Präsens','Imperfekt','Futur I','Perfekt','Plusquamperfekt','Futur II'],modes:['Indikativ','Konjunktiv'],voices:['Aktiv','Passiv'],extra:false,mode:'select'},badges:{},xpDoubler:0,rewardClaimed:{},quizProgress:{},profile:{id:'usr-'+cryptoRandomId(),name:''},groups:[]}}
 function cryptoRandomId(){try{return crypto.getRandomValues(new Uint32Array(2)).map(n=>n.toString(36)).join('').slice(0,10)}catch(e){return Math.random().toString(36).slice(2,12)}}
 function randomInviteCode(){return (Math.random().toString(36).slice(2,5)+'-'+Math.random().toString(36).slice(2,6)).toUpperCase()}
 let state;
@@ -736,7 +778,7 @@ function mergeSourceVocab(){
   }else state.vocab.push({...src,lessons:[...src.lessons]});
  }
 }
-state.vocab=Array.isArray(state.vocab)?state.vocab:[];state.selectedLessons=Array.isArray(state.selectedLessons)?state.selectedLessons:[];mergeSourceVocab();
+state.vocab=Array.isArray(state.vocab)?state.vocab:[];state.activity=state.activity&&typeof state.activity==='object'&&!Array.isArray(state.activity)?state.activity:{};state.syncMeta=state.syncMeta&&typeof state.syncMeta==='object'?state.syncMeta:{deviceId:'device-'+cryptoRandomId(),schemaVersion:1,lastSyncedAt:null};state.syncMeta.deviceId=state.syncMeta.deviceId||'device-'+cryptoRandomId();state.selectedLessons=Array.isArray(state.selectedLessons)?state.selectedLessons:[];mergeSourceVocab();
 // Nach der Register-Datenbereinigung niemals doppelte Quellen-IDs im Lernbestand behalten.
 const _sourceSeen=new Set();state.vocab=state.vocab.filter(v=>{if(!v.source)return true;if(_sourceSeen.has(v.id))return false;_sourceSeen.add(v.id);return true;});
 state.direction=state.direction||'de-la';state.searchDirection=state.searchDirection==='de-la'?'de-la':'la-de';state.xp=Number(state.xp)||0;state.badges=state.badges&&typeof state.badges==='object'?state.badges:{};state.rewardClaimed=state.rewardClaimed&&typeof state.rewardClaimed==='object'?state.rewardClaimed:{};state.xpDoubler=Math.max(0,Number(state.xpDoubler)||0);state.profile=state.profile&&typeof state.profile==='object'?state.profile:{id:'usr-'+cryptoRandomId(),name:''};state.profile.id=state.profile.id||'usr-'+cryptoRandomId();state.profile.name=String(state.profile.name||'');state.groups=Array.isArray(state.groups)?state.groups:[];state.xpDoublerUntil=Number(state.xpDoublerUntil)||0;if(state.xpDoubler>0){state.xpDoublerUntil=Math.max(state.xpDoublerUntil,Date.now()+state.xpDoubler*1800000);state.xpDoubler=0;}if(!state.xpDoublerUntil||state.xpDoublerUntil<=Date.now())state.xpDoublerUntil=0;state.antiCheat=state.antiCheat&&typeof state.antiCheat==='object'?state.antiCheat:{quickStreak:0,lastAnswerAt:0,warned:false,suspiciousXp:0,violations:0};state.antiCheat.quickStreak=Number(state.antiCheat.quickStreak)||0;state.antiCheat.lastAnswerAt=Number(state.antiCheat.lastAnswerAt)||0;state.antiCheat.warned=!!state.antiCheat.warned;state.antiCheat.suspiciousXp=Number(state.antiCheat.suspiciousXp)||0;state.antiCheat.violations=Number(state.antiCheat.violations)||0;state.streak=Number(state.streak)||0;state.dailyGoal=Math.max(1,Math.min(200,Number(state.dailyGoal)||20));state.formProgress=state.formProgress&&typeof state.formProgress==='object'?state.formProgress:{};state.formSettings=state.formSettings&&typeof state.formSettings==='object'?state.formSettings:{};state.formSettings.lessons=Array.isArray(state.formSettings.lessons)?state.formSettings.lessons:[];state.formSettings.types=Array.isArray(state.formSettings.types)&&state.formSettings.types.length?state.formSettings.types:['Substantiv'];state.formSettings.cases=Array.isArray(state.formSettings.cases)&&state.formSettings.cases.length?state.formSettings.cases:['Nominativ','Genitiv','Dativ','Akkusativ','Ablativ','Vokativ'];state.formSettings.tenses=Array.isArray(state.formSettings.tenses)&&state.formSettings.tenses.length?state.formSettings.tenses:['Präsens','Imperfekt','Futur I','Perfekt','Plusquamperfekt','Futur II'];state.formSettings.modes=Array.isArray(state.formSettings.modes)&&state.formSettings.modes.length?state.formSettings.modes:['Indikativ','Konjunktiv'];state.formSettings.voices=Array.isArray(state.formSettings.voices)&&state.formSettings.voices.length?state.formSettings.voices:['Aktiv','Passiv'];state.formSettings.extra=!!state.formSettings.extra;state.formSettings.mode=state.formSettings.mode==='type'?'type':'select';state.quizProgress=state.quizProgress&&typeof state.quizProgress==='object'?state.quizProgress:{};
@@ -745,7 +787,61 @@ if(state.dailyDate!==todayKey()){state.dailyDate=todayKey();state.dailyCount=0}
 state.dailyCount=Number(state.dailyCount)||0;
 let current=0,quizType='',quizIndex=0,quizData=[],answered=false,startY=0;
 let cardsStarted=false,cardMode='lesson',sessionCards=[],sessionErrors=[];
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state));return true}catch(e){showToast('Speichern fehlgeschlagen: Der lokale Speicher ist voll oder nicht verfügbar. Bitte exportiere eine Sicherung.',4200);return false}}
+function save(){
+ try{
+  const backupKey=KEY+'-auto-backups',previous=localStorage.getItem(KEY),today=todayKey();
+  if(previous&&state.lastAutoBackupDate!==today){
+   try{
+    const previousState=JSON.parse(previous);
+    if(previousState&&Array.isArray(previousState.vocab)){
+     let backups=[];try{backups=JSON.parse(localStorage.getItem(backupKey)||'[]')}catch(_){backups=[]}
+     if(!Array.isArray(backups))backups=[];
+     backups.unshift({date:today,savedAt:new Date().toISOString(),data:previousState});
+     localStorage.setItem(backupKey,JSON.stringify(backups.slice(0,3)));
+     state.lastAutoBackupDate=today;
+    }
+   }catch(_){/* Eine defekte alte Sicherung darf das normale Speichern nicht verhindern. */}
+  }
+  localStorage.setItem(KEY,JSON.stringify(state));return true;
+ }catch(e){showToast('Speichern fehlgeschlagen: Der lokale Speicher ist voll oder nicht verfügbar. Bitte exportiere eine Sicherung.',4200);return false}
+}
+function exportBackup(){
+ try{
+  const payload={app:'VocaLatinum',schemaVersion:1,exportedAt:new Date().toISOString(),data:state};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='VocaLatinum-Backup-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  showToast('Backup wurde erstellt.');
+ }catch(e){showToast('Backup konnte nicht erstellt werden.',3500)}
+}
+function importBackup(event){
+ const input=event?.target,file=input?.files?.[0];if(!file)return;
+ if(file.size>20*1024*1024){showToast('Die Backup-Datei ist größer als 20 MB.',3500);input.value='';return}
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const parsed=JSON.parse(String(reader.result||''));
+   if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('Ungültiges Backup');
+   if(parsed.app==='VocaLatinum'&&parsed.schemaVersion!==1)throw new Error('Unbekannte Backup-Version');
+   const incoming=parsed.app==='VocaLatinum'?parsed.data:parsed;
+   if(!incoming||typeof incoming!=='object'||Array.isArray(incoming)||!Array.isArray(incoming.vocab))throw new Error('Ungültiger Lernstand');
+   if(!incoming.vocab.every(v=>v&&typeof v==='object'&&!Array.isArray(v)&&typeof v.l==='string'&&v.l.trim()&&typeof v.g==='string'&&v.g.trim()))throw new Error('Ungültige Vokabeldaten');
+   const serialized=JSON.stringify(incoming);
+   if(!serialized||serialized.length>20*1024*1024)throw new Error('Backup zu groß oder ungültig');
+   if(!confirm('Möchtest du diesen Lernstand importieren? Dein aktueller Lernstand wird vorher lokal gesichert.')){input.value='';return}
+   // Ohne erfolgreiche Rücksicherung wird der Import grundsätzlich abgebrochen.
+   const rollback={app:'VocaLatinum',schemaVersion:1,exportedAt:new Date().toISOString(),data:state};
+   localStorage.setItem(KEY+'-pre-import-backup',JSON.stringify(rollback));
+   localStorage.setItem(KEY,serialized);
+   showToast('Backup importiert. VocaLatinum wird neu geladen.');
+   setTimeout(()=>location.reload(),500);
+  }catch(e){showToast('Backup ungültig oder konnte nicht sicher importiert werden. Dein bisheriger Lernstand bleibt erhalten.',4500)}
+  input.value='';
+ };
+ reader.onerror=()=>{showToast('Die Backup-Datei konnte nicht gelesen werden.',3500);input.value=''};
+ reader.readAsText(file);
+}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function showToast(t,duration=2200){const e=document.getElementById('toast');if(!e)return;e.textContent=t;e.style.display='block';clearTimeout(window._toast);window._toast=setTimeout(()=>e.style.display='none',duration)}
 function saveFriendName(){const el=document.getElementById('friendName');const name=String(el?.value||'').trim();if(name.length<2){showToast('Bitte wähle einen Namen mit mindestens 2 Zeichen.');return}if(!isNameAvailable(name)){showToast('Dieser Name ist in deinen Gruppen bereits vergeben. Bitte wähle einen anderen Namen.');return}state.profile.name=name;save();renderFriends();updateHomeProfileName();showToast('Name gespeichert.')}
@@ -767,7 +863,7 @@ const SENTENCE_FILTER_OPTIONS={
  cases:['Nominativ','Genitiv','Dativ','Akkusativ','Ablativ','Vokativ'],
  tenses:['Präsens','Imperfekt','Futur I','Perfekt','Plusquamperfekt','Futur II'],
  modes:['Indikativ','Konjunktiv'],
- constructions:['Grundsatz','PPP','PPA','AcI']
+ constructions:['Grundsatz','PPP','PPA','AcI','PC']
 };
 let sentenceFilters={difficulties:['Normal'],numbers:[...SENTENCE_FILTER_OPTIONS.numbers],cases:[...SENTENCE_FILTER_OPTIONS.cases],tenses:[...SENTENCE_FILTER_OPTIONS.tenses],modes:[...SENTENCE_FILTER_OPTIONS.modes],constructions:[...SENTENCE_FILTER_OPTIONS.constructions]};
 let sentenceTrainerItems=[];
@@ -926,6 +1022,7 @@ function generateSentenceCandidate(){
   if(c==='PPA'&&m==='Indikativ'&&t==='Präsens')combos.push({construction:c,tense:t,mode:m});
   if(c==='PPP'&&m==='Indikativ'&&['Perfekt','Plusquamperfekt','Futur II'].includes(t))combos.push({construction:c,tense:t,mode:m});
   if(c==='AcI'&&m==='Indikativ'&&['Präsens','Perfekt'].includes(t))combos.push({construction:c,tense:t,mode:m});
+  if(c==='PC'&&m==='Indikativ'&&['Präsens','Perfekt'].includes(t))combos.push({construction:c,tense:t,mode:m});
  })));
  if(!combos.length)return null;
  const chosen=sentencePick(combos),tense=chosen.tense,mode=chosen.mode,construction=chosen.construction;
@@ -942,7 +1039,7 @@ function generateSentenceCandidate(){
  const objPool=compatible.length?compatible:objectPool;
  const obj=sentencePick(objPool.length?objPool:peoplePool);
  const otherPeople=peoplePool.filter(n=>n.lemma!==subj.lemma);
- let la='',de='',actualTense=tense,actualMode=mode,actualConstruction=construction;
+ let la='',de='',deAlternatives=[],actualTense=tense,actualMode=mode,actualConstruction=construction;
  const subjectLatin=sentenceNounForm(subj,'nom',false),subjectGerman=sentenceGermanSubject(subj,false),subjectCap=subjectGerman.charAt(0).toUpperCase()+subjectGerman.slice(1);
  const objectLatin=sentenceNounForm(obj,'acc',false),objectGerman=sentenceGermanObject(obj,false);
  const presentDe={laudare:'lobt',portare:'trägt',amare:'liebt',monere:'mahnt',videre:'sieht',legere:'liest',scribere:'schreibt',defendere:'verteidigt',audire:'hört',venire:'kommt',dare:'gibt',vincere:'besiegt',vocare:'ruft'};
@@ -959,7 +1056,7 @@ function generateSentenceCandidate(){
    la=`${sentenceNounForm(patient,'nom',false)} ${form} ${tense==='Plusquamperfekt'?'erat': 'est'}.`;
    const pde={laudare:'gelobt',portare:'getragen',amare:'geliebt',monere:'ermahnt',videre:'gesehen',legere:'gelesen',scribere:'geschrieben',defendere:'verteidigt',audire:'gehört',dare:'gegeben',vincere:'besiegt',vocare:'gerufen'}[pv.lemma];
    const patientGerman=sentenceGermanSubject(patient,false),patientCap=patientGerman.charAt(0).toUpperCase()+patientGerman.slice(1);
-   de=tense==='Plusquamperfekt'?`${patientCap} war ${pde} worden.`:tense==='Futur II'?`${patientCap} wird ${pde} worden sein.`:`${patientCap} ist ${pde} worden.`;
+   de=tense==='Plusquamperfekt'?`${patientCap} war ${pde} worden.`:tense==='Futur II'?`${patientCap} wird ${pde} worden sein.`:`${patientCap} ist ${pde} worden.`;if(tense==='Perfekt')deAlternatives=[`${patientCap} wurde ${pde}.`];
    actualTense=tense;actualMode='Indikativ';
  } else if(construction==='PPA'){
    if(subj.dynamic)return null;
@@ -972,7 +1069,7 @@ function generateSentenceCandidate(){
    la=`${subjectLatin} ${sentenceNounForm(ppaObject,'acc',false)} ${ppa} ${sentenceNounForm(mainObj,'acc',false)} ${sentenceTenseVerb(main,'Präsens',false)}.`;
    const ppaPresent={laudare:'lobt',portare:'trägt',amare:'liebt',monere:'mahnt',videre:'sieht',legere:'liest',scribere:'schreibt',defendere:'verteidigt',audire:'hört',dare:'gibt',vincere:'besiegt',vocare:'ruft'};
    const subjPhrase=sentenceGermanSubject(subj,false),subjCap=subjPhrase.charAt(0).toUpperCase()+subjPhrase.slice(1),relativePronoun=subj.lemma==='puella'?'das':subj.lemma==='femina'?'die':'der';
-   de=`${subjCap}, ${relativePronoun} ${sentenceGermanObject(ppaObject,false)} ${ppaPresent[ppaVerb.lemma]}, ${ppaPresent[main.lemma]} ${sentenceGermanObject(mainObj,false)}.`;
+   de=`${subjCap}, ${relativePronoun} ${sentenceGermanObject(ppaObject,false)} ${ppaPresent[ppaVerb.lemma]}, ${ppaPresent[main.lemma]} ${sentenceGermanObject(mainObj,false)}.`;const ppaSubjectPronoun=relativePronoun==='das'?'es':relativePronoun==='die'?'sie':'er';deAlternatives=[`${subjCap} ${ppaPresent[main.lemma]} ${sentenceGermanObject(mainObj,false)}, während ${ppaSubjectPronoun} ${sentenceGermanObject(ppaObject,false)} ${ppaPresent[ppaVerb.lemma]}.`];
    actualTense='Präsens';actualMode='Indikativ';
  } else if(construction==='AcI'){
    const aciSubject=sentencePick(otherPeople);const report=sentencePick(['dicit','videt']);const inf=tense==='Perfekt'?verb.infPerf:verb.inf;
@@ -981,6 +1078,34 @@ function generateSentenceCandidate(){
    const aciSubjectGerman=sentenceGermanSubject(aciSubject,false);const infPresent=presentDe[verb.lemma]||`${verb.g}t`;const infPerfect=({laudare:'gelobt hat',portare:'getragen hat',amare:'geliebt hat',monere:'ermahnt hat',videre:'gesehen hat',legere:'gelesen hat',scribere:'geschrieben hat',defendere:'verteidigt hat',audire:'gehört hat',venire:'gekommen ist',dare:'gegeben hat',vincere:'besiegt hat',vocare:'gerufen hat'})[verb.lemma]||`${verb.g}t hat`;
    const objectGermanPart=aciObject?sentenceGermanObject(aciObject,false)+' ':'';const subordinateVerb=tense==='Perfekt'?infPerfect:infPresent;
    de=`Er ${report==='dicit'?'sagt':'sieht'}, dass ${aciSubjectGerman} ${objectGermanPart}${subordinateVerb}.`;actualMode='Indikativ';
+
+ } else if(construction==='PC'){
+   const mainCandidates=verbs.filter(v=>Object.prototype.hasOwnProperty.call(allowed,v.lemma)&&allowed[v.lemma].length);
+   if(!mainCandidates.length)return null;
+   const main=sentencePick(mainCandidates),mainObjects=allowed[main.lemma].map(k=>byLemma[k]).filter(Boolean);
+   if(!mainObjects.length)return null;
+   const mainObject=sentencePick(mainObjects),pcNoun=sentencePick(peoplePool);
+   const pcCandidates=verbs.filter(v=>v.lemma!=='venire'&&Object.prototype.hasOwnProperty.call(allowed,v.lemma)&&allowed[v.lemma].length);
+   if(!pcCandidates.length)return null;
+   const pcVerb=sentencePick(pcCandidates),pcObjects=allowed[pcVerb.lemma].map(k=>byLemma[k]).filter(Boolean);
+   if(!pcObjects.length)return null;
+   const pcObject=sentencePick(pcObjects),germanPcNoun=sentenceGermanObject(pcNoun,false);
+   const relativePronoun=germanPcNoun.startsWith('den ')?'der':germanPcNoun.startsWith('das ')?'das':'die';const personalPronoun=relativePronoun==='der'?'er':relativePronoun==='das'?'es':'sie';
+   const mainGerman=presentDe[main.lemma]||'sieht',pcGerman=presentDe[pcVerb.lemma]||'liest';
+   if(tense==='Präsens'){
+     const ppaMap={laudare:'laudans',portare:'portans',amare:'amans',monere:'monens',videre:'videns',legere:'legens',scribere:'scribens',defendere:'defendens',audire:'audiens',dare:'dans',vincere:'vincens',vocare:'vocans'};
+     const ppa=ppaMap[pcVerb.lemma];if(!ppa)return null;
+     const ppaAcc=ppa.slice(0,-3)+(ppa.endsWith('ans')?'antem':'entem');
+     la=`${subjectLatin} ${sentenceNounForm(pcNoun,'acc',false)} ${sentenceNounForm(pcObject,'acc',false)} ${ppaAcc} ${sentenceTenseVerb(main,'Präsens',false)}.`;
+     de=`${subjectCap} ${mainGerman} ${sentenceGermanObject(mainObject,false)}, ${relativePronoun} ${sentenceGermanObject(pcObject,false)} ${pcGerman}.`;deAlternatives=[`${subjectCap} ${mainGerman} ${sentenceGermanObject(mainObject,false)}, während ${personalPronoun} ${sentenceGermanObject(pcObject,false)} ${pcGerman}.`];
+   }else{
+     const pppMap={laudare:{m:'laudatum',f:'laudatam',n:'laudatum',de:'gelobt'},portare:{m:'portatum',f:'portatam',n:'portatum',de:'getragen'},amare:{m:'amatum',f:'amatam',n:'amatum',de:'geliebt'},monere:{m:'monitum',f:'monitam',n:'monitum',de:'ermahnt'},videre:{m:'visum',f:'visam',n:'visum',de:'gesehen'},legere:{m:'lectum',f:'lectam',n:'lectum',de:'gelesen'},scribere:{m:'scriptum',f:'scriptam',n:'scriptum',de:'geschrieben'},defendere:{m:'defensum',f:'defensam',n:'defensum',de:'verteidigt'},audire:{m:'auditum',f:'auditam',n:'auditum',de:'gehört'},dare:{m:'datum',f:'datam',n:'datum',de:'gegeben'},vincere:{m:'victum',f:'victam',n:'victum',de:'besiegt'},vocare:{m:'vocatum',f:'vocatam',n:'vocatum',de:'gerufen'}};
+     const ppp=pppMap[pcVerb.lemma];if(!ppp)return null;
+     const pppForm=pcNoun.gender==='f'?ppp.f:pcNoun.gender==='n'?ppp.n:ppp.m;
+     la=`${subjectLatin} ${sentenceNounForm(pcNoun,'acc',false)} ${pppForm} ${sentenceTenseVerb(main,'Präsens',false)}.`;
+     de=`${subjectCap} ${mainGerman} ${germanPcNoun}, ${relativePronoun} ${ppp.de} worden ist.`;deAlternatives=[`${subjectCap} ${mainGerman} ${germanPcNoun}, ${relativePronoun} ${ppp.de} wurde.`];
+   }
+   actualConstruction='PC';actualMode='Indikativ';actualTense=tense;
  } else if(mode==='Konjunktiv'){
    const child=sentencePick(otherPeople);const subjVerb=verb.conj||sentenceTenseVerb(verb,'Präsens',false);
    la=`${subjectLatin} rogat ut ${sentenceNounForm(child,'nom',false)} ${objectLatin} ${subjVerb}.`;
@@ -991,7 +1116,7 @@ function generateSentenceCandidate(){
    else {la=`${subjectLatin} ${objectLatin} ${sentenceTenseVerb(verb,tense,false)}.`;if(tense==='Perfekt'){const part=(perfectDe[verb.lemma]||`${verb.g}t`).replace(/^hat |^ist /,'');const aux=(perfectDe[verb.lemma]||'hat getan').startsWith('ist ')?'ist':'hat';de=`${subjectCap} ${aux} ${objectGerman} ${part}.`;}else if(tense==='Futur I'){const inf=(futureDe[verb.lemma]||`wird ${verb.g}`).replace(/^wird /,'');de=`${subjectCap} wird ${objectGerman} ${inf}.`;}else if(tense==='Plusquamperfekt'){const part=(perfectDe[verb.lemma]||'hat getan').replace(/^hat |^ist /,'');const aux=(perfectDe[verb.lemma]||'hat getan').startsWith('ist ')?'war':'hatte';de=`${subjectCap} ${aux} ${objectGerman} ${part}.`;}else if(tense==='Futur II'){const part=(perfectDe[verb.lemma]||'hat getan').replace(/^hat |^ist /,'');const aux=(perfectDe[verb.lemma]||'hat getan').startsWith('ist ')?'wird':'wird';de=`${subjectCap} wird ${objectGerman} ${part} haben.`;}else {de=`${subjectCap} ${tense==='Imperfekt'?(imperfectDe[verb.lemma]||verb.g+'te'):(presentDe[verb.lemma]||verb.g+'t')} ${objectGerman}.`;}}
  }
  if(!la||!de||/undefined|NaN|\[object Object\]/.test(la+de))return null;
- return {la,de,numbers:['Singular'],cases:['Nominativ','Akkusativ'],tense:actualTense,mode:actualMode,construction:actualConstruction,difficulty};
+ return {la,de,deAlternatives,numbers:['Singular'],cases:['Nominativ','Akkusativ'],tense:actualTense,mode:actualMode,construction:actualConstruction,difficulty};
 }
 function generateUniqueSentence(){let fallback=null;for(let i=0;i<1800;i++){const item=generateSentenceCandidate();if(!item)continue;fallback=item;if(!sentenceRecent.has(item.la)){sentenceRecent.add(item.la);if(sentenceRecent.size>5000)sentenceRecent.clear();return item}}if(fallback){sentenceRecent.clear();sentenceRecent.add(fallback.la)}return fallback}
 function renderSentenceFilterGroup(containerId,key){const container=document.getElementById(containerId);if(!container)return;container.innerHTML=SENTENCE_FILTER_OPTIONS[key].map(value=>{const active=sentenceFilters[key].includes(value);return `<button type="button" class="sentence-chip ${active?'on':''}" aria-pressed="${active}" onclick="toggleSentenceFilter('${key}','${value}')">${value}</button>`}).join('')}
@@ -1004,7 +1129,7 @@ function updateSentenceAvailableCount(){const el=document.getElementById('senten
 function startSentencePractice(){sentenceTrainerItems=[];sentenceTrainerIndex=0;sentenceCorrectCount=0;sentenceRecent.clear();const first=generateUniqueSentence();if(!first){showToast('Für diese Kombination gibt es keine passenden Satzbausteine. Bitte wähle auch Präsens/Indikativ oder eine passende Konstruktion.');return}sentenceTrainerItems.push(first);const setup=document.getElementById('sentenceSetup'),learning=document.getElementById('sentenceLearning');if(setup)setup.style.display='none';if(learning)learning.style.display='block';renderSentenceTrainer()}
 function renderSentenceTrainer(){const setup=document.getElementById('sentenceSetup'),learning=document.getElementById('sentenceLearning');if(!sentenceTrainerItems.length){if(setup)setup.style.display='block';if(learning)learning.style.display='none';renderSentenceFilters();return}const item=sentenceTrainerItems[sentenceTrainerIndex];if(!item)return;const prompt=document.getElementById('sentencePrompt'),answer=document.getElementById('sentenceUserAnswer'),feedback=document.getElementById('sentenceFeedback'),counter=document.getElementById('sentenceCounter'),checkBtn=document.getElementById('sentenceCheckBtn'),revealBtn=document.getElementById('sentenceRevealBtn');if(prompt)prompt.textContent=item.la;if(answer){answer.value='';answer.disabled=false}if(feedback){feedback.hidden=true;feedback.textContent=''}if(counter)counter.textContent=`Satz ${sentenceTrainerIndex+1} · ${item.difficulty} · ${item.tense} · ${item.construction} · Richtig: ${sentenceCorrectCount}`;if(checkBtn)checkBtn.style.display='block';if(revealBtn)revealBtn.style.display='block';sentenceAnswered=false;if(answer)answer.focus()}
 function normalizeSentenceAnswer(value){return String(value||'').toLocaleLowerCase('de').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[.,!?;:]/g,'').replace(/\s+/g,' ').trim()}
-function checkSentenceAnswer(){if(sentenceAnswered)return;const item=sentenceTrainerItems[sentenceTrainerIndex];if(!item)return;const input=document.getElementById('sentenceUserAnswer'),feedback=document.getElementById('sentenceFeedback'),checkBtn=document.getElementById('sentenceCheckBtn'),revealBtn=document.getElementById('sentenceRevealBtn');const userAnswer=normalizeSentenceAnswer(input?.value),correctAnswer=normalizeSentenceAnswer(item.de);if(!userAnswer){if(typeof showToast==='function')showToast('Bitte gib zuerst eine Übersetzung ein.');if(input)input.focus();return}sentenceAnswered=true;const isCorrect=userAnswer===correctAnswer;if(isCorrect)sentenceCorrectCount++;if(feedback){feedback.hidden=false;feedback.textContent=isCorrect?`✓ Richtig! ${item.de}`:`Noch nicht ganz. Musterlösung: ${item.de}`}if(input)input.disabled=true;if(checkBtn)checkBtn.style.display='none';if(revealBtn)revealBtn.style.display='none';const counter=document.getElementById('sentenceCounter');if(counter)counter.textContent=`Satz ${sentenceTrainerIndex+1} von ${sentenceTrainerItems.length} · Richtig: ${sentenceCorrectCount}`}
+function checkSentenceAnswer(){if(sentenceAnswered)return;const item=sentenceTrainerItems[sentenceTrainerIndex];if(!item)return;const input=document.getElementById('sentenceUserAnswer'),feedback=document.getElementById('sentenceFeedback'),checkBtn=document.getElementById('sentenceCheckBtn'),revealBtn=document.getElementById('sentenceRevealBtn');const userAnswer=normalizeSentenceAnswer(input?.value),acceptedAnswers=[item.de,...(Array.isArray(item.deAlternatives)?item.deAlternatives:[])].map(normalizeSentenceAnswer);if(!userAnswer){if(typeof showToast==='function')showToast('Bitte gib zuerst eine Übersetzung ein.');if(input)input.focus();return}sentenceAnswered=true;const isCorrect=acceptedAnswers.includes(userAnswer);if(isCorrect)sentenceCorrectCount++;if(typeof addXP==='function'){addXP(isCorrect?3:1,'Satztrainer',isCorrect);save();updateStats()}if(feedback){feedback.hidden=false;feedback.textContent=isCorrect?`✓ Richtig! ${item.de}`:`Noch nicht ganz. Musterlösung: ${item.de}`}if(input)input.disabled=true;if(checkBtn)checkBtn.style.display='none';if(revealBtn)revealBtn.style.display='none';const counter=document.getElementById('sentenceCounter');if(counter)counter.textContent=`Satz ${sentenceTrainerIndex+1} von ${sentenceTrainerItems.length} · Richtig: ${sentenceCorrectCount}`}
 function revealSentenceAnswer(){const item=sentenceTrainerItems[sentenceTrainerIndex];if(!item)return;const feedback=document.getElementById('sentenceFeedback'),checkBtn=document.getElementById('sentenceCheckBtn'),revealBtn=document.getElementById('sentenceRevealBtn'),input=document.getElementById('sentenceUserAnswer');if(feedback){feedback.hidden=false;feedback.textContent=`Musterlösung: ${item.de}`}sentenceAnswered=true;if(input)input.disabled=true;if(checkBtn)checkBtn.style.display='none';if(revealBtn)revealBtn.style.display='none'}
 function nextSentence(){if(!sentenceTrainerItems.length)return;if(!sentenceAnswered){showToast('Bitte prüfe deine Übersetzung oder zeige zuerst die Lösung an.');return}const next=generateUniqueSentence();if(!next){showToast('Für diese Einstellungen konnte gerade kein weiterer Satz gebildet werden.');return}sentenceTrainerItems.push(next);sentenceTrainerIndex++;renderSentenceTrainer()}
 function backToSentenceSetup(){sentenceTrainerItems=[];const setup=document.getElementById('sentenceSetup'),learning=document.getElementById('sentenceLearning');if(setup)setup.style.display='block';if(learning)learning.style.display='none';renderSentenceFilters()}
@@ -1035,6 +1160,7 @@ function updateStats(){
  const homeDue=document.getElementById('homeDue');if(homeDue)homeDue.textContent=getDuePool().length;
  const goalText=document.getElementById('goalText');if(goalText)goalText.textContent=Math.min(state.dailyCount,state.dailyGoal)+' / '+state.dailyGoal;
  const goalBar=document.getElementById('goalBar');if(goalBar)goalBar.style.width=Math.min(100,(state.dailyCount/state.dailyGoal)*100)+'%';
+ renderLearningInsights();
  renderLevelTrack();
 }
 
@@ -1197,7 +1323,30 @@ function renderVocab(){
 function openAdd(){showPage('add')}
 function addVocab(){const l=document.getElementById('newLatin').value.trim(),g=document.getElementById('newGerman').value.trim(),forms=document.getElementById('newForms').value.trim(),lessons=parseLessons(document.getElementById('newLessons').value);if(!l||!g)return alert('Bitte Latein und Deutsch eingeben.');state.vocab.push({id:'own-'+Date.now(),l,g,forms,lessons,box:0,next:0,seen:0,correct:0,wrong:0,source:false});save();document.getElementById('newLatin').value='';document.getElementById('newGerman').value='';document.getElementById('newForms').value='';document.getElementById('newLessons').value='';showToast('Vokabel gespeichert.');showPage('vocab')}
 function parseDelimitedText(text){const firstLine=String(text).split(/\r?\n/,1)[0]||'';const delimiter=(firstLine.match(/;/g)||[]).length>(firstLine.match(/,/g)||[]).length?';':',';const rows=[];let row=[],field='',quoted=false;const src=String(text).replace(/^\uFEFF/,'');for(let i=0;i<src.length;i++){const c=src[i],n=src[i+1];if(c==='"'&&quoted&&n==='"'){field+='"';i++}else if(c==='"'){quoted=!quoted}else if(c===delimiter&&!quoted){row.push(field);field=''}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&n==='\n')i++;row.push(field);if(row.some(x=>String(x).trim()))rows.push(row);row=[];field=''}else field+=c}row.push(field);if(row.some(x=>String(x).trim()))rows.push(row);return rows}
-function importFile(e){const input=e.target,f=input?.files?.[0];if(!f)return;const ext=f.name.toLowerCase().split('.').pop();const done=(rows)=>{let count=0,duplicates=0;const seen=new Set(state.vocab.map(v=>[v.l,v.g,v.lessons?.join(',')||''].map(x=>String(x||'').trim().toLocaleLowerCase()).join('\u0000')));rows.forEach(r=>{const l=String(r.l??'').trim(),g=String(r.g??'').trim(),forms=String(r.forms??'').trim(),lessons=parseLessons(r.lessons||'');if(!l||!g)return;const key=[l,g,lessons.join(',')].map(x=>String(x||'').trim().toLocaleLowerCase()).join('\u0000');if(seen.has(key)){duplicates++;return}seen.add(key);state.vocab.push({id:'imp-'+cryptoRandomId(),l,g,forms,lessons,box:0,next:0,seen:0,correct:0,wrong:0,source:false});count++});const saved=save();if(saved){renderVocab();renderLessons();updateStats();alert(count+' Vokabeln importiert.'+(duplicates?' '+duplicates+' Dubletten übersprungen.':''))}input.value=''};if(ext==='xlsx'||ext==='xls'){if(!window.XLSX){alert('Excel-Import benötigt Internetzugang zum Laden des Importmoduls.');input.value='';return}const r=new FileReader();r.onload=()=>{try{const wb=XLSX.read(new Uint8Array(r.result),{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],data=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const first=data[0]||[],hasHeader=first.some(x=>/latein|deutsch|bedeutung|lektion|formen/i.test(String(x)));const body=hasHeader?data.slice(1):data;done(body.map(a=>({l:a[0],g:a[1],forms:a[2],lessons:a[3]})))}catch(err){alert('Excel-Datei konnte nicht gelesen werden. Bitte prüfe das Dateiformat.');input.value=''}};r.onerror=()=>{alert('Excel-Datei konnte nicht gelesen werden.');input.value=''};r.readAsArrayBuffer(f)}else{const r=new FileReader();r.onload=()=>{try{let rows=parseDelimitedText(r.result);if(rows.length&&/latein|deutsch|bedeutung|lektion|formen/i.test(rows[0].join(' ')))rows=rows.slice(1);done(rows.map(a=>({l:a[0],g:a[1],forms:a[2],lessons:a[3]})))}catch(err){alert('CSV/TXT-Datei konnte nicht gelesen werden.');input.value=''}};r.onerror=()=>{alert('Datei konnte nicht gelesen werden.');input.value=''};r.readAsText(f)}}
+function importRowsFromTable(data){
+ const rows=Array.isArray(data)?data.filter(r=>Array.isArray(r)):[];if(!rows.length)return [];
+ const norm=h=>String(h??'').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+ const aliases={l:['latein','lateinisch','latin','vokabel','wort','lemma'],g:['deutsch','bedeutung','uebersetzung','übersetzung','deutschuebersetzung','translation'],forms:['formen','form','stammformen','grammatik'],lessons:['lektion','lektionen','lektionnr','lektionnummer','kapitel']};
+ const header=rows[0].map(norm),findIndex=key=>header.findIndex(h=>aliases[key].some(a=>h===norm(a)||h.includes(norm(a))));
+ const hasHeader=Object.values(aliases).some(list=>list.some(a=>header.some(h=>h===norm(a))))&&(findIndex('l')>=0||findIndex('g')>=0);
+ const body=hasHeader?rows.slice(1):rows,idx=hasHeader?{l:findIndex('l'),g:findIndex('g'),forms:findIndex('forms'),lessons:findIndex('lessons')}:{l:0,g:1,forms:2,lessons:3};
+ return body.map(row=>({l:row[idx.l>=0?idx.l:0],g:row[idx.g>=0?idx.g:1],forms:row[idx.forms>=0?idx.forms:2],lessons:row[idx.lessons>=0?idx.lessons:3]}));
+}
+function importFile(e){
+ const input=e.target,f=input?.files?.[0];if(!f)return;const ext=f.name.toLowerCase().split('.').pop();
+ const done=(rows)=>{
+  let count=0,duplicates=0;
+  const seen=new Set(state.vocab.map(v=>[v.l,v.g,v.lessons?.join(',')||''].map(x=>String(x||'').trim().toLocaleLowerCase()).join('\\u0000')));
+  rows.forEach(r=>{const l=String(r.l??'').trim(),g=String(r.g??'').trim(),forms=String(r.forms??'').trim(),lessons=parseLessons(r.lessons||'');if(!l||!g)return;const key=[l,g,lessons.join(',')].map(x=>String(x||'').trim().toLocaleLowerCase()).join('\\u0000');if(seen.has(key)){duplicates++;return}seen.add(key);state.vocab.push({id:'imp-'+cryptoRandomId(),l,g,forms,lessons,box:0,next:0,seen:0,correct:0,wrong:0,source:false});count++});
+  const saved=save();if(saved){renderVocab();renderLessons();updateStats();alert(count+' Vokabeln importiert.'+(duplicates?' '+duplicates+' Dubletten übersprungen.':''))}input.value='';
+ };
+ if(ext==='xlsx'||ext==='xls'){
+  if(!window.XLSX){alert('Excel-Import benötigt Internetzugang zum Laden des Importmoduls.');input.value='';return}
+  const r=new FileReader();r.onload=()=>{try{const wb=XLSX.read(new Uint8Array(r.result),{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],data=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});done(importRowsFromTable(data))}catch(err){alert('Excel-Datei konnte nicht gelesen werden. Bitte prüfe das Dateiformat.');input.value=''}};r.onerror=()=>{alert('Excel-Datei konnte nicht gelesen werden.');input.value=''};r.readAsArrayBuffer(f);
+ }else{
+  const r=new FileReader();r.onload=()=>{try{done(importRowsFromTable(parseDelimitedText(r.result)))}catch(err){alert('CSV/TXT-Datei konnte nicht gelesen werden.');input.value=''}};r.onerror=()=>{alert('Datei konnte nicht gelesen werden.');input.value=''};r.readAsText(f);
+ }
+}
 function toggleDirection(){state.direction=state.direction==='de-la'?'la-de':'de-la';save();renderDirectionButton();renderCard()}
 function cardPoolForMode(){
  if(cardMode==='due')return [...getDuePool()];
@@ -1291,7 +1440,7 @@ function addXP(amount,reason,answerOk=true){
  let gained=base;
  if(xpDoublerActive())gained*=2;
  else if(state.xpDoublerUntil)state.xpDoublerUntil=0;
- const oldLevel=levelFromXp(state.xp||0);state.xp=(Number(state.xp)||0)+gained;
+ const oldLevel=levelFromXp(state.xp||0);state.xp=(Number(state.xp)||0)+gained;recordStudyActivity(answerOk,gained);
  let newLevel=levelFromXp(state.xp);let safety=0;let notices=[];let rewardFrom=oldLevel;
  while(newLevel>rewardFrom&&safety++<40){const before=newLevel;const reward=grantLevelRewards(rewardFrom,newLevel);notices.push(...reward.notices);newLevel=levelFromXp(state.xp);if(newLevel<=before)break;rewardFrom=before;}
  syncUnlockedBadges();
@@ -1329,8 +1478,8 @@ function renderCollection(){
 
 function rate(ok){
  const el=document.getElementById('flash');if(!el)return;if(el.dataset.open!=='1'){revealCard();return}
- const v=sessionCards[current];const gained=ok?10:2;if(addXP(gained,'Karte',ok)===null)return;v.seen=(v.seen||0)+1;if(ok){v.correct=(v.correct||0)+1;v.box=Math.min(4,(v.box||0)+1);v.errorStreak=0}else{v.wrong=(v.wrong||0)+1;v.errorStreak=(v.errorStreak||0)+1;v.box=0;sessionErrors.push(v.id);sessionCards.splice(current+1,0,v);showToast('🔁 Genau diese Vokabel wird direkt noch einmal geprüft.')}
- const intervals=[10,60,360,1440,4320];const mins=intervals[Math.min(v.box,intervals.length-1)];v.next=Date.now()+mins*60000;
+ const v=sessionCards[current];const gained=ok?10:2;if(addXP(gained,'Karte',ok)===null)return;v.seen=(v.seen||0)+1;if(ok){v.correct=(v.correct||0)+1;v.box=Math.min(7,(v.box||0)+1);v.errorStreak=0}else{v.wrong=(v.wrong||0)+1;v.errorStreak=(v.errorStreak||0)+1;v.box=0;sessionErrors.push(v.id);sessionCards.splice(current+1,0,v);showToast('🔁 Genau diese Vokabel wird direkt noch einmal geprüft.')}
+ const intervals=[10,60,360,1440,4320,10080,20160,43200];const mins=intervals[Math.min(v.box,intervals.length-1)];v.next=Date.now()+mins*60000;recordCardReview();
  const d=todayKey();if(state.dailyDate!==d){state.dailyDate=d;state.dailyCount=0}state.dailyCount++;updateStreak();save();
  if(state.dailyCount===state.dailyGoal)showToast('🎯 Tagesziel erreicht!');
  current++;updateCardModeCounts();renderCard();updateStats();renderVocab();
@@ -1564,20 +1713,71 @@ function resetVocabTest(){document.getElementById('vocabTestSetup').hidden=false
 function showQuizLockInfo(){showToast('🔒 Vokabeltest: Diese Funktion erscheint nach den Herbstferien.',4200)}
 function showFriendsLockInfo(){showToast('🔒 Freunde & Gruppen: Diese Funktion erscheint nach den Herbstferien.',4200)}
 setInterval(()=>{if(state.xpDoublerUntil&&state.xpDoublerUntil<=Date.now()){state.xpDoublerUntil=0;save();updateStats();}},15000);
-function startQuiz(type){quizType=type;quizData=DATA[type];quizIndex=0;answered=false;showPage('quiz');document.getElementById('quizTitle').textContent=type==='tempora'?'⏳ Tempora':type==='kng'?'🔤 KNG':'📝 Satzbestimmung';renderQuiz()}
+function resetQuizSetup(){const setup=document.getElementById('quizSetup'),play=document.getElementById('quizPlay');if(setup)setup.style.display='block';if(play)play.style.display='none';quizData=[];quizIndex=0;answered=false}
+function startQuiz(type){quizType=type;quizData=DATA[type];quizIndex=0;answered=false;showPage('quiz');document.getElementById('quizSetup').style.display='none';document.getElementById('quizPlay').style.display='block';document.getElementById('quizTitle').textContent=type==='tempora'?'⏳ Tempora':type==='kng'?'🔤 KNG':'📝 Satzbestimmung';renderQuiz()}
 function renderQuiz(){const q=quizData[quizIndex%quizData.length];answered=false;document.getElementById('quizProgress').textContent='Aufgabe '+(quizIndex%quizData.length+1)+' / '+quizData.length;document.getElementById('quizQuestion').textContent=quizType==='sentence'?q[0]:'Bestimme: '+q[0];document.getElementById('options').innerHTML=q[2].map((o,i)=>`<button class="option" onclick="answer(${i})">${esc(o)}</button>`).join('');document.getElementById('quizResult').innerHTML=''}
 function answer(i){if(answered)return;answered=true;const idx=quizIndex%quizData.length,q=quizData[idx],correct=q[2].indexOf(q[1]),opts=document.querySelectorAll('.option');opts[i].classList.add(i===correct?'correct':'bad');if(i!==correct)opts[correct].classList.add('correct');const key=quizType+':'+idx;const qp=state.quizProgress[key]||{correct:0,wrong:0,errorStreak:0};if(i===correct){qp.correct++;qp.errorStreak=0}else{qp.wrong++;qp.errorStreak=(qp.errorStreak||0)+1}state.quizProgress[key]=qp;document.getElementById('quizResult').innerHTML=`<p><b>${i===correct?'✓ Richtig!':'✗ Noch einmal üben.'}</b> ${esc(q[1])}</p><button class="primary" onclick="nextQuiz()">${i===correct?'Nächste Aufgabe →':'🔁 Genau diese Aufgabe noch einmal'}</button>`;addXP(i===correct?2:1,'Quiz',i===correct);updateStreak();save();updateStats()} function nextQuiz(){const idx=quizIndex%quizData.length;const qp=state.quizProgress[quizType+':'+idx]||{};if((qp.errorStreak||0)>0){qp.errorStreak=0;state.quizProgress[quizType+':'+idx]=qp;save();renderQuiz();return}quizIndex++;renderQuiz()}
 function detectTense(form){const f=form.toLowerCase().trim();if(/(eram|eras|erat|eramus|eratis|erant)$/.test(f))return'Plusquamperfekt (von esse)';if(/(bo|bis|bit|bimus|bitis|bunt)$/.test(f)&&!/(ibo|abis|ebis|abit|ebit)$/.test(f))return'Futur I';if(/(bam|bas|bat|bamus|batis|bant)$/.test(f))return'Imperfekt';if(/(ero|eris|erit|erimus|eritis|erint)$/.test(f))return'Futur II / Futur von esse – Kontext nötig';if(/(avi|avisti|avit|avimus|avistis|averunt|ivi|ivisti|ivit|ivimus|ivistis|iverunt)$/.test(f)||/^(fu|fui|fuisti|fuit|fuimus|fuistis|fuerunt)$/.test(f))return'Perfekt';return'Präsens oder unregelmäßige Form – Kontext nötig'}
 function setDark(v){state.dark=v;document.body.classList.toggle('dark',v);save()}
-function updateStorageStatus(){const e=document.getElementById('storageStatus');if(!e)return;try{localStorage.setItem('__vtest','1');localStorage.removeItem('__vtest');e.innerHTML='<span class="ok">● Lokale Speicherung aktiv</span>'}catch(x){e.innerHTML='<span class="warn">● Lokale Speicherung nicht verfügbar</span>'}}
+function updateStorageStatus(){const e=document.getElementById('storageStatus');if(e){try{localStorage.setItem('__vtest','1');localStorage.removeItem('__vtest');e.innerHTML='<span class="ok">● Lokale Speicherung aktiv</span>'}catch(x){e.innerHTML='<span class="warn">● Lokale Speicherung nicht verfügbar</span>'}}updateAutoBackupStatus();updateRuntimeErrorStatus()}
 function updateOfflineStatus(){const e=document.getElementById('offlineStatus');if(!e)return;e.innerHTML='<span class="ok">● Grundfunktionen sind in dieser HTML-Datei offline nutzbar.</span>'}
-function resetProgress(){if(confirm('Wirklich den gesamten Lernstand zurücksetzen? Die Vokabeln bleiben erhalten.')){state.vocab=state.vocab.map(v=>({...v,box:0,next:0,seen:0,correct:0,wrong:0}));state.formProgress={};state.xp=0;state.xpDoubler=0;state.xpDoublerUntil=0;state.antiCheat={quickStreak:0,lastAnswerAt:0,warned:false,suspiciousXp:0,violations:0};state.badges={};state.rewardClaimed={};state.streak=0;state.lastDay=null;state.dailyDate=todayKey();state.dailyCount=0;save();updateStats();renderVocab();updateCardModeCounts();showToast('Lernstand zurückgesetzt.')}}
+
+function changeCalendarMonth(delta){calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()+delta,1);renderLearningInsights()}
+function renderLearningCalendar(){
+ const host=document.getElementById('learningCalendar'),label=document.getElementById('calendarMonth');if(!host||!label)return;
+ const y=calendarCursor.getFullYear(),m=calendarCursor.getMonth(),first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),offset=(first.getDay()+6)%7,log=ensureActivity(),today=todayKey();
+ label.textContent=new Intl.DateTimeFormat('de-DE',{month:'long',year:'numeric'}).format(first);
+ const names=['Mo','Di','Mi','Do','Fr','Sa','So'];let html=names.map(n=>'<div class="calendar-weekday">'+n+'</div>').join('');
+ for(let i=0;i<offset;i++)html+='<div class="calendar-day empty" aria-hidden="true"></div>';
+ for(let d=1;d<=days;d++){const key=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),entry=log[key],active=entry&&((entry.events||0)+(entry.cards||0)>0),isToday=key===today;html+='<div class="calendar-day '+(active?'active-day ':'')+(isToday?'today':'')+'" title="'+(active?((entry.events||0)+' Lernaktionen, '+(entry.cards||0)+' Karteikarten'):'Keine Lernaktivität')+'">'+d+'</div>'}
+ host.innerHTML='<div class="calendar-grid">'+html+'</div>';
+}
+function renderDetailedStats(){
+ const host=document.getElementById('detailStats');if(!host)return;const log=ensureActivity(),days=Object.keys(log).sort(),total=days.reduce((a,k)=>a+(Number(log[k].events)||0),0),correct=days.reduce((a,k)=>a+(Number(log[k].correct)||0),0),wrong=days.reduce((a,k)=>a+(Number(log[k].wrong)||0),0),xp=days.reduce((a,k)=>a+(Number(log[k].xp)||0),0),cards=days.reduce((a,k)=>a+(Number(log[k].cards)||0),0),accuracy=correct+wrong?Math.round(correct/(correct+wrong)*100):0;
+ const since=new Date();since.setDate(since.getDate()-6);const week=Array.from({length:7},(_,i)=>{const d=new Date(since);d.setDate(since.getDate()+i);const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');return log[k]||{}});
+ const weekEvents=week.reduce((a,e)=>a+(Number(e.events)||0),0),weekXp=week.reduce((a,e)=>a+(Number(e.xp)||0),0);
+ host.innerHTML='<div class="insight-stats"><div class="insight-stat"><span>Lernaktionen gesamt</span><b>'+total+'</b></div><div class="insight-stat"><span>Trefferquote</span><b>'+accuracy+' %</b></div><div class="insight-stat"><span>Karteikarten bewertet</span><b>'+cards+'</b></div><div class="insight-stat"><span>XP aus Lernaktionen</span><b>'+xp+'</b></div><div class="insight-stat"><span>Letzte 7 Tage</span><b>'+weekEvents+'</b></div><div class="insight-stat"><span>XP letzte 7 Tage</span><b>'+weekXp+'</b></div></div><p class="muted small" style="margin:10px 0 0">Richtige Antworten: '+correct+' · Falsche Antworten: '+wrong+' · Lerntage: '+days.length+'</p>';
+}
+function renderLessonMastery(){
+ const host=document.getElementById('lessonMastery');if(!host)return;const lessons=uniqueLessons();if(!lessons.length){host.innerHTML='<p class="muted small">Noch keine Lektionen vorhanden.</p>';return}
+ host.innerHTML=lessons.map(n=>{const words=lessonVocab(n),seen=words.filter(v=>(Number(v.seen)||0)>0).length,correct=words.reduce((a,v)=>a+(Number(v.correct)||0),0),wrong=words.reduce((a,v)=>a+(Number(v.wrong)||0),0),pct=words.length?Math.round(seen/words.length*100):0;return '<div class="insight-row"><div class="insight-row-top"><b>Lektion '+n+'</b><span>'+seen+' / '+words.length+' begonnen · '+pct+' %</span></div><div class="bar"><i style="width:'+pct+'%"></i></div><div class="muted small" style="margin-top:5px">'+correct+' richtige · '+wrong+' falsche Antworten</div></div>'}).join('');
+}
+function renderWeakVocab(){
+ const host=document.getElementById('weakVocab');if(!host)return;const weak=getErrorPool().slice(0,8);if(!weak.length){host.innerHTML='<p class="muted small">Noch keine Fehler gespeichert. Weiter so!</p>';return}
+ host.innerHTML=weak.map(v=>'<div class="insight-word"><div><b>'+esc(v.l)+'</b><div class="muted small">'+esc(v.g||'')+'</div></div><span>'+(Number(v.wrong)||0)+' Fehler<br>Stufe '+(Number(v.box)||0)+'</span></div>').join('');
+}
+function renderLearningInsights(){renderLearningCalendar();renderDetailedStats();renderLessonMastery();renderWeakVocab()}
+
+function readAutoBackups(){try{const value=JSON.parse(localStorage.getItem(KEY+'-auto-backups')||'[]');return Array.isArray(value)?value:[]}catch(_){return[]}}
+function updateAutoBackupStatus(){
+ const e=document.getElementById('autoBackupStatus'),b=document.getElementById('restoreAutoBackupBtn');if(!e)return;
+ const list=readAutoBackups();e.textContent=list.length?'● '+list.length+' automatische Sicherung(en) vorhanden · letzte: '+(list[0].date||'unbekannt'):'Noch keine automatische Sicherung vorhanden.';
+ if(b)b.disabled=!list.length;
+}
+function restoreLatestAutoBackup(){
+ const list=readAutoBackups(),latest=list[0];if(!latest||!latest.data||!Array.isArray(latest.data.vocab)){showToast('Keine gültige automatische Sicherung gefunden.');return}
+ if(!confirm('Möchtest du die automatische Sicherung vom '+(latest.date||'unbekannten Datum')+' wiederherstellen? Dein aktueller Lernstand wird dabei ersetzt.'))return;
+ try{const current=JSON.parse(localStorage.getItem(KEY)||'null');if(!current||!Array.isArray(current.vocab))throw new Error('Kein gültiger aktueller Lernstand');localStorage.setItem(KEY+'-pre-restore-backup',JSON.stringify({app:'VocaLatinum',schemaVersion:1,exportedAt:new Date().toISOString(),data:current}));localStorage.setItem(KEY,JSON.stringify(latest.data));showToast('Sicherung wird wiederhergestellt.');location.reload()}catch(_){showToast('Wiederherstellung abgebrochen: Der aktuelle Lernstand konnte nicht sicher gesichert werden.',4500)}
+}
+function addRuntimeError(message,source,line){
+ try{const key=KEY+'-errors';let entries=[];try{entries=JSON.parse(localStorage.getItem(key)||'[]')}catch(_){entries=[]}if(!Array.isArray(entries))entries=[];entries.push({time:new Date().toISOString(),message:String(message||'Unbekannter Fehler').slice(0,300),source:String(source||'').slice(0,160),line:Number(line)||0});localStorage.setItem(key,JSON.stringify(entries.slice(-30)));updateRuntimeErrorStatus()}catch(_){}
+}
+function readRuntimeErrors(){try{const value=JSON.parse(localStorage.getItem(KEY+'-errors')||'[]');return Array.isArray(value)?value:[]}catch(_){return[]}}
+function updateRuntimeErrorStatus(){const e=document.getElementById('errorLogStatus');if(e)e.textContent='Lokal gespeicherte Fehler: '+readRuntimeErrors().length+' / 30'}
+function showRuntimeErrors(){
+ const entries=readRuntimeErrors();if(!entries.length){showToast('Keine Fehler protokolliert.');return}
+ alert(entries.slice(-10).reverse().map(x=>new Date(x.time).toLocaleString('de-DE')+' · '+x.message+(x.source?' ('+x.source+')':'')).join('\n\n'));
+}
+function clearRuntimeErrors(){try{localStorage.removeItem(KEY+'-errors')}catch(_){}updateRuntimeErrorStatus();showToast('Fehlerprotokoll gelöscht.')}
+function resetProgress(){if(confirm('Wirklich den gesamten Lernstand zurücksetzen? Die Vokabeln bleiben erhalten.')){state.activity={};state.vocab=state.vocab.map(v=>({...v,box:0,next:0,seen:0,correct:0,wrong:0}));state.formProgress={};state.xp=0;state.xpDoubler=0;state.xpDoublerUntil=0;state.antiCheat={quickStreak:0,lastAnswerAt:0,warned:false,suspiciousXp:0,violations:0};state.badges={};state.rewardClaimed={};state.streak=0;state.lastDay=null;state.dailyDate=todayKey();state.dailyCount=0;save();updateStats();renderVocab();updateCardModeCounts();showToast('Lernstand zurückgesetzt.')}}
 const flash=document.getElementById('flash');
 flash.addEventListener('click',()=>revealCard());
 flash.addEventListener('touchstart',e=>startY=e.touches[0].clientY,{passive:true});
 flash.addEventListener('touchend',e=>{const dy=e.changedTouches[0].clientY-startY;if(Math.abs(dy)>70){if(document.getElementById('flash').dataset.open==='1')rate(dy<0);else revealCard()}},{passive:true});
-state.dark&&document.body.classList.add('dark');updateStats();renderCollection();renderLessons();renderVocab();renderFormLessons();syncFormFilters();resetCardSetup();updateStorageStatus();
+save();state.dark&&document.body.classList.add('dark');updateStats();renderCollection();renderLessons();renderVocab();renderFormLessons();syncFormFilters();resetCardSetup();updateStorageStatus();
 document.body.classList.toggle('dark',!!state.dark);
 renderDirectionButton();updateStats();
+window.addEventListener('error',event=>addRuntimeError(event.message,event.filename,event.lineno));window.addEventListener('unhandledrejection',event=>addRuntimeError(event.reason?.message||String(event.reason||'Promise-Fehler'),'unhandledrejection',0));
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){navigator.serviceWorker.register('./service-worker.js').then(()=>{const e=document.getElementById('offlineStatus');if(e)e.innerHTML='<span class="ok">● Offline-Speicherung für die App ist eingerichtet.</span>'}).catch(()=>{const e=document.getElementById('offlineStatus');if(e)e.innerHTML='<span class="warn">● Offline-Modus konnte nicht eingerichtet werden.</span>'})}
 </script>
 </body></html>
