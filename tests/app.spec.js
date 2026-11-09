@@ -338,3 +338,63 @@ test('Älterer Lernstand wird migriert, ohne XP oder Vokabelfortschritt zu verli
   expect(result.activity).toBeTruthy();
   expect(result.syncDevice).toBeTruthy();
 });
+
+test('Karteikarten funktionieren in beiden Abfragerichtungen', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    state.direction = 'de-la';
+    showPage('cards');
+    setCardMode('all', document.querySelector('[data-mode="all"]'));
+    startCards();
+    toggleDirection();
+    return { direction: state.direction, front: document.getElementById('flash').dataset.front, expected: sessionCards[current].l };
+  });
+  expect(result.direction).toBe('la-de');
+  expect(result.front).toBe(result.expected);
+});
+
+test('Fehler- und Unsicher-Modus finden die richtigen Vokabeln', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    state.vocab[0].seen = 1;
+    state.vocab[0].wrong = 3;
+    state.vocab[0].box = 0;
+    state.vocab[1].seen = 1;
+    state.vocab[1].wrong = 0;
+    state.vocab[1].box = 1;
+    return { errors: getErrorPool().map(v => v.id), uncertain: getUncertainPool().map(v => v.id) };
+  });
+  expect(result.errors).toContain('src-0');
+  expect(result.uncertain).toContain('src-0');
+  expect(result.uncertain).toContain('src-1');
+});
+
+test('Eigene Vokabeln können hinzugefügt und gespeichert werden', async ({ page }) => {
+  const saved = await page.evaluate(() => {
+    showPage('add');
+    document.getElementById('newLatin').value = 'testare-vocalatinum';
+    document.getElementById('newGerman').value = 'testen';
+    document.getElementById('newForms').value = 'testare, -avi, -atum';
+    document.getElementById('newLessons').value = '99';
+    addVocab();
+    return state.vocab.find(v => v.l === 'testare-vocalatinum');
+  });
+  expect(saved).toBeTruthy();
+  expect(saved.g).toBe('testen');
+  expect(saved.lessons).toContain(99);
+});
+
+test('XP, Level-Belohnungen und Lernserie werden aktualisiert', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    state.xp = 0;
+    state.badges = {};
+    state.rewardClaimed = {};
+    state.antiCheat.lastAnswerAt = 0;
+    addXP(1500, 'Regressionstest', true);
+    state.streak = 0;
+    state.lastDay = null;
+    updateStreak();
+    return { level: levelFromXp(state.xp), badges: Object.keys(state.badges).length, streak: state.streak };
+  });
+  expect(result.level).toBeGreaterThan(1);
+  expect(result.badges).toBeGreaterThan(0);
+  expect(result.streak).toBe(1);
+});
