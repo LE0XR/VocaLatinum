@@ -92,7 +92,7 @@ Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach
 - Weitere Belohnungsarten können später ergänzt werden.
 - Der Wochenwechsel startet einen neuen Zeitraum; vergangene Wochen bleiben für die technische Nachvollziehbarkeit erhalten.
 
-**Noch festzulegen:** Ob pro erreichtem Wochenziel eine dieser drei Belohnungen ausgewählt wird oder ob die Gruppe mehrere bzw. alle drei erhalten kann. Beim Abzeichen ist außerdem der endgültige Name noch auszuwählen.
+**Noch festzulegen:** Nach welchem Verfahren pro erreichtem Gruppenziel genau eines der drei Belohnungspakete ausgewählt wird. Der endgültige Name des besonderen Gruppen-Abzeichens ist ebenfalls noch auszuwählen.
 
 ## 5. Sicherheitsanforderungen für die spätere Umsetzung
 
