@@ -570,3 +570,52 @@ test('Freunde-Bereich zeigt alle sieben Wochenwettbewerbskategorien und wechselt
   await expect(page.locator('#weeklyCompetitionRanking')).toContainText('75 %');
   await expect(page.locator('[data-weekly-category="accuracy"]')).toHaveClass(/active/);
 });
+
+test('Freunde-Profil erhält eine eindeutige private ID und startet standardmäßig privat', async ({ page }) => {
+  const initial = await page.evaluate(() => {
+    showPage('friends');
+    runFriendsSecurityCheck();
+    return {
+      id: state.profile.id,
+      visibility: state.profile.privacy.visibility,
+      weekly: state.profile.privacy.shareWeeklyStats,
+      progress: state.profile.privacy.shareProgress,
+      allowRequests: state.profile.privacy.allowFriendRequests
+    };
+  });
+  expect(initial.id).toMatch(/^usr-[a-f0-9]{32}$/i);
+  expect(initial.visibility).toBe('private');
+  expect(initial.weekly).toBe(false);
+  expect(initial.progress).toBe(false);
+  expect(initial.allowRequests).toBe(false);
+  await expect(page.locator('#privateUserId')).toHaveText(initial.id);
+  await expect(page.locator('#friendsSecurityResults')).toContainText('Online-Datenbank und serverseitige Zugriffsregeln sind noch nicht verbunden');
+  await page.reload();
+  expect(await page.evaluate(() => state.profile.id)).toBe(initial.id);
+});
+
+test('Privatsphäre-Einstellungen lassen sich speichern und bleiben nach Neuladen erhalten', async ({ page }) => {
+  await page.evaluate(() => showPage('friends'));
+  await page.locator('#privacyFriends').check();
+  await page.locator('#shareWeeklyStats').check();
+  await page.locator('#shareProgress').check();
+  const saved = await page.evaluate(() => ({ ...state.profile.privacy }));
+  expect(saved).toEqual({ visibility: 'friends', shareWeeklyStats: true, shareProgress: true, allowFriendRequests: false });
+  await page.reload();
+  await page.evaluate(() => showPage('friends'));
+  await expect(page.locator('#privacyFriends')).toBeChecked();
+  await expect(page.locator('#shareWeeklyStats')).toBeChecked();
+  await expect(page.locator('#shareProgress')).toBeChecked();
+  await expect(page.locator('#allowFriendRequests')).not.toBeChecked();
+});
+
+test('Öffentliche Namen und Anzeigen von Wochenwerten sind getrennte Privatsphäre-Einstellungen', async ({ page }) => {
+  await page.evaluate(() => showPage('friends'));
+  await page.locator('#privacyPublic').check();
+  await expect(page.locator('#privacyVisibilityInfo')).toContainText('Öffentlich');
+  await page.locator('#shareWeeklyStats').check();
+  await page.locator('#shareWeeklyStats').uncheck();
+  const privacy = await page.evaluate(() => state.profile.privacy);
+  expect(privacy.visibility).toBe('public');
+  expect(privacy.shareWeeklyStats).toBe(false);
+});
