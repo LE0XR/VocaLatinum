@@ -763,14 +763,21 @@ function importBackup(event){
  reader.onload=()=>{
   try{
    const parsed=JSON.parse(String(reader.result||''));
-   const incoming=parsed?.app==='VocaLatinum'?parsed.data:parsed;
-   if(!incoming||typeof incoming!=='object'||!Array.isArray(incoming.vocab))throw new Error('Ungültiges Backup');
-   if(!confirm('Möchtest du diesen Lernstand importieren? Der aktuelle Lernstand wird vorher lokal als Rücksicherung gespeichert.')){input.value='';return}
-   try{localStorage.setItem(KEY+'-pre-import-backup',JSON.stringify({app:'VocaLatinum',schemaVersion:1,exportedAt:new Date().toISOString(),data:state}))}catch(e){if(!confirm('Die lokale Rücksicherung konnte nicht gespeichert werden. Trotzdem fortfahren?')){input.value='';return}}
-   localStorage.setItem(KEY,JSON.stringify(incoming));
+   if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('Ungültiges Backup');
+   if(parsed.app==='VocaLatinum'&&parsed.schemaVersion!==1)throw new Error('Unbekannte Backup-Version');
+   const incoming=parsed.app==='VocaLatinum'?parsed.data:parsed;
+   if(!incoming||typeof incoming!=='object'||Array.isArray(incoming)||!Array.isArray(incoming.vocab))throw new Error('Ungültiger Lernstand');
+   if(!incoming.vocab.every(v=>v&&typeof v==='object'&&!Array.isArray(v)&&typeof v.l==='string'&&v.l.trim()&&typeof v.g==='string'&&v.g.trim()))throw new Error('Ungültige Vokabeldaten');
+   const serialized=JSON.stringify(incoming);
+   if(!serialized||serialized.length>20*1024*1024)throw new Error('Backup zu groß oder ungültig');
+   if(!confirm('Möchtest du diesen Lernstand importieren? Dein aktueller Lernstand wird vorher lokal gesichert.')){input.value='';return}
+   // Ohne erfolgreiche Rücksicherung wird der Import grundsätzlich abgebrochen.
+   const rollback={app:'VocaLatinum',schemaVersion:1,exportedAt:new Date().toISOString(),data:state};
+   localStorage.setItem(KEY+'-pre-import-backup',JSON.stringify(rollback));
+   localStorage.setItem(KEY,serialized);
    showToast('Backup importiert. VocaLatinum wird neu geladen.');
    setTimeout(()=>location.reload(),500);
-  }catch(e){showToast('Backup ungültig oder konnte nicht gelesen werden. Dein bisheriger Lernstand bleibt erhalten.',4500)}
+  }catch(e){showToast('Backup ungültig oder konnte nicht sicher importiert werden. Dein bisheriger Lernstand bleibt erhalten.',4500)}
   input.value='';
  };
  reader.onerror=()=>{showToast('Die Backup-Datei konnte nicht gelesen werden.',3500);input.value=''};
