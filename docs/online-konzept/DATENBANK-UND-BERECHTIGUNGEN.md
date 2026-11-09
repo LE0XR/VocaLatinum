@@ -74,9 +74,12 @@ Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach
 - Die Gruppenansicht erhält nur die Summe. Einzelbeiträge werden nicht offengelegt.
 - Ein Lernereignis darf nur einmal zählen. Wiederholtes Laden, Synchronisieren oder Senden desselben Ereignisses darf keine zusätzlichen XP erzeugen.
 - Beim Erreichen des Ziels wird die Gruppenbelohnung genau einmal ausgelöst. Datenbank-Eindeutigkeitsregeln müssen doppelte Vergaben verhindern.
+- **Belohnungsberechtigt sind ausschließlich Gruppenmitglieder, die im betreffenden Wochenzeitraum seit ihrem tatsächlichen Beitritt mindestens einen gültigen XP-Beitrag zum Gruppenziel geleistet haben.** Mitglieder ohne eigenen Beitrag erhalten keine Belohnung.
+- **Auch nicht beitragende Gruppenmitglieder werden informiert**, sobald das Ziel erreicht und die Belohnung verteilt bzw. abholbar ist. Die Mitteilung erklärt freundlich, dass sie diesmal keinen eigenen Beitrag geleistet haben und deshalb keine Belohnung erhalten. Sie bleiben weiterhin Gruppenmitglieder.
+- Die individuelle Berechtigungsprüfung und Belohnungszuteilung erfolgen serverseitig. Für jedes berechtigte Mitglied darf es höchstens eine Zuteilung geben. Nicht berechtigte Mitglieder erhalten keine Belohnung, aber die beschriebene Statusmitteilung.
 - Der Wochenwechsel startet einen neuen Zeitraum; vergangene Wochen bleiben für die technische Nachvollziehbarkeit erhalten.
 
-**Noch festzulegen:** Wer bei Zielerreichung die Belohnung erhält (alle aktiven Mitglieder oder nur Mitglieder mit eigenem Beitrag); welche Belohnungen zuerst angeboten werden und wie lange ein zeitlich begrenzter XP-Boost gilt.
+**Noch festzulegen:** Welche Belohnungen zuerst angeboten werden und wie lange ein zeitlich begrenzter XP-Boost gilt.
 
 ## 5. Sicherheitsanforderungen für die spätere Umsetzung
 
@@ -101,6 +104,8 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Gruppenansichten enthalten nur gemeinsamen XP-Fortschritt, niemals persönliche Ranglisten.
 - Ein Lernereignis wird auch bei wiederholter Übertragung nur einmal gezählt.
 - Das Wochenziel und die Belohnung werden bei parallelen Anfragen nicht doppelt verarbeitet.
+- Nur Mitglieder mit mindestens einem gültigen XP-Beitrag im maßgeblichen Zeitraum erhalten eine Belohnung.
+- Nicht beitragende Mitglieder erhalten nach Zielerreichung eine Mitteilung, aber keine Belohnung.
 - Wochenwechsel und Zeitzonen-/Sommerzeitgrenzen funktionieren korrekt.
 - Nicht berechtigte direkte Datenbank- und API-Anfragen werden abgewiesen.
 
