@@ -532,3 +532,41 @@ test('Wöchentliche Kartenstatistik zählt jede Karte nur einmal und Lernabschl�
   expect(stats.learnedCards).toBe(2);
   expect(stats.completedUnits).toBe(2);
 });
+
+
+test('Freunde-Bereich zeigt alle sieben Wochenwettbewerbskategorien und wechselt die Rangliste', async ({ page }) => {
+  await page.evaluate(() => {
+    state.profile.name = 'Lernfuchs';
+    state.groups = [{
+      id: 'grp-weekly-test',
+      name: 'Testgruppe',
+      code: 'TEST-123',
+      ownerId: state.profile.id,
+      members: [
+        { id: state.profile.id, name: 'Lernfuchs', xp: 25, level: 1, badges: 0 },
+        { id: 'friend-local', name: 'Freund' }
+      ]
+    }];
+    state.activity = {
+      [todayKey()]: { events: 4, correct: 3, wrong: 1, xp: 25, cards: 2, cardIds: ['a', 'b'], units: 1 }
+    };
+    state.badges = {};
+    save();
+    showPage('friends');
+  });
+  await expect(page.locator('#weeklyCompetitionStats [data-weekly-category]')).toHaveCount(7);
+  await expect(page.locator('#weeklyCompetitionStats')).toContainText('Richtige Antworten');
+  await expect(page.locator('#weeklyCompetitionStats')).toContainText('Trefferquote');
+  await expect(page.locator('#weeklyCompetitionStats')).toContainText('Gesammelte XP');
+  await expect(page.locator('#weeklyCompetitionStats')).toContainText('Neue Abzeichen');
+  await expect(page.locator('#weeklyCompetitionStats')).toContainText('Gelernte Karten');
+  await expect(page.locator('#weeklyCompetitionStats')).toContainText('Längste Lernserie');
+  await expect(page.locator('#weeklyCompetitionStats')).toContainText('Abgeschlossene Lerneinheiten');
+  await expect(page.locator('#weeklyCompetitionRanking')).toContainText('Lernfuchs');
+  await expect(page.locator('#weeklyCompetitionRanking')).toContainText('3 Antworten');
+  await expect(page.locator('#weeklyCompetitionRanking')).toContainText('1 Gruppenmitglied(er) haben noch keine synchronisierten Wochenwerte.');
+  await page.locator('[data-weekly-category="accuracy"]').click();
+  await expect(page.locator('#weeklyCompetitionTitle')).toHaveText('Rangliste · Trefferquote');
+  await expect(page.locator('#weeklyCompetitionRanking')).toContainText('75 %');
+  await expect(page.locator('[data-weekly-category="accuracy"]')).toHaveClass(/active/);
+});
