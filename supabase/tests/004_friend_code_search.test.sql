@@ -56,7 +56,7 @@ select is(
 select ok(
   (select friend_code ~ '^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}
 select throws_ok(
-  $$select * from public.search_profiles('Le')$$,
+  $cmd$select * from public.search_profiles('Le')$cmd$,
   'P0001',
   'Search query must contain at least 3 characters',
   'Very short search terms are rejected'
