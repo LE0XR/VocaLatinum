@@ -298,6 +298,7 @@ test('Automatische Sicherung kann mit zusätzlicher Rücksicherung wiederhergest
     snapshot.xp = 50;
     localStorage.setItem(KEY + '-auto-backups', JSON.stringify([{ date: '2026-01-01', data: snapshot }]));
     state.xp = 999;
+    state.lastAutoBackupDate = todayKey();
     save();
   });
   page.once('dialog', dialog => dialog.accept());
