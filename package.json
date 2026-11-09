@@ -1,0 +1,13 @@
+{
+  "name": "vocalatinum",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Automatisierte Browser-Tests für VocaLatinum",
+  "scripts": {
+    "test": "playwright test",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0"
+  }
+}
