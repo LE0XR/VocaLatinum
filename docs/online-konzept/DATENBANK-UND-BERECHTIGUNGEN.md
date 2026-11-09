@@ -30,6 +30,11 @@ Die spätere Datenbank soll PostgreSQL verwenden. Falls Supabase als Backend gew
 | `groups` | Lerngruppen | Gruppen-ID, Name, Ersteller, Erstellungsdatum, Status. |
 | `group_members` | Mitgliedschaften und Rollen | Gruppe, Nutzer, Rolle (z. B. owner/member), Beginn und Ende der Mitgliedschaft. |
 | `group_invites` | Persönliche Gruppeneinladungen | Gruppe, einladender Nutzer, eingeladener Freund, Status und Ablaufdatum. Keine offenen oder wiederverwendbaren Beitrittscodes. |
+| `group_messages` | Gruppenchat-Nachrichten und Ankündigungen | Gruppe, Absender, Nachrichtentext, Nachrichtentyp (normal/Ankündigung), Zeitstempel. Nur aktuelle Gruppenmitglieder dürfen lesen und schreiben. |
+| `group_attachments` | Bilder und andere freigegebene Chat-Anhänge | Nachricht, interner Speicherpfad, Dateityp, Größe, Upload-Zeit. Zugriff nur für Gruppenmitglieder; sichere Typ-/Größenprüfung und private Speicherung. |
+| `group_polls` | Umfragen im Gruppenchat | Gruppe, Ersteller, Frage, Laufzeit, Status. Umfragen können z. B. zur Beratung bei einer Gleichstandsentscheidung dienen. |
+| `group_poll_options` | Antwortmöglichkeiten einer Umfrage | Umfrage, Antworttext, Sortierung. |
+| `group_poll_votes` | Stimmen zu Gruppen-Umfragen | Umfrage, Option, Nutzer, Zeitstempel. Pro Nutzer und Umfrage höchstens eine gültige Stimme; Änderung nur solange die Umfrage offen ist. |
 | `learning_events` | Serverseitig geprüfte Lernereignisse | Eindeutige Ereignis-ID, Nutzer, XP-Änderung, Ereigniszeit. Deduplizierung über eindeutige Event-ID. |
 | `group_weekly_goals` | Wöchentliches Gruppenziel | Gruppe, Wochenbeginn, Wochenende, XP-Ziel, Status. Pro Gruppe und Woche höchstens ein aktives Ziel. |
 | `group_goal_rewards` | Einmalige Gruppenbelohnung | Gruppe, Ziel/Woche, Belohnungstyp und Vergabezeit. Eindeutigkeit pro Gruppe und Woche verhindert doppelte Vergabe. |
@@ -59,12 +64,26 @@ Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach
 - Ablehnen, Abbrechen und Entfernen einer Freundschaft müssen möglich sein.
 - Doppelte offene Anfragen und Selbstanfragen werden serverseitig verhindert.
 
+### Gruppenchat, Bilder und Umfragen
+
+- Jede Gruppe erhält einen eigenen Chat, der ausschließlich für aktuelle Gruppenmitglieder zugänglich ist. Eine Gruppenmitgliedschaft gewährt weiterhin keinen Zugriff auf persönliche Lernstatistiken.
+- Mitglieder können Textnachrichten schreiben und Bilder in den Chat senden. Anhänge werden privat gespeichert und dürfen nicht über öffentliche oder erratbare Links zugänglich sein.
+- Der Gruppenanführer kann wichtige Nachrichten als Ankündigungen kennzeichnen bzw. anheften, damit Regeln, Hinweise und Aufgaben gut sichtbar bleiben.
+- Mitglieder können Umfragen mit einer Frage und mehreren Antwortmöglichkeiten erstellen, um die Gruppe zu befragen oder eine Entscheidung vorzubereiten.
+- Umfragen haben einen klaren Status und optional eine Laufzeit. Pro Mitglied und Umfrage zählt höchstens eine Stimme; eine Stimmänderung ist nur bis zum Ende der Umfrage möglich.
+- Chat, Bilder, Umfragen und Ankündigungen sind nur für aktuelle Gruppenmitglieder sichtbar. Nach dem Austritt oder Entfernen aus einer Gruppe endet der Zugriff auf neue und bisherige Gruppeninhalte; die genaue Aufbewahrung und Sichtbarkeit alter Nachrichten muss vor der Umsetzung festgelegt werden.
+- Nachrichten und Bilder müssen gemeldet werden können. Es braucht Schutz gegen Spam, Belästigung und ungeeignete Inhalte sowie eine Möglichkeit für den Gruppenanführer, Inhalte zu moderieren. Die konkrete Melde- und Moderationsregel wird vor der Online-Freigabe spezifiziert.
+- Es sollen nur notwendige Daten gespeichert werden. Nutzer sollen keine privaten Kontaktdaten oder sensiblen persönlichen Informationen im Gruppenchat teilen müssen.
+
 ### Gruppen
 
 - Eine Einladung darf nur an einen bereits bestätigten Freund gehen.
 - Einladungsempfänger müssen aktiv annehmen, bevor sie Mitglied werden.
 - Gruppenmitglieder dürfen Gruppennamen, Mitgliederliste und gemeinsamen Fortschritt sehen.
 - Gruppenmitglieder dürfen keine persönlichen Lernstatistiken anderer Mitglieder sehen – auch dann nicht, wenn sie gemeinsam in einer Gruppe sind.
+- Gruppenchat, Anhänge, Umfragen und Ankündigungen sind nur für aktuelle Mitglieder dieser Gruppe zugänglich.
+- Der Gruppenanführer darf bei einem Gleichstand des Glücksrads zwischen den gleichauf liegenden Paketen entscheiden. Er kann vorher über den Gruppenchat beraten und eine Umfrage starten; die endgültige Gleichstandsentscheidung bleibt beim Gruppenanführer.
+- Der Gruppenanführer kann wichtige Gruppenhinweise als Ankündigung sichtbar machen. Moderations- und Meldefunktionen müssen vor dem Online-Start umgesetzt sein.
 - Gruppen haben keine persönlichen Ranglisten, Vergleichsansichten oder individuellen XP-Anzeigen.
 - Nur Gruppenfortschritt und Gruppenbelohnungen werden gemeinsam angezeigt.
 
@@ -95,7 +114,7 @@ Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach
 - **Mindestbeteiligung (50-%-Quorum):** Die manuell abgegebenen Glücksrad-Drehungen zählen nur, wenn mindestens 50 % aller zum Abstimmungsstart stimmberechtigten Gruppenmitglieder gedreht haben. Bei einer ungeraden Mitgliederzahl wird auf die nächste ganze Person aufgerundet (z. B. bei 5 Mitgliedern mindestens 3 Drehungen).
 - Wird das 50-%-Quorum erreicht, zählen die abgegebenen Drehungen; das Paket mit den meisten Stimmen gewinnt.
 - Wird das Quorum bis zum Ende des Montags nicht erreicht, ist die Abstimmung ungültig und das System wählt automatisch zufällig eines der drei Belohnungspakete aus. Die wenigen abgegebenen Drehungen werden dann nicht berücksichtigt.
-- **Noch offen beim Glücksrad:** Was bei einem Gleichstand der Stimmen passiert.
+- **Gleichstand beim Glücksrad:** Wenn zwei oder mehr Belohnungspakete gleich viele Stimmen erhalten, darf der Gruppenanführer (Owner) zwischen den gleichauf liegenden Paketen entscheiden. Möchte er nicht allein entscheiden, kann er die Gruppe vorher im Gruppenchat beraten lassen und dort eine Umfrage erstellen. Die Umfrage dient als Entscheidungshilfe; die abschließende Auswahl bei Gleichstand trifft weiterhin der Gruppenanführer.
 - **Abzeichenübersicht:** Alle erhaltenen Abzeichen sollen in einer gemeinsamen Übersicht gesammelt werden. Dort erscheinen sowohl Gruppen-Abzeichen als auch Abzeichen aus dem Belohnungspfad/Pass. Die Übersicht zeigt, welche Abzeichen bereits erhalten wurden; noch nicht erhaltene Abzeichen aus dem Belohnungspfad können dort ebenfalls entsprechend als noch nicht freigeschaltet erkennbar sein.
 - **XP-Boost manuell aktivieren:** Ein gutgeschriebener XP-Boost landet zunächst im verfügbaren Bestand und startet nicht automatisch. Auf den Lernpfaden gibt es ein Stern-Symbol. Durch Anklicken wird die Option **„XP-Boost aktivieren“** angezeigt; erst die bewusste Bestätigung startet den Boost. Nach erfolgreicher Aktivierung läuft er genau **30 Minuten**.
 - **Websiteweite Tagesbegrenzung:** Pro Nutzer darf höchstens **ein XP-Boost pro Kalendertag** aktiviert werden. Diese Regel gilt für die gesamte Website und alle Lernpfade, nicht je Lernpfad oder Gerät. Auch wenn mehrere Boosts im Bestand liegen, kann nach einer Aktivierung am selben Tag kein zweiter Boost gestartet werden – auch nicht nach Ablauf der ersten 30 Minuten. Der verwendete Boost wird beim Aktivieren verbraucht; weitere Boosts bleiben bis zu einem späteren Tag im Bestand.
@@ -124,6 +143,11 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Ein Freund sieht nur freigegebene Felder.
 - Das Ausschalten einer Freigabe und das Beenden einer Freundschaft sperren den Zugriff.
 - Ein Gruppenmitglied, das kein Freund ist, sieht keinerlei persönliche Statistiken.
+- Nichtmitglieder können weder Gruppenchat-Nachrichten noch Bilder, Umfragen oder Ankündigungen einer Gruppe lesen oder aufrufen.
+- Nach dem Austritt bzw. Entfernen aus einer Gruppe wird der Zugriff auf den Gruppenchat und seine Anhänge entzogen.
+- Gruppenmitglieder können Textnachrichten und Bilder austauschen, Umfragen erstellen und Ankündigungen des Gruppenanführers sehen.
+- Umfragen zählen pro Mitglied höchstens eine Stimme und erlauben nur während der Laufzeit eine Stimmänderung.
+- Bei einem Gleichstand der Glücksrad-Stimmen kann der Gruppenanführer nach optionaler Beratung und Chat-Umfrage die endgültige Auswahl treffen.
 - Nicht-Freunde können nicht eingeladen werden; Einladungen müssen angenommen werden.
 - Gruppenansichten enthalten nur gemeinsamen XP-Fortschritt, niemals persönliche Ranglisten.
 - Ein Lernereignis wird auch bei wiederholter Übertragung nur einmal gezählt.
@@ -154,10 +178,11 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Kein Authentifizierungsanbieter eingerichtet.
 - Keine Online-Datenbank erstellt oder verbunden.
 - Keine Freundschaftsanfragen oder Online-Freundesuche aktiviert.
-- Keine Online-Gruppen oder Einladungen aktiviert.
+- Keine Online-Gruppen, Einladungen oder Gruppenchats aktiviert.
+- Keine Chat-Nachrichten, Bildanhänge, Umfragen oder Gruppenankündigungen aktiviert.
 - Keine XP-Synchronisierung oder Belohnungsautomatik aktiviert.
 - Keine Änderung an `main` und keine Veröffentlichung.
 
 ## 8. Entscheidungen für den nächsten Konzeptschritt
 
-Vor der SQL-Migration müssen wir noch festlegen, wie Gleichstände beim Glücksrad behandelt werden und wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
+Vor der SQL-Migration müssen wir noch festlegen, wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben, sowie die konkreten Melde-, Moderations- und Aufbewahrungsregeln für den Gruppenchat. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
