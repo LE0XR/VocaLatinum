@@ -11,14 +11,18 @@ test('Startseite lädt ohne JavaScript-Ausnahmen', async ({ page }) => {
   await page.reload();
   await expect(page.locator('#home')).toHaveClass(/active/);
   await expect(page.locator('.home-title')).toContainText('Salve');
-  await expect(page.locator('#learningCalendar')).toBeVisible();
+  await expect(page.locator('.home-stats-open')).toBeVisible();
+  await expect(page.locator('#learningCalendar')).toBeHidden();
   expect(errors).toEqual([]);
 });
 
 test('Lernkalender und Auswertungen werden gerendert', async ({ page }) => {
-  await expect(page.locator('#calendarMonth')).not.toBeEmpty();
+  await page.evaluate(() => showPage('stats'));
   await expect(page.locator('#detailStats')).toContainText('Lernaktionen gesamt');
   await expect(page.locator('#lessonMastery')).not.toBeEmpty();
+  await page.getByRole('button', { name: /Lernkalender/ }).click();
+  await expect(page.locator('#learningCalendar')).toBeVisible();
+  await expect(page.locator('#calendarMonth')).not.toBeEmpty();
   await page.getByRole('button', { name: 'Nächster Monat' }).click();
   await expect(page.locator('#calendarMonth')).not.toBeEmpty();
 });
