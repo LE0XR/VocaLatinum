@@ -398,3 +398,51 @@ test('XP, Level-Belohnungen und Lernserie werden aktualisiert', async ({ page })
   expect(result.badges).toBeGreaterThan(0);
   expect(result.streak).toBe(1);
 });
+
+
+test('Ungültiger Backup-Import verändert den bestehenden Lernstand nicht', async ({ page }) => {
+  await page.evaluate(() => {
+    state.xp = 777;
+    save();
+    showPage('settings');
+  });
+  await page.locator('#backup').setInputFiles({
+    name: 'ungueltiges-backup.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify({
+      app: 'VocaLatinum',
+      schemaVersion: 1,
+      data: { vocab: [{ l: 'puella', g: '' }] }
+    }), 'utf8')
+  });
+  await expect(page.locator('#toast')).toContainText('Backup ungültig');
+  expect(await page.evaluate(() => state.xp)).toBe(777);
+  await page.reload();
+  expect(await page.evaluate(() => state.xp)).toBe(777);
+});
+
+test('Abgebrochener Backup-Import lässt den vorhandenen Lernstand unverändert', async ({ page }) => {
+  const backupData = await page.evaluate(() => {
+    state.xp = 123;
+    save();
+    return JSON.parse(JSON.stringify(state));
+  });
+  await page.evaluate(() => {
+    state.xp = 888;
+    save();
+    showPage('settings');
+  });
+  page.once('dialog', dialog => dialog.dismiss());
+  await page.locator('#backup').setInputFiles({
+    name: 'abgebrochenes-backup.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify({
+      app: 'VocaLatinum',
+      schemaVersion: 1,
+      data: backupData
+    }), 'utf8')
+  });
+  await expect.poll(() => page.evaluate(() => state.xp)).toBe(888);
+  await page.reload();
+  expect(await page.evaluate(() => state.xp)).toBe(888);
+});
