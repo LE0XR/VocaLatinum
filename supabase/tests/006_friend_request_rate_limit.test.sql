@@ -56,8 +56,8 @@ reset role;
 select is(
   (select request_count from private.friend_request_rate_limits
    where user_id = '80000000-0000-4000-8000-000000000008'),
-  11,
-  'Rate-limit state is stored privately per authenticated sender'
+  10,
+  'Rejected attempt does not increase the committed server-side counter'
 );
 
 select * from finish();
