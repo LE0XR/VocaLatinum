@@ -35,6 +35,10 @@ Die spätere Datenbank soll PostgreSQL verwenden. Falls Supabase als Backend gew
 | `group_polls` | Umfragen im Gruppenchat | Gruppe, Ersteller, Frage, Laufzeit, Status. Umfragen können z. B. zur Beratung bei einer Gleichstandsentscheidung dienen. |
 | `group_poll_options` | Antwortmöglichkeiten einer Umfrage | Umfrage, Antworttext, Sortierung. |
 | `group_poll_votes` | Stimmen zu Gruppen-Umfragen | Umfrage, Option, Nutzer, Zeitstempel. Pro Nutzer und Umfrage höchstens eine gültige Stimme; Änderung nur solange die Umfrage offen ist. |
+| `group_message_hidden_for_users` | Persönliches Ausblenden/Löschen | Nachricht, Nutzer, Zeitstempel. Entfernt eine Nachricht nur aus der eigenen Ansicht; andere Gruppenmitglieder sehen sie weiterhin. |
+| `group_message_reports` | Meldungen zu Nachrichten und Bildern | Meldender Nutzer, Nachricht/Anhang, Grund, Status, Zeitstempel und Bearbeitung. Meldungen sind nur für berechtigte Moderation sichtbar. |
+| `group_user_blocks` | Blockierte Mitspieler | Blockierender Nutzer, blockierter Nutzer, Zeitstempel. Blockieren wirkt für das eigene Konto und kann aufgehoben werden. |
+| `group_moderation_actions` | Moderationsnachweise | Gruppe, moderierende Person, betroffener Inhalt, Aktion (z. B. gruppenweit gelöscht), Zeitstempel und optionaler Grund. Nur notwendige Nachweisdaten speichern. |
 | `learning_events` | Serverseitig geprüfte Lernereignisse | Eindeutige Ereignis-ID, Nutzer, XP-Änderung, Ereigniszeit. Deduplizierung über eindeutige Event-ID. |
 | `group_weekly_goals` | Wöchentliches Gruppenziel | Gruppe, Wochenbeginn, Wochenende, XP-Ziel, Status. Pro Gruppe und Woche höchstens ein aktives Ziel. |
 | `group_goal_rewards` | Einmalige Gruppenbelohnung | Gruppe, Ziel/Woche, Belohnungstyp und Vergabezeit. Eindeutigkeit pro Gruppe und Woche verhindert doppelte Vergabe. |
@@ -72,7 +76,10 @@ Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach
 - Mitglieder können Umfragen mit einer Frage und mehreren Antwortmöglichkeiten erstellen, um die Gruppe zu befragen oder eine Entscheidung vorzubereiten.
 - Umfragen haben einen klaren Status und optional eine Laufzeit. Pro Mitglied und Umfrage zählt höchstens eine Stimme; eine Stimmänderung ist nur bis zum Ende der Umfrage möglich.
 - Chat, Bilder, Umfragen und Ankündigungen sind nur für aktuelle Gruppenmitglieder sichtbar. Nach dem Austritt oder Entfernen aus einer Gruppe endet der Zugriff auf neue und bisherige Gruppeninhalte; die genaue Aufbewahrung und Sichtbarkeit alter Nachrichten muss vor der Umsetzung festgelegt werden.
-- Nachrichten und Bilder müssen gemeldet werden können. Es braucht Schutz gegen Spam, Belästigung und ungeeignete Inhalte sowie eine Möglichkeit für den Gruppenanführer, Inhalte zu moderieren. Die konkrete Melde- und Moderationsregel wird vor der Online-Freigabe spezifiziert.
+- **Eigene Nachrichten für sich löschen:** Jedes Mitglied darf Nachrichten aus der eigenen Ansicht entfernen. Das ist ein persönliches Ausblenden und löscht die Nachricht nicht für andere Mitglieder. Bei Bildern bleiben die Bilddateien für die übrigen berechtigten Gruppenmitglieder verfügbar.
+- **Gruppenweite Moderation:** Der Gruppenanführer darf jede Nachricht und jedes Bild in seiner Gruppe für alle Mitglieder löschen, insbesondere bei Beleidigungen, Belästigung, Spam oder ungeeigneten Inhalten. Der Inhalt wird dann für die Gruppe unzugänglich; die Moderationsaktion wird mit minimalen Nachweisdaten protokolliert.
+- **Melden:** Mitglieder können Nachrichten und Bilder an die Gruppenmoderation melden. Eine Meldung entfernt den Inhalt nicht automatisch. Der Gruppenanführer kann den gemeldeten Inhalt prüfen und bei Bedarf gruppenweit löschen.
+- **Blockieren:** Mitglieder können andere Mitspieler blockieren und die Blockierung später wieder aufheben. Blockieren ist eine persönliche Schutzfunktion und löscht keine Inhalte für andere Gruppenmitglieder. Für das blockierende Mitglied werden Inhalte des blockierten Kontos im Chat ausgeblendet; außerdem wird eine direkte Kontaktaufnahme zwischen diesen Konten unterbunden. Gruppenweite Moderation bleibt Aufgabe des Gruppenanführers.
 - Es sollen nur notwendige Daten gespeichert werden. Nutzer sollen keine privaten Kontaktdaten oder sensiblen persönlichen Informationen im Gruppenchat teilen müssen.
 
 ### Gruppen
@@ -145,6 +152,10 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Ein Gruppenmitglied, das kein Freund ist, sieht keinerlei persönliche Statistiken.
 - Nichtmitglieder können weder Gruppenchat-Nachrichten noch Bilder, Umfragen oder Ankündigungen einer Gruppe lesen oder aufrufen.
 - Nach dem Austritt bzw. Entfernen aus einer Gruppe wird der Zugriff auf den Gruppenchat und seine Anhänge entzogen.
+- Mitglieder können eigene Nachrichten nur für sich ausblenden; andere Mitglieder sehen sie weiterhin.
+- Der Gruppenanführer kann Nachrichten und Bilder anderer Mitglieder gruppenweit löschen.
+- Mitglieder können Nachrichten und Bilder melden; eine Meldung löscht den Inhalt nicht automatisch.
+- Mitglieder können andere Mitglieder blockieren; die Blockierung beeinflusst nur die eigene Ansicht und direkte Kontaktmöglichkeiten, nicht die Ansichten der übrigen Gruppe.
 - Gruppenmitglieder können Textnachrichten und Bilder austauschen, Umfragen erstellen und Ankündigungen des Gruppenanführers sehen.
 - Umfragen zählen pro Mitglied höchstens eine Stimme und erlauben nur während der Laufzeit eine Stimmänderung.
 - Bei einem Gleichstand der Glücksrad-Stimmen kann der Gruppenanführer nach optionaler Beratung und Chat-Umfrage die endgültige Auswahl treffen.
@@ -179,10 +190,10 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Keine Online-Datenbank erstellt oder verbunden.
 - Keine Freundschaftsanfragen oder Online-Freundesuche aktiviert.
 - Keine Online-Gruppen, Einladungen oder Gruppenchats aktiviert.
-- Keine Chat-Nachrichten, Bildanhänge, Umfragen oder Gruppenankündigungen aktiviert.
+- Keine Chat-Nachrichten, Bildanhänge, Umfragen, Gruppenankündigungen, Melde-/Blockierfunktionen oder Moderationswerkzeuge aktiviert.
 - Keine XP-Synchronisierung oder Belohnungsautomatik aktiviert.
 - Keine Änderung an `main` und keine Veröffentlichung.
 
 ## 8. Entscheidungen für den nächsten Konzeptschritt
 
-Vor der SQL-Migration müssen wir noch festlegen, wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben, sowie die konkreten Melde-, Moderations- und Aufbewahrungsregeln für den Gruppenchat. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
+Vor der SQL-Migration müssen wir noch festlegen, wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben, und wie lange Chat-Nachrichten und Bilder aufbewahrt werden sollen. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
