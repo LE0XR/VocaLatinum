@@ -797,7 +797,7 @@ function save(){
      let backups=[];try{backups=JSON.parse(localStorage.getItem(backupKey)||'[]')}catch(_){backups=[]}
      if(!Array.isArray(backups))backups=[];
      backups.unshift({date:today,savedAt:new Date().toISOString(),data:previousState});
-     localStorage.setItem(backupKey,JSON.stringify(backups.slice(0,5)));
+     localStorage.setItem(backupKey,JSON.stringify(backups.slice(0,3)));
      state.lastAutoBackupDate=today;
     }
    }catch(_){/* Eine defekte alte Sicherung darf das normale Speichern nicht verhindern. */}
