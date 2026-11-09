@@ -8,7 +8,7 @@
 - GitHub Actions startet für Änderungen an `supabase/**` eine isolierte lokale Supabase-Instanz und führt Migrationen sowie pgTAP-Tests aus.
 - Die Migration wurde noch **nicht** auf ein echtes Supabase-Projekt angewendet.
 - Es wurden keine Zugangsdaten oder Schlüssel im Repository gespeichert.
-- Freundschaftsanfragen sind als lokale Datenbank-RPCs vorbereitet und werden in CI getestet; eine Website-Anbindung und Profilsuche fehlen noch.
+- Freundschaftsanfragen, automatisch erzeugte Freundescodes und eine sichere Profilsuche sind als lokale Datenbank-RPCs vorbereitet und werden in CI getestet; die Website-Anbindung fehlt noch.
 - Gruppen, Chat und Uploads sind noch nicht online nutzbar.
 
 ## Sicherheitsprinzipien
@@ -35,14 +35,14 @@ Die automatisierte GitHub-Prüfung führt dieselben Schritte in einer kurzlebige
 
 - `001_privacy_foundation.test.sql`: RLS-Aktivierung, RLS-Erzwingung und minimale Rollen-/Spaltenrechte.
 - `002_two_account_access.test.sql`: zwei künstliche Testkonten; jedes Konto darf ausschließlich das eigene Profil und die eigenen Freigaben lesen und nur den eigenen Anzeigenamen ändern.
-- `003_friend_request_workflow.test.sql`: zwei künstliche Testkonten prüfen Senden, eingehende/ausgehende Liste, Empfänger-Annahme, Ablehnung, gespeicherten Freundschaftsstatus und gesperrten direkten Tabellenzugriff.
+- `003_friend_request_workflow.test.sql`: zwei künstliche Testkonten prüfen Senden, eingehende/ausgehende Liste, Empfänger-Annahme, Ablehnung, gespeicherten Freundschaftsstatus und gesperrten direkten Tabellenzugriff.\n- `004_friend_code_search.test.sql`: automatisch erzeugte eindeutige Freundescodes, Suche nach Anzeigenamen, Ausschluss des eigenen Kontos, Mindestlänge der Suche und Anfrageversand per Freundescode.
 
 Die Tests verwenden ausschließlich erfundene Konten mit `.invalid`-E-Mail-Adressen. Vor dem Online-Start müssen weitere Zwei-Konten-Tests für Freundschaftsfreigaben, Gruppen, Rollen, Chat, Anhänge und Moderation ergänzt und bestanden werden.
 
 ## Noch nicht freigeschaltet
 
 - Konto-Registrierung und Anmeldung in der Website
-- Profilsuche nach Anzeigenamen und Website-Oberfläche für Freundschaftsanfragen
+- Website-Oberfläche für Profilsuche und Freundschaftsanfragen
 - Profilfreigaben an bestätigte Freunde
 - Gruppenerstellung, Einladungen und Mitgliedschaften
 - Gruppenchat, Bilder, Moderations-Bot und Umfragen
@@ -53,3 +53,4 @@ Die Migrationen sind ein getesteter lokaler Datenbankbaustein, aber noch kein fe
 
 
 Die CI-Prüfung läuft bei jeder Änderung an dieser Supabase-Konfiguration oder den Migrationen automatisch auf GitHub Actions.
+\n\n## Freundescodes und Profilsuche (Backend)\n\n- Jedes Profil erhält automatisch einen eindeutigen sechsstelligen Freundescode aus einem verwechselungsarmen Zeichensatz.\n- `search_profiles(text)` sucht ab mindestens drei Zeichen nach dem Anfang eines Anzeigenamens oder exakt nach einem Freundescode. Das eigene Konto wird ausgeschlossen; höchstens 20 Treffer mit Anzeigename und Freundescode werden zurückgegeben.\n- `send_friend_request_by_code(text)` löst den Freundescode serverseitig auf und legt die Anfrage an, ohne interne Auth-UUIDs an den Client weiterzugeben.\n- Die Website-Oberfläche, echte Konten und ein echtes Supabase-Projekt sind weiterhin nicht verbunden.\n
