@@ -43,4 +43,4 @@ jobs:
         if: always()
         run: supabase stop --no-backup
 
-# Harmless test-branch update to trigger the Supabase CI workflow.
+# Harmless test-branch update to validate friend-code migration and tests.
