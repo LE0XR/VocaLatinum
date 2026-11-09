@@ -823,7 +823,7 @@ const SENTENCE_FILTER_OPTIONS={
  cases:['Nominativ','Genitiv','Dativ','Akkusativ','Ablativ','Vokativ'],
  tenses:['Präsens','Imperfekt','Futur I','Perfekt','Plusquamperfekt','Futur II'],
  modes:['Indikativ','Konjunktiv'],
- constructions:['Grundsatz','PPP','PPA','AcI']
+ constructions:['Grundsatz','PPP','PPA','AcI','PC']
 };
 let sentenceFilters={difficulties:['Normal'],numbers:[...SENTENCE_FILTER_OPTIONS.numbers],cases:[...SENTENCE_FILTER_OPTIONS.cases],tenses:[...SENTENCE_FILTER_OPTIONS.tenses],modes:[...SENTENCE_FILTER_OPTIONS.modes],constructions:[...SENTENCE_FILTER_OPTIONS.constructions]};
 let sentenceTrainerItems=[];
@@ -982,6 +982,7 @@ function generateSentenceCandidate(){
   if(c==='PPA'&&m==='Indikativ'&&t==='Präsens')combos.push({construction:c,tense:t,mode:m});
   if(c==='PPP'&&m==='Indikativ'&&['Perfekt','Plusquamperfekt','Futur II'].includes(t))combos.push({construction:c,tense:t,mode:m});
   if(c==='AcI'&&m==='Indikativ'&&['Präsens','Perfekt'].includes(t))combos.push({construction:c,tense:t,mode:m});
+  if(c==='PC'&&m==='Indikativ'&&['Präsens','Perfekt'].includes(t))combos.push({construction:c,tense:t,mode:m});
  })));
  if(!combos.length)return null;
  const chosen=sentencePick(combos),tense=chosen.tense,mode=chosen.mode,construction=chosen.construction;
@@ -1037,6 +1038,34 @@ function generateSentenceCandidate(){
    const aciSubjectGerman=sentenceGermanSubject(aciSubject,false);const infPresent=presentDe[verb.lemma]||`${verb.g}t`;const infPerfect=({laudare:'gelobt hat',portare:'getragen hat',amare:'geliebt hat',monere:'ermahnt hat',videre:'gesehen hat',legere:'gelesen hat',scribere:'geschrieben hat',defendere:'verteidigt hat',audire:'gehört hat',venire:'gekommen ist',dare:'gegeben hat',vincere:'besiegt hat',vocare:'gerufen hat'})[verb.lemma]||`${verb.g}t hat`;
    const objectGermanPart=aciObject?sentenceGermanObject(aciObject,false)+' ':'';const subordinateVerb=tense==='Perfekt'?infPerfect:infPresent;
    de=`Er ${report==='dicit'?'sagt':'sieht'}, dass ${aciSubjectGerman} ${objectGermanPart}${subordinateVerb}.`;actualMode='Indikativ';
+
+ } else if(construction==='PC'){
+   const mainCandidates=verbs.filter(v=>Object.prototype.hasOwnProperty.call(allowed,v.lemma)&&allowed[v.lemma].length);
+   if(!mainCandidates.length)return null;
+   const main=sentencePick(mainCandidates),mainObjects=allowed[main.lemma].map(k=>byLemma[k]).filter(Boolean);
+   if(!mainObjects.length)return null;
+   const mainObject=sentencePick(mainObjects),pcNoun=sentencePick(peoplePool);
+   const pcCandidates=verbs.filter(v=>v.lemma!=='venire'&&Object.prototype.hasOwnProperty.call(allowed,v.lemma)&&allowed[v.lemma].length);
+   if(!pcCandidates.length)return null;
+   const pcVerb=sentencePick(pcCandidates),pcObjects=allowed[pcVerb.lemma].map(k=>byLemma[k]).filter(Boolean);
+   if(!pcObjects.length)return null;
+   const pcObject=sentencePick(pcObjects),germanPcNoun=sentenceGermanObject(pcNoun,false);
+   const relativePronoun=germanPcNoun.startsWith('den ')?'der':germanPcNoun.startsWith('das ')?'das':'die';
+   const mainGerman=presentDe[main.lemma]||'sieht',pcGerman=presentDe[pcVerb.lemma]||'liest';
+   if(tense==='Präsens'){
+     const ppaMap={laudare:'laudans',portare:'portans',amare:'amans',monere:'monens',videre:'videns',legere:'legens',scribere:'scribens',defendere:'defendens',audire:'audiens',dare:'dans',vincere:'vincens',vocare:'vocans'};
+     const ppa=ppaMap[pcVerb.lemma];if(!ppa)return null;
+     const ppaAcc=ppa.slice(0,-3)+(ppa.endsWith('ans')?'antem':'entem');
+     la=`${subjectLatin} ${sentenceNounForm(pcNoun,'acc',false)} ${sentenceNounForm(pcObject,'acc',false)} ${ppaAcc} ${sentenceTenseVerb(main,'Präsens',false)}.`;
+     de=`${subjectCap} ${mainGerman} ${sentenceGermanObject(mainObject,false)}, ${relativePronoun} ${sentenceGermanObject(pcObject,false)} ${pcGerman}.`;
+   }else{
+     const pppMap={laudare:{m:'laudatum',f:'laudatam',n:'laudatum',de:'gelobt'},portare:{m:'portatum',f:'portatam',n:'portatum',de:'getragen'},amare:{m:'amatum',f:'amatam',n:'amatum',de:'geliebt'},monere:{m:'monitum',f:'monitam',n:'monitum',de:'ermahnt'},videre:{m:'visum',f:'visam',n:'visum',de:'gesehen'},legere:{m:'lectum',f:'lectam',n:'lectum',de:'gelesen'},scribere:{m:'scriptum',f:'scriptam',n:'scriptum',de:'geschrieben'},defendere:{m:'defensum',f:'defensam',n:'defensum',de:'verteidigt'},audire:{m:'auditum',f:'auditam',n:'auditum',de:'gehört'},dare:{m:'datum',f:'datam',n:'datum',de:'gegeben'},vincere:{m:'victum',f:'victam',n:'victum',de:'besiegt'},vocare:{m:'vocatum',f:'vocatam',n:'vocatum',de:'gerufen'}};
+     const ppp=pppMap[pcVerb.lemma];if(!ppp)return null;
+     const pppForm=pcNoun.gender==='f'?ppp.f:pcNoun.gender==='n'?ppp.n:ppp.m;
+     la=`${subjectLatin} ${sentenceNounForm(pcNoun,'acc',false)} ${pppForm} ${sentenceTenseVerb(main,'Präsens',false)}.`;
+     de=`${subjectCap} ${mainGerman} ${germanPcNoun}, ${relativePronoun} ${ppp.de} worden ist.`;
+   }
+   actualConstruction='PC';actualMode='Indikativ';actualTense=tense;
  } else if(mode==='Konjunktiv'){
    const child=sentencePick(otherPeople);const subjVerb=verb.conj||sentenceTenseVerb(verb,'Präsens',false);
    la=`${subjectLatin} rogat ut ${sentenceNounForm(child,'nom',false)} ${objectLatin} ${subjVerb}.`;
