@@ -1,0 +1,48 @@
+name: VocaLatinum Playwright Tests
+
+on:
+  push:
+    branches:
+      - test
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vocalatinum-playwright-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  playwright:
+    name: Browser tests (Chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Abhängigkeiten installieren
+        run: npm install --no-audit --no-fund
+
+      - name: Chromium und Systemabhängigkeiten installieren
+        run: npx playwright install --with-deps chromium
+
+      - name: Playwright-Tests ausführen
+        run: npm test
+
+      - name: Testergebnisse bei Fehlern sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vocalatinum-playwright-ergebnisse
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
