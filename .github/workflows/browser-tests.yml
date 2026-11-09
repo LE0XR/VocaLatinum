@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - main
-      - phase1-stabilisierung
+      - test
   pull_request:
     branches:
       - main
+      - test
   workflow_dispatch:
 
 jobs:
