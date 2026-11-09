@@ -77,9 +77,14 @@ Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach
 - **Belohnungsberechtigt sind ausschließlich Gruppenmitglieder, die im betreffenden Wochenzeitraum seit ihrem tatsächlichen Beitritt mindestens einen gültigen XP-Beitrag zum Gruppenziel geleistet haben.** Mitglieder ohne eigenen Beitrag erhalten keine Belohnung.
 - **Auch nicht beitragende Gruppenmitglieder werden informiert**, sobald das Ziel erreicht und die Belohnung verteilt bzw. abholbar ist. Die Mitteilung enthält genau diesen Satz: **„Ohne Fleiß kein Preis“**. Sie bleiben weiterhin Gruppenmitglieder.
 - Die individuelle Berechtigungsprüfung und Belohnungszuteilung erfolgen serverseitig. Für jedes berechtigte Mitglied darf es höchstens eine Zuteilung geben. Nicht berechtigte Mitglieder erhalten keine Belohnung, aber die beschriebene Statusmitteilung.
+- Für den ersten Start sind genau drei Belohnungsarten vorgesehen:
+  1. **XP-Verdoppler:** Die während des Boosts erspielten XP werden für **30 Minuten verdoppelt**. Die Dauer entspricht dem bereits im Spiel verwendeten XP-Verdoppler.
+  2. **Besonderes Gruppen-Abzeichen:** Ein exklusives Abzeichen als Auszeichnung für das gemeinsam erreichte Wochenziel. Erste Namensideen: **„Gemeinsam unschlagbar“**, **„Ziel erreicht!“** oder **„Lernteam-Legenden“**.
+  3. **Feste XP-Belohnung:** **400 XP** pro berechtigtem Mitglied.
+- Diese drei Belohnungsarten bilden zunächst den vollständigen Startkatalog. Weitere Belohnungen können später ergänzt werden, ohne das Grundmodell neu aufzubauen.
 - Der Wochenwechsel startet einen neuen Zeitraum; vergangene Wochen bleiben für die technische Nachvollziehbarkeit erhalten.
 
-**Noch festzulegen:** Welche Belohnungen zuerst angeboten werden und wie lange ein zeitlich begrenzter XP-Boost gilt.
+**Noch festzulegen:** Ob pro erreichtem Wochenziel eine dieser drei Belohnungen ausgewählt wird oder ob die Gruppe mehrere bzw. alle drei erhalten kann. Beim Abzeichen ist außerdem der endgültige Name noch auszuwählen.
 
 ## 5. Sicherheitsanforderungen für die spätere Umsetzung
 
@@ -106,6 +111,9 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Das Wochenziel und die Belohnung werden bei parallelen Anfragen nicht doppelt verarbeitet.
 - Nur Mitglieder mit mindestens einem gültigen XP-Beitrag im maßgeblichen Zeitraum erhalten eine Belohnung.
 - Nicht beitragende Mitglieder erhalten nach Zielerreichung eine Mitteilung, aber keine Belohnung.
+- Der XP-Verdoppler läuft exakt 30 Minuten und wird nicht versehentlich mehrfach für dieselbe Belohnung aktiviert.
+- Eine feste XP-Belohnung von 400 XP wird pro berechtigtem Mitglied nur einmal gutgeschrieben.
+- Ein besonderes Gruppen-Abzeichen wird nur berechtigten Mitgliedern zugeteilt und nicht doppelt vergeben.
 - Wochenwechsel und Zeitzonen-/Sommerzeitgrenzen funktionieren korrekt.
 - Nicht berechtigte direkte Datenbank- und API-Anfragen werden abgewiesen.
 
