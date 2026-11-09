@@ -42,3 +42,5 @@ jobs:
       - name: Supabase-Dienste beenden
         if: always()
         run: supabase stop --no-backup
+
+# Harmless test-branch update to trigger the Supabase CI workflow.
