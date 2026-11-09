@@ -28,7 +28,9 @@ Die spätere Datenbank soll PostgreSQL verwenden. Falls Supabase als Backend gew
 | `friend_requests` | Freundschaftsanfragen | Absender, Empfänger, Status (`pending`, `accepted`, `rejected`, `cancelled`), Zeitstempel. Keine Selbstanfragen oder doppelten offenen Anfragen. |
 | `friendships` | Bestätigte Freundschaften | Zwei User-IDs in kanonischer Reihenfolge, Erstellungsdatum; eindeutige Kombination. |
 | `groups` | Lerngruppen | Gruppen-ID, Name, Ersteller, Erstellungsdatum, Status. |
-| `group_members` | Mitgliedschaften und Rollen | Gruppe, Nutzer, Rolle (z. B. owner/member), Beginn und Ende der Mitgliedschaft. |
+| `group_members` | Mitgliedschaften und Rollen | Gruppe, Nutzer, Rolle (`leader`, `deputy_leader`, `member`), Beginn und Ende der Mitgliedschaft. Pro Gruppe gibt es genau einen Gruppenanführer und genau einen gewählten Vize-Anführer. |
+| `group_settings` | Gruppeneinstellungen | Gruppe, automatische Chat-Aufbewahrungsdauer, Einstellungszeitpunkt und Frist für die Wahl eines Vize-Anführers. Die Aufbewahrungsdauer wird vom Gruppenanführer oder Vize-Anführer festgelegt. |
+| `group_lifecycle` | Gruppenstatus und Fristen | Gruppe, Status, Beginn/Ende einer Frist ohne Vize-Anführer und geplanter Löschzeitpunkt. Wenn innerhalb von zwei Tagen kein Vize-Anführer gewählt wird, wird die Gruppe samt Gruppeninhalten automatisch gelöscht. |
 | `group_invites` | Persönliche Gruppeneinladungen | Gruppe, einladender Nutzer, eingeladener Freund, Status und Ablaufdatum. Keine offenen oder wiederverwendbaren Beitrittscodes. |
 | `group_messages` | Gruppenchat-Nachrichten und Ankündigungen | Gruppe, Absender, Nachrichtentext, Nachrichtentyp (normal/Ankündigung), Zeitstempel. Nur aktuelle Gruppenmitglieder dürfen lesen und schreiben. |
 | `group_attachments` | Bilder und andere freigegebene Chat-Anhänge | Nachricht, interner Speicherpfad, Dateityp, Größe, Upload-Zeit. Zugriff nur für Gruppenmitglieder; sichere Typ-/Größenprüfung und private Speicherung. |
@@ -73,6 +75,8 @@ Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach
 - Jede Gruppe erhält einen eigenen Chat, der ausschließlich für aktuelle Gruppenmitglieder zugänglich ist. Eine Gruppenmitgliedschaft gewährt weiterhin keinen Zugriff auf persönliche Lernstatistiken.
 - Mitglieder können Textnachrichten schreiben und Bilder in den Chat senden. Anhänge werden privat gespeichert und dürfen nicht über öffentliche oder erratbare Links zugänglich sein.
 - Der Gruppenanführer kann wichtige Nachrichten als Ankündigungen kennzeichnen bzw. anheften, damit Regeln, Hinweise und Aufgaben gut sichtbar bleiben.
+- Jede Gruppe muss zusätzlich zum Gruppenanführer einen Vize-Anführer haben. Der Gruppenanführer wählt ein Gruppenmitglied für diese Rolle aus. Der Vize-Anführer besitzt dieselben Verwaltungs- und Moderationsrechte wie der Gruppenanführer und kann bei Problemen oder Missbrauch durch den Gruppenanführer eingreifen.
+- Ist kein Vize-Anführer vorhanden, beginnt eine Frist von zwei Tagen. Wird innerhalb dieser Frist kein neuer Vize-Anführer gewählt, wird die Gruppe automatisch gelöscht. Die Gruppe und ihre Chat-Inhalte sind danach nicht mehr zugänglich.
 - Mitglieder können Umfragen mit einer Frage und mehreren Antwortmöglichkeiten erstellen, um die Gruppe zu befragen oder eine Entscheidung vorzubereiten.
 - Umfragen haben einen klaren Status und optional eine Laufzeit. Pro Mitglied und Umfrage zählt höchstens eine Stimme; eine Stimmänderung ist nur bis zum Ende der Umfrage möglich.
 - Chat, Bilder, Umfragen und Ankündigungen sind nur für aktuelle Gruppenmitglieder sichtbar. Nach dem Austritt oder Entfernen aus einer Gruppe endet der Zugriff auf neue und bisherige Gruppeninhalte; die genaue Aufbewahrung und Sichtbarkeit alter Nachrichten muss vor der Umsetzung festgelegt werden.
@@ -152,15 +156,22 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Ein Gruppenmitglied, das kein Freund ist, sieht keinerlei persönliche Statistiken.
 - Nichtmitglieder können weder Gruppenchat-Nachrichten noch Bilder, Umfragen oder Ankündigungen einer Gruppe lesen oder aufrufen.
 - Nach dem Austritt bzw. Entfernen aus einer Gruppe wird der Zugriff auf den Gruppenchat und seine Anhänge entzogen.
+- Gruppenanführer und Vize-Anführer können die automatische Aufbewahrungsdauer einstellen; abgelaufene Nachrichten und Bilder sind für alle nicht mehr sichtbar.
+- Der Vize-Anführer hat dieselben Verwaltungs- und Moderationsrechte wie der Gruppenanführer und kann bei missbräuchlicher Nutzung eingreifen.
+- Wenn der Vize-Anführer fehlt, wird die Gruppe nach einer Frist von zwei Tagen automatisch gelöscht, sofern bis dahin kein neuer Vize-Anführer gewählt wurde.
 - Mitglieder können eigene Nachrichten nur für sich ausblenden; andere Mitglieder sehen sie weiterhin.
 - Der Gruppenanführer kann Nachrichten und Bilder anderer Mitglieder gruppenweit löschen.
 - Mitglieder können Nachrichten und Bilder melden; eine Meldung löscht den Inhalt nicht automatisch.
 - Mitglieder können andere Mitglieder blockieren; die Blockierung beeinflusst nur die eigene Ansicht und direkte Kontaktmöglichkeiten, nicht die Ansichten der übrigen Gruppe.
-- Gruppenmitglieder können Textnachrichten und Bilder austauschen, Umfragen erstellen und Ankündigungen des Gruppenanführers sehen.
+- Gruppenmitglieder können Textnachrichten und Bilder austauschen, Umfragen erstellen und Ankündigungen der Gruppenleitung sehen.
+- Gruppenleitung kann die automatische Aufbewahrungsdauer ändern; abgelaufene Nachrichten und Bilder sind für alle nicht mehr sichtbar.
+- Der Vize-Anführer besitzt dieselben Verwaltungsrechte wie der Gruppenanführer und kann bei dessen missbräuchlicher Nutzung eingreifen.
+- Wenn kein Vize-Anführer vorhanden ist, wird nach zwei Tagen ohne Ersatzwahl die Gruppe automatisch gelöscht.
 - Umfragen zählen pro Mitglied höchstens eine Stimme und erlauben nur während der Laufzeit eine Stimmänderung.
 - Bei einem Gleichstand der Glücksrad-Stimmen kann der Gruppenanführer nach optionaler Beratung und Chat-Umfrage die endgültige Auswahl treffen.
 - Nicht-Freunde können nicht eingeladen werden; Einladungen müssen angenommen werden.
 - Gruppenansichten enthalten nur gemeinsamen XP-Fortschritt, niemals persönliche Ranglisten.
+- Eine Gruppe ohne Vize-Anführer wird nach zwei Tagen automatisch gelöscht, wenn bis dahin kein Ersatz gewählt wird.
 - Ein Lernereignis wird auch bei wiederholter Übertragung nur einmal gezählt.
 - Das Wochenziel, die Glücksrad-Auswertung und die Belohnung werden bei parallelen Anfragen nicht doppelt verarbeitet.
 - Jedes Gruppenmitglied sieht zu Wochenbeginn das Glücksrad für die jeweilige Gruppe und kann pro Gruppenwoche genau einmal manuell drehen.
@@ -190,10 +201,10 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Keine Online-Datenbank erstellt oder verbunden.
 - Keine Freundschaftsanfragen oder Online-Freundesuche aktiviert.
 - Keine Online-Gruppen, Einladungen oder Gruppenchats aktiviert.
-- Keine Chat-Nachrichten, Bildanhänge, Umfragen, Gruppenankündigungen, Melde-/Blockierfunktionen oder Moderationswerkzeuge aktiviert.
+- Keine Chat-Nachrichten, Bildanhänge, Umfragen, Gruppenankündigungen, Melde-/Blockierfunktionen, Moderationswerkzeuge, automatische Chat-Aufbewahrung oder Vize-Anführer-Verwaltung aktiviert.
 - Keine XP-Synchronisierung oder Belohnungsautomatik aktiviert.
 - Keine Änderung an `main` und keine Veröffentlichung.
 
 ## 8. Entscheidungen für den nächsten Konzeptschritt
 
-Vor der SQL-Migration müssen wir noch festlegen, wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben, und wie lange Chat-Nachrichten und Bilder aufbewahrt werden sollen. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
+Vor der SQL-Migration müssen wir noch festlegen, wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben, und welche festen Auswahlwerte für die vom Gruppenanführer einstellbare Chat-Aufbewahrungsdauer angeboten werden sollen. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
