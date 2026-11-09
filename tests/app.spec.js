@@ -360,11 +360,11 @@ test('Fehler- und Unsicher-Modus finden die richtigen Vokabeln', async ({ page }
     state.vocab[1].seen = 1;
     state.vocab[1].wrong = 0;
     state.vocab[1].box = 1;
-    return { errors: getErrorPool().map(v => v.id), uncertain: getUncertainPool().map(v => v.id) };
+    return { firstId: state.vocab[0].id, secondId: state.vocab[1].id, errors: getErrorPool().map(v => v.id), uncertain: getUncertainPool().map(v => v.id) };
   });
-  expect(result.errors).toContain('src-0');
-  expect(result.uncertain).toContain('src-0');
-  expect(result.uncertain).toContain('src-1');
+  expect(result.errors).toContain(result.firstId);
+  expect(result.uncertain).toContain(result.firstId);
+  expect(result.uncertain).toContain(result.secondId);
 });
 
 test('Eigene Vokabeln können hinzugefügt und gespeichert werden', async ({ page }) => {
