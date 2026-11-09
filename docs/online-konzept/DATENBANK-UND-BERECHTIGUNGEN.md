@@ -168,8 +168,14 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Mitglieder können eigene Nachrichten nur für sich ausblenden; andere Mitglieder sehen sie weiterhin.
 - Der Gruppenanführer kann Nachrichten und Bilder anderer Mitglieder gruppenweit löschen.
 - Mitglieder können Nachrichten und Bilder melden; eine Meldung löscht den Inhalt nicht automatisch.
+- Ein Moderations-Bot warnt bei erkannten Regelverstößen, entfernt je nach Schwere Nachrichten/Bilder und kann bei wiederholten Verstößen eine mindestens dreitägige Gruppensperre verhängen.
+- Nach einer solchen Sperre darf nur der Gruppenanführer als Gruppenadmin das Mitglied wieder aufnehmen; der Beitritt erfolgt nicht automatisch nach drei Tagen.
+- Nutzer werden über die automatisierte Prüfung informiert und können eine Fehlentscheidung überprüfen lassen.
 - Mitglieder können andere Mitglieder blockieren; die Blockierung beeinflusst nur die eigene Ansicht und direkte Kontaktmöglichkeiten, nicht die Ansichten der übrigen Gruppe.
 - Gruppenmitglieder können Textnachrichten und Bilder austauschen, Umfragen erstellen und Ankündigungen der Gruppenleitung sehen.
+- Der Moderations-Bot erkennt Regelverstöße in Texten und Bildern, warnt Nutzer und entfernt bei Bedarf Inhalte automatisch.
+- Wiederholte Verstöße können eine automatische Entfernung aus der Gruppe mit mindestens drei Tagen Beitrittssperre auslösen; danach kann nur der Gruppenanführer als Gruppenadmin das Mitglied wieder aufnehmen.
+- Moderationshinweise, Einspruch und Schutz vor Fehlentscheidungen werden getestet.
 - Der Moderations-Bot erkennt Testfälle mit Beleidigungen, Belästigung und unzulässigen privaten/ungeeigneten Bildern, hält Inhalte zurück bzw. entfernt sie und zeigt eine Warnung.
 - Wiederholte Regelverstöße können zu einer automatischen Gruppensperre führen; nur Gruppenanführer oder Vize-Anführer können die Sperre aufheben.
 - Fehlalarme können von der Gruppenleitung überprüft und korrigiert werden.
@@ -216,4 +222,4 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 
 ## 8. Entscheidungen für den nächsten Konzeptschritt
 
-Vor der SQL-Migration müssen wir noch festlegen, wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben, und welche festen Auswahlwerte für die vom Gruppenanführer einstellbare Chat-Aufbewahrungsdauer angeboten werden sollen. Außerdem müssen die genauen Schwellenwerte für Warnungen und automatische Gruppensperren festgelegt werden. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
+Vor der SQL-Migration müssen wir noch festlegen, wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben, und welche festen Auswahlwerte für die vom Gruppenanführer einstellbare Chat-Aufbewahrungsdauer angeboten werden sollen und welche Schwellenwerte für wiederholte Verstöße gelten. Außerdem müssen die genauen Schwellenwerte für Warnungen und automatische Gruppensperren festgelegt werden. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
