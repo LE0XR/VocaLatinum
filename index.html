@@ -783,7 +783,12 @@ function todayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMo
 let calendarCursor=new Date();
 function ensureActivity(){if(!state.activity||typeof state.activity!=='object'||Array.isArray(state.activity))state.activity={};return state.activity}
 function recordStudyActivity(correct,xp){const log=ensureActivity(),day=todayKey(),entry=log[day]||(log[day]={events:0,correct:0,wrong:0,xp:0,cards:0});entry.events=(Number(entry.events)||0)+1;if(correct)entry.correct=(Number(entry.correct)||0)+1;else entry.wrong=(Number(entry.wrong)||0)+1;entry.xp=(Number(entry.xp)||0)+(Number(xp)||0)}
-function recordCardReview(){const log=ensureActivity(),day=todayKey(),entry=log[day]||(log[day]={events:0,correct:0,wrong:0,xp:0,cards:0});entry.cards=(Number(entry.cards)||0)+1}
+function recordCardReview(cardId){const log=ensureActivity(),day=todayKey(),entry=log[day]||(log[day]={events:0,correct:0,wrong:0,xp:0,cards:0,cardIds:[],units:0});entry.cards=(Number(entry.cards)||0)+1;if(cardId){entry.cardIds=Array.isArray(entry.cardIds)?entry.cardIds:[];if(!entry.cardIds.includes(String(cardId)))entry.cardIds.push(String(cardId))}}
+function recordCompletedLearningUnit(kind){const log=ensureActivity(),day=todayKey(),entry=log[day]||(log[day]={events:0,correct:0,wrong:0,xp:0,cards:0,units:0});entry.units=(Number(entry.units)||0)+1;entry.unitTypes=entry.unitTypes&&typeof entry.unitTypes==='object'?entry.unitTypes:{};entry.unitTypes[kind]=(Number(entry.unitTypes[kind])||0)+1}
+function weekDateKeys(now=new Date()){const start=new Date(now.getFullYear(),now.getMonth(),now.getDate());start.setDate(start.getDate()-((start.getDay()+6)%7));return Array.from({length:7},(_,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})}
+function badgeDateKey(value){if(value instanceof Date&&!Number.isNaN(value.getTime()))return value.getFullYear()+'-'+String(value.getMonth()+1).padStart(2,'0')+'-'+String(value.getDate()).padStart(2,'0');const raw=String(value||'').trim(),de=raw.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);if(de)return de[3]+'-'+String(de[2]).padStart(2,'0')+'-'+String(de[1]).padStart(2,'0');const parsed=new Date(raw);return Number.isNaN(parsed.getTime())?'':parsed.getFullYear()+'-'+String(parsed.getMonth()+1).padStart(2,'0')+'-'+String(parsed.getDate()).padStart(2,'0')}
+function getWeeklyCompetitionStats(now=new Date()){const keys=weekDateKeys(now),log=ensureActivity();let correctAnswers=0,wrongAnswers=0,xp=0,completedUnits=0;const cardIds=new Set(),active=[];for(const key of keys){const entry=log[key]||{};correctAnswers+=Number(entry.correct)||0;wrongAnswers+=Number(entry.wrong)||0;xp+=Number(entry.xp)||0;completedUnits+=Number(entry.units)||0;if((Number(entry.events)||0)+(Number(entry.cards)||0)>0)active.push(true);else active.push(false);(Array.isArray(entry.cardIds)?entry.cardIds:[]).forEach(id=>cardIds.add(String(id)))}let longestStreak=0,currentStreak=0;for(const dayActive of active){if(dayActive){currentStreak++;longestStreak=Math.max(longestStreak,currentStreak)}else currentStreak=0}const start=keys[0],end=keys[6],newBadges=Object.values(state.badges||{}).filter(b=>{const date=badgeDateKey(b&&b.date);return date>=start&&date<=end}).length;const attempts=correctAnswers+wrongAnswers;return{weekStart:start,weekEnd:end,correctAnswers,wrongAnswers,attempts,accuracy:attempts?correctAnswers/attempts*100:0,xp,newBadges,learnedCards:cardIds.size,longestStreak,completedUnits}}
+function recordWeeklyXp(amount){const log=ensureActivity(),day=todayKey(),entry=log[day]||(log[day]={events:0,correct:0,wrong:0,xp:0,cards:0,units:0});entry.xp=(Number(entry.xp)||0)+(Number(amount)||0)}
 function fresh(){return{vocab:defaultVocab.map(v=>({...v,lessons:[...v.lessons]})),activity:{},syncMeta:{deviceId:'device-'+cryptoRandomId(),schemaVersion:1,lastSyncedAt:null},xp:0,streak:0,lastDay:null,direction:'de-la',searchDirection:'la-de',dark:false,selectedLessons:[],dailyGoal:20,dailyDate:todayKey(),dailyCount:0,lastBackup:null,xpDoublerUntil:0,antiCheat:{quickStreak:0,lastAnswerAt:0,warned:false,suspiciousXp:0,violations:0},formProgress:{},formSettings:{lessons:[],types:['Substantiv'],cases:['Nominativ','Genitiv','Dativ','Akkusativ','Ablativ','Vokativ'],tenses:['Präsens','Imperfekt','Futur I','Perfekt','Plusquamperfekt','Futur II'],modes:['Indikativ','Konjunktiv'],voices:['Aktiv','Passiv'],extra:false,mode:'select'},badges:{},xpDoubler:0,rewardClaimed:{},quizProgress:{},profile:{id:'usr-'+cryptoRandomId(),name:''},groups:[]}}
 function cryptoRandomId(){try{return crypto.getRandomValues(new Uint32Array(2)).map(n=>n.toString(36)).join('').slice(0,10)}catch(e){return Math.random().toString(36).slice(2,12)}}
 function randomInviteCode(){return (Math.random().toString(36).slice(2,5)+'-'+Math.random().toString(36).slice(2,6)).toUpperCase()}
@@ -813,7 +818,7 @@ state.direction=state.direction||'de-la';state.searchDirection=state.searchDirec
 if(state.dailyDate!==todayKey()){state.dailyDate=todayKey();state.dailyCount=0}
 state.dailyCount=Number(state.dailyCount)||0;
 let current=0,quizType='',quizIndex=0,quizData=[],answered=false,startY=0;
-let cardsStarted=false,cardMode='lesson',sessionCards=[],sessionErrors=[];
+let cardsStarted=false,cardMode='lesson',sessionCards=[],sessionErrors=[],cardSessionRecorded=false;
 function save(){
  try{
   const backupKey=KEY+'-auto-backups',previous=localStorage.getItem(KEY),today=todayKey();
@@ -1386,13 +1391,14 @@ function resetCardSetup(){cardsStarted=false;sessionCards=[];sessionErrors=[];cu
 function startCards(){
  const pool=cardPoolForMode();
  if(!pool.length){showToast('Für diesen Lernmodus gibt es keine Vokabeln.');return}
- sessionCards=pool.sort((a,b)=>(a.next||0)-(b.next||0)||(a.box||0)-(b.box||0));sessionErrors=[];current=0;cardsStarted=true;
+ sessionCards=pool.sort((a,b)=>(a.next||0)-(b.next||0)||(a.box||0)-(b.box||0));sessionErrors=[];current=0;cardsStarted=true;cardSessionRecorded=false;
  document.getElementById('cardSetup').style.display='none';document.getElementById('cardLearning').style.display='block';renderCard();
  const note=document.getElementById('sessionNote');if(note)note.textContent=(cardMode==='lesson'?'Ausgewählte Lektionen':cardMode==='due'?'Heute fällig':cardMode==='errors'?'Fehler wiederholen':cardMode==='uncertain'?'Unsichere Vokabeln':'Alle Vokabeln')+' · '+sessionCards.length+' Karten';
 }
 function renderCard(){
  if(!cardsStarted)return;const el=document.getElementById('flash');if(!el)return;const total=sessionCards.length;
  if(current>=total){
+   if(!cardSessionRecorded){recordCompletedLearningUnit('Karteikarten');cardSessionRecorded=true;save()}
    document.getElementById('cardCounter').textContent=total+' / '+total;
    el.dataset.open='1';el.innerHTML=`<div class="term">🎉 Runde geschafft!</div><div class="answer">${total} Vokabeln bearbeitet.</div><div class="hint">${sessionErrors.length?sessionErrors.length+' davon falsch beantwortet.':'Keine Fehler in dieser Runde.'}</div>`;
    const note=document.getElementById('sessionNote');if(note)note.innerHTML=sessionErrors.length?`<button class="primary full-action" onclick="repeatSessionErrors()">🔁 Meine Fehler noch einmal lernen</button>`:'Du kannst jetzt einen anderen Lernmodus wählen.';
@@ -1445,7 +1451,7 @@ function grantLevelRewards(fromLevel,toLevel){
    }else if(reward.type==='xp'){extraXp+=30;}
   }
  }
- if(extraXp)state.xp+=extraXp;
+ if(extraXp){state.xp+=extraXp;recordWeeklyXp(extraXp)}
  return {extraXp,notices};
 }
 function syncUnlockedBadges(){
@@ -1457,7 +1463,7 @@ function antiCheatObserve(ok,baseAmount,reason){
  a.quickStreak++;
  if(a.quickStreak>=5&&!a.warned){a.warned=true;a.suspiciousXp=0;showToast('⚠️ Warnung: Sehr schnelle, wiederholte Eingaben erkannt. Beim nächsten bestätigten Auto-Klick-Muster werden die dabei gewonnenen XP abgezogen und die Lernrunde beendet.',5200);}
  if(a.warned){a.suspiciousXp+=baseAmount;
-  if(a.quickStreak>=8){a.violations++;const deduction=Math.min(state.xp,Math.max(0,a.suspiciousXp));state.xp=Math.max(0,state.xp-deduction);a.quickStreak=0;a.warned=false;a.suspiciousXp=0;save();showToast('⛔ Auto-Klick-Muster bestätigt. '+deduction+' XP wurden abgezogen; die Lernrunde wird beendet.',5200);const active=document.querySelector('.page.active')?.id;if(active==='cards')resetCardSetup();else if(active==='forms')resetFormSetup();else if(active==='quiz')showPage('home');return false;}
+  if(a.quickStreak>=8){a.violations++;const deduction=Math.min(state.xp,Math.max(0,a.suspiciousXp));state.xp=Math.max(0,state.xp-deduction);recordWeeklyXp(-deduction);a.quickStreak=0;a.warned=false;a.suspiciousXp=0;save();showToast('⛔ Auto-Klick-Muster bestätigt. '+deduction+' XP wurden abgezogen; die Lernrunde wird beendet.',5200);const active=document.querySelector('.page.active')?.id;if(active==='cards')resetCardSetup();else if(active==='forms')resetFormSetup();else if(active==='quiz')showPage('home');return false;}
  }
  return true;
 }
@@ -1506,13 +1512,13 @@ function renderCollection(){
 function rate(ok){
  const el=document.getElementById('flash');if(!el)return;if(el.dataset.open!=='1'){revealCard();return}
  const v=sessionCards[current];const gained=ok?10:2;if(addXP(gained,'Karte',ok)===null)return;v.seen=(v.seen||0)+1;if(ok){v.correct=(v.correct||0)+1;v.box=Math.min(7,(v.box||0)+1);v.errorStreak=0}else{v.wrong=(v.wrong||0)+1;v.errorStreak=(v.errorStreak||0)+1;v.box=0;sessionErrors.push(v.id);sessionCards.splice(current+1,0,v);showToast('🔁 Genau diese Vokabel wird direkt noch einmal geprüft.')}
- const intervals=[10,60,360,1440,4320,10080,20160,43200];const mins=intervals[Math.min(v.box,intervals.length-1)];v.next=Date.now()+mins*60000;recordCardReview();
+ const intervals=[10,60,360,1440,4320,10080,20160,43200];const mins=intervals[Math.min(v.box,intervals.length-1)];v.next=Date.now()+mins*60000;recordCardReview(v.id);
  const d=todayKey();if(state.dailyDate!==d){state.dailyDate=d;state.dailyCount=0}state.dailyCount++;updateStreak();save();
  if(state.dailyCount===state.dailyGoal)showToast('🎯 Tagesziel erreicht!');
  current++;updateCardModeCounts();renderCard();updateStats();renderVocab();
 }
 function repeatSessionErrors(){
- const unique=[...new Set(sessionErrors)];sessionCards=state.vocab.filter(v=>unique.includes(v.id));sessionErrors=[];current=0;cardMode='errors';if(sessionCards.length){cardsStarted=true;document.getElementById('cardLearning').style.display='block';renderCard();document.getElementById('sessionNote').textContent='Nur die Fehler dieser Runde · '+sessionCards.length+' Karten'}
+ const unique=[...new Set(sessionErrors)];sessionCards=state.vocab.filter(v=>unique.includes(v.id));sessionErrors=[];current=0;cardSessionRecorded=false;cardMode='errors';if(sessionCards.length){cardsStarted=true;document.getElementById('cardLearning').style.display='block';renderCard();document.getElementById('sessionNote').textContent='Nur die Fehler dieser Runde · '+sessionCards.length+' Karten'}
 }
 function updateStreak(){const d=new Date().toDateString();if(state.lastDay===d)return;const prev=new Date();prev.setDate(prev.getDate()-1);if(state.lastDay===prev.toDateString())state.streak++;else state.streak=1;state.lastDay=d}
 const DATA={
@@ -1659,7 +1665,7 @@ function checkFormAnswer(){
  document.getElementById('formCheckBtn').style.display='none';
  document.getElementById('formNextBtn').style.display='block';
 }
-function nextFormTask(){if(formIndex+1>=formTasks.length){showToast('Lernrunde abgeschlossen.');resetFormSetup();return}formIndex++;renderFormTask()}
+function nextFormTask(){if(formIndex+1>=formTasks.length){recordCompletedLearningUnit('Formen');save();showToast('Lernrunde abgeschlossen.');resetFormSetup();return}formIndex++;renderFormTask()}
 function resetFormSetup(){formTasks=[];formIndex=0;formAnswered=false;document.getElementById('formSetup').style.display='block';document.getElementById('formLearning').style.display='none';syncFormFilters();renderFormLessons()}
 
 // Schriftlicher Vokabeltest: Aufgaben zeigen nie die gesuchte lateinische Lösung.
@@ -1759,7 +1765,7 @@ function getQuizCorrectIndex(question){
  const expected=normalizeKngAnswer(question[1]);
  return question[2].findIndex(option=>normalizeKngAnswer(option)===expected);
 }
-function answer(i){if(answered)return;answered=true;const idx=quizIndex%quizData.length,q=quizData[idx],correct=getQuizCorrectIndex(q),opts=document.querySelectorAll('.option');if(correct<0||!opts[i]||!opts[correct]){answered=false;showToast('Diese Quizfrage konnte nicht ausgewertet werden.');return}opts[i].classList.add(i===correct?'correct':'bad');if(i!==correct)opts[correct].classList.add('correct');const key=quizType+':'+idx;const qp=state.quizProgress[key]||{correct:0,wrong:0,errorStreak:0};if(i===correct){qp.correct++;qp.errorStreak=0}else{qp.wrong++;qp.errorStreak=(qp.errorStreak||0)+1}state.quizProgress[key]=qp;document.getElementById('quizResult').innerHTML=`<p><b>${i===correct?'✓ Richtig!':'✗ Noch einmal üben.'}</b> ${esc(q[1])}</p><button class="primary" onclick="nextQuiz()">${i===correct?'Nächste Aufgabe →':'🔁 Genau diese Aufgabe noch einmal'}</button>`;addXP(i===correct?2:1,'Quiz',i===correct);updateStreak();save();updateStats()} function nextQuiz(){const idx=quizIndex%quizData.length;const qp=state.quizProgress[quizType+':'+idx]||{};if((qp.errorStreak||0)>0){qp.errorStreak=0;state.quizProgress[quizType+':'+idx]=qp;save();renderQuiz();return}quizIndex++;renderQuiz()}
+function answer(i){if(answered)return;answered=true;const idx=quizIndex%quizData.length,q=quizData[idx],correct=getQuizCorrectIndex(q),opts=document.querySelectorAll('.option');if(correct<0||!opts[i]||!opts[correct]){answered=false;showToast('Diese Quizfrage konnte nicht ausgewertet werden.');return}opts[i].classList.add(i===correct?'correct':'bad');if(i!==correct)opts[correct].classList.add('correct');const key=quizType+':'+idx;const qp=state.quizProgress[key]||{correct:0,wrong:0,errorStreak:0};if(i===correct){qp.correct++;qp.errorStreak=0}else{qp.wrong++;qp.errorStreak=(qp.errorStreak||0)+1}state.quizProgress[key]=qp;document.getElementById('quizResult').innerHTML=`<p><b>${i===correct?'✓ Richtig!':'✗ Noch einmal üben.'}</b> ${esc(q[1])}</p><button class="primary" onclick="nextQuiz()">${i===correct?'Nächste Aufgabe →':'🔁 Genau diese Aufgabe noch einmal'}</button>`;addXP(i===correct?2:1,'Quiz',i===correct);updateStreak();save();updateStats()} function nextQuiz(){const idx=quizIndex%quizData.length;const qp=state.quizProgress[quizType+':'+idx]||{};if((qp.errorStreak||0)>0){qp.errorStreak=0;state.quizProgress[quizType+':'+idx]=qp;save();renderQuiz();return}if(idx===quizData.length-1)recordCompletedLearningUnit('Quiz');quizIndex++;save();renderQuiz()}
 function detectTense(form){const f=form.toLowerCase().trim();if(/(eram|eras|erat|eramus|eratis|erant)$/.test(f))return'Plusquamperfekt (von esse)';if(/(bo|bis|bit|bimus|bitis|bunt)$/.test(f)&&!/(ibo|abis|ebis|abit|ebit)$/.test(f))return'Futur I';if(/(bam|bas|bat|bamus|batis|bant)$/.test(f))return'Imperfekt';if(/(ero|eris|erit|erimus|eritis|erint)$/.test(f))return'Futur II / Futur von esse – Kontext nötig';if(/(avi|avisti|avit|avimus|avistis|averunt|ivi|ivisti|ivit|ivimus|ivistis|iverunt)$/.test(f)||/^(fu|fui|fuisti|fuit|fuimus|fuistis|fuerunt)$/.test(f))return'Perfekt';return'Präsens oder unregelmäßige Form – Kontext nötig'}
 function setDark(v){state.dark=v;document.body.classList.toggle('dark',v);save()}
 function updateStorageStatus(){const e=document.getElementById('storageStatus');if(e){try{localStorage.setItem('__vtest','1');localStorage.removeItem('__vtest');e.innerHTML='<span class="ok">● Lokale Speicherung aktiv</span>'}catch(x){e.innerHTML='<span class="warn">● Lokale Speicherung nicht verfügbar</span>'}}updateAutoBackupStatus();updateRuntimeErrorStatus()}
