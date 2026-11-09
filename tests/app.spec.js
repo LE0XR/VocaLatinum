@@ -203,3 +203,34 @@ test('Excel-Import übernimmt eine Arbeitsmappe', async ({ page }) => {
   });
   await expect.poll(() => page.evaluate(() => state.vocab.some(v => v.l === 'amicus-excel-test' && v.g === 'Freund Excel'))).toBeTruthy();
 });
+
+test('Automatische Sicherung wird angelegt und angezeigt', async ({ page }) => {
+  const count = await page.evaluate(() => {
+    state.lastAutoBackupDate = '2000-01-01';
+    save();
+    showPage('settings');
+    return readAutoBackups().length;
+  });
+  expect(count).toBeGreaterThan(0);
+  await expect(page.locator('#autoBackupStatus')).toContainText('automatische Sicherung');
+  await expect(page.locator('#restoreAutoBackupBtn')).toBeEnabled();
+});
+
+test('Fehlerprotokoll speichert lokale technische Meldungen', async ({ page }) => {
+  const count = await page.evaluate(() => {
+    addRuntimeError('Testfehler', 'test.js', 42);
+    showPage('settings');
+    return readRuntimeErrors().length;
+  });
+  expect(count).toBe(1);
+  await expect(page.locator('#errorLogStatus')).toContainText('1 / 30');
+});
+
+test('PWA-Manifest ist vorhanden und korrekt konfiguriert', async ({ page }) => {
+  const response = await page.request.get('/manifest.webmanifest');
+  expect(response.ok()).toBeTruthy();
+  const manifest = await response.json();
+  expect(manifest.name).toContain('VocaLatinum');
+  expect(manifest.display).toBe('standalone');
+  expect(manifest.start_url).toBe('./');
+});
