@@ -1056,7 +1056,7 @@ function generateSentenceCandidate(){
    la=`${sentenceNounForm(patient,'nom',false)} ${form} ${tense==='Plusquamperfekt'?'erat': 'est'}.`;
    const pde={laudare:'gelobt',portare:'getragen',amare:'geliebt',monere:'ermahnt',videre:'gesehen',legere:'gelesen',scribere:'geschrieben',defendere:'verteidigt',audire:'gehört',dare:'gegeben',vincere:'besiegt',vocare:'gerufen'}[pv.lemma];
    const patientGerman=sentenceGermanSubject(patient,false),patientCap=patientGerman.charAt(0).toUpperCase()+patientGerman.slice(1);
-   de=tense==='Plusquamperfekt'?`${patientCap} war ${pde} worden.`:tense==='Futur II'?`${patientCap} wird ${pde} worden sein.`:`${patientCap} ist ${pde} worden.`;
+   de=tense==='Plusquamperfekt'?`${patientCap} war ${pde} worden.`:tense==='Futur II'?`${patientCap} wird ${pde} worden sein.`:`${patientCap} ist ${pde} worden.`;if(tense==='Perfekt')deAlternatives=[`${patientCap} wurde ${pde}.`];
    actualTense=tense;actualMode='Indikativ';
  } else if(construction==='PPA'){
    if(subj.dynamic)return null;
@@ -1069,7 +1069,7 @@ function generateSentenceCandidate(){
    la=`${subjectLatin} ${sentenceNounForm(ppaObject,'acc',false)} ${ppa} ${sentenceNounForm(mainObj,'acc',false)} ${sentenceTenseVerb(main,'Präsens',false)}.`;
    const ppaPresent={laudare:'lobt',portare:'trägt',amare:'liebt',monere:'mahnt',videre:'sieht',legere:'liest',scribere:'schreibt',defendere:'verteidigt',audire:'hört',dare:'gibt',vincere:'besiegt',vocare:'ruft'};
    const subjPhrase=sentenceGermanSubject(subj,false),subjCap=subjPhrase.charAt(0).toUpperCase()+subjPhrase.slice(1),relativePronoun=subj.lemma==='puella'?'das':subj.lemma==='femina'?'die':'der';
-   de=`${subjCap}, ${relativePronoun} ${sentenceGermanObject(ppaObject,false)} ${ppaPresent[ppaVerb.lemma]}, ${ppaPresent[main.lemma]} ${sentenceGermanObject(mainObj,false)}.`;
+   de=`${subjCap}, ${relativePronoun} ${sentenceGermanObject(ppaObject,false)} ${ppaPresent[ppaVerb.lemma]}, ${ppaPresent[main.lemma]} ${sentenceGermanObject(mainObj,false)}.`;const ppaSubjectPronoun=relativePronoun==='das'?'es':relativePronoun==='die'?'sie':'er';deAlternatives=[`${subjCap} ${ppaPresent[main.lemma]} ${sentenceGermanObject(mainObj,false)}, während ${ppaSubjectPronoun} ${sentenceGermanObject(ppaObject,false)} ${ppaPresent[ppaVerb.lemma]}.`];
    actualTense='Präsens';actualMode='Indikativ';
  } else if(construction==='AcI'){
    const aciSubject=sentencePick(otherPeople);const report=sentencePick(['dicit','videt']);const inf=tense==='Perfekt'?verb.infPerf:verb.inf;
