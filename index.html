@@ -725,6 +725,22 @@ h1,h2,h3,.home-title,.home-section-title{font-weight:600!important;letter-spacin
 <section id="friends" class="page">
 <div class="page-title-wrap"><h1 class="page-title">👥 Freunde &amp; Gruppen</h1><button class="info-mini" onclick="toggleAreaInfo('friendsInfo')" aria-label="Informationen zu Freunde und Gruppen">i</button></div><div id="friendsInfo" class="info-popover"><b>👥 Freunde &amp; Gruppen</b><p>Hier kannst du später Freunde hinzufügen, Gruppen erstellen oder beitreten und dich über Level, XP und Abzeichen mit anderen vergleichen.</p></div>
 <div class="friends-grid">
+  <div class="friends-card" id="onlineFriendsCard">
+    <h2>🌐 Online-Freunde</h2>
+    <p class="friends-note">Die sichere Datenbank-Grundlage ist vorbereitet. Die Website ist aber noch nicht mit einem Supabase-Projekt verbunden. Deshalb gibt es noch keinen echten Freundescode und noch keine Online-Suche.</p>
+    <div class="invite-card" aria-live="polite">
+      <div class="muted small">Dein persönlicher Freundescode</div>
+      <div class="invite-code" id="onlineFriendCode">Noch nicht verfügbar</div>
+      <span class="status-pill" id="onlineFriendsConnectionStatus">Online-Verbindung noch nicht eingerichtet</span>
+    </div>
+    <label for="onlineFriendSearch" class="friends-note">Person über Anzeigenamen oder Freundescode suchen</label>
+    <input id="onlineFriendSearch" class="field" type="search" minlength="3" maxlength="40" placeholder="Anzeigename oder Code" disabled aria-describedby="onlineFriendsHelp">
+    <button id="onlineFriendSearchButton" class="primary full-action" type="button" disabled>Online suchen</button>
+    <p id="onlineFriendsHelp" class="friends-note">Die Suche wird freigeschaltet, sobald Anmeldung und Datenbankverbindung eingerichtet und getestet sind. Bis dahin werden hier keine Personen vorgetäuscht und keine Daten versendet.</p>
+    <hr class="divider">
+    <h3>📨 Freundschaftsanfragen</h3>
+    <p id="onlineFriendRequests" class="friends-note">Noch nicht verfügbar – die Online-Verbindung fehlt.</p>
+  </div>
   <div class="friends-card" id="friendSetupCard">
     <b>Dein Name</b>
     <p class="muted small">Beim ersten Öffnen legst du einmal deinen Namen fest. Danach kannst du ihn nur noch in den Einstellungen ändern.</p>
