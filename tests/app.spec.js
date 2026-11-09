@@ -457,3 +457,35 @@ test('Lernstatistiken sind über drei getrennte Ansichten erreichbar', async ({ 
   await expect(page.locator('[data-stat-view="vocab"]')).toBeVisible();
   await expect(page.locator('[data-stat-view="calendar"]')).toBeHidden();
 });
+
+
+test('KNG-Quiz ordnet jede richtige Antwort korrekt zu und wertet Fehlversuche ohne Laufzeitfehler aus', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    quizType = 'kng';
+    const indices = DATA.kng.map(question => getQuizCorrectIndex(question));
+    const question = DATA.kng[0];
+    const correct = getQuizCorrectIndex(question);
+    const options = document.createElement('div');
+    options.id = 'kngRegressionOptions';
+    options.innerHTML = question[2].map(option => '<button class="option">' + option + '</button>').join('');
+    const feedback = document.createElement('div');
+    feedback.id = 'quizResult';
+    document.body.append(options, feedback);
+    quizData = [question];
+    quizIndex = 0;
+    answered = false;
+    answer((correct + 1) % question[2].length);
+    return {
+      indices,
+      expectedCount: DATA.kng.length,
+      correctMarked: options.querySelectorAll('.option.correct').length,
+      wrongMarked: options.querySelectorAll('.option.bad').length,
+      feedback: feedback.textContent
+    };
+  });
+  expect(result.indices).toHaveLength(result.expectedCount);
+  expect(result.indices.every(index => index >= 0)).toBeTruthy();
+  expect(result.correctMarked).toBe(1);
+  expect(result.wrongMarked).toBe(1);
+  expect(result.feedback).toContain('Noch einmal üben');
+});
