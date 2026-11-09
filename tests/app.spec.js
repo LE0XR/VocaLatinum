@@ -234,3 +234,42 @@ test('PWA-Manifest ist vorhanden und korrekt konfiguriert', async ({ page }) => 
   expect(manifest.display).toBe('standalone');
   expect(manifest.start_url).toBe('./');
 });
+
+for (const [construction, tense] of [['PPA', 'Präsens'], ['PPP', 'Perfekt'], ['AcI', 'Präsens']]) {
+  test(`Satztrainer erzeugt die Konstruktion ${construction}`, async ({ page }) => {
+    const item = await page.evaluate(({ construction, tense }) => {
+      sentenceFilters.difficulties = ['Schwierig'];
+      sentenceFilters.constructions = [construction];
+      sentenceFilters.tenses = [tense];
+      sentenceFilters.modes = ['Indikativ'];
+      sentenceRecent.clear();
+      return generateUniqueSentence();
+    }, { construction, tense });
+    expect(item).toBeTruthy();
+    expect(item.construction).toBe(construction);
+    expect(item.la).toMatch(/[.]$/);
+  });
+}
+
+test('Formenlernen wertet eine eingegebene richtige Form aus', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    state.formSettings.mode = 'type';
+    startFormLearning();
+    const task = formTasks[0];
+    document.getElementById('formTyped').value = task.form;
+    checkFormAnswer();
+    return state.formProgress[formTaskKey(task)].correct;
+  });
+  expect(result).toBe(1);
+});
+
+test('Quiz speichert eine richtige Antwort', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    startQuiz('tempora');
+    const question = quizData[0];
+    const correctIndex = question[2].indexOf(question[1]);
+    answer(correctIndex);
+    return state.quizProgress['tempora:0'].correct;
+  });
+  expect(result).toBe(1);
+});
