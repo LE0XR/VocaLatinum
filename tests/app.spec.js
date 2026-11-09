@@ -273,3 +273,39 @@ test('Quiz speichert eine richtige Antwort', async ({ page }) => {
   });
   expect(result).toBe(1);
 });
+
+test('Alle App-Bereiche lassen sich ohne Laufzeitfehler öffnen', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const ids = await page.evaluate(() => [...document.querySelectorAll('.page')].map(el => el.id));
+  for (const id of ids) await page.evaluate(id => showPage(id), id);
+  expect(ids).toContain('quiz');
+  expect(ids).toContain('sentenceTrainer');
+  expect(errors).toEqual([]);
+});
+
+test('Startseite bleibt auf einem schmalen Smartphone-Bildschirm ohne horizontales Scrollen', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.reload();
+  const widths = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, content: document.documentElement.scrollWidth }));
+  expect(widths.content).toBeLessThanOrEqual(widths.viewport + 1);
+});
+
+test('Automatische Sicherung kann mit zusätzlicher Rücksicherung wiederhergestellt werden', async ({ page }) => {
+  await page.evaluate(() => {
+    const snapshot = JSON.parse(JSON.stringify(state));
+    snapshot.xp = 50;
+    localStorage.setItem(KEY + '-auto-backups', JSON.stringify([{ date: '2026-01-01', data: snapshot }]));
+    state.xp = 999;
+    save();
+  });
+  page.once('dialog', dialog => dialog.accept());
+  await page.evaluate(() => restoreLatestAutoBackup());
+  await page.waitForTimeout(900);
+  const result = await page.evaluate(() => ({
+    restoredXp: state.xp,
+    rollbackXp: JSON.parse(localStorage.getItem(KEY + '-pre-restore-backup')).data.xp
+  }));
+  expect(result.restoredXp).toBe(50);
+  expect(result.rollbackXp).toBe(999);
+});
