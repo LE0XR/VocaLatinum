@@ -40,8 +40,10 @@ select throws_ok(
 
 reset role;
 
-select ok(
-  not private.consume_profile_search_limit(),
+select is(
+  (select request_count from private.profile_search_rate_limits
+   where user_id = '50000000-0000-4000-8000-000000000005'),
+  20,
   'Rate-limit state is maintained server-side for the authenticated account'
 );
 
