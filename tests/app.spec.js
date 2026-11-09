@@ -619,3 +619,24 @@ test('Öffentliche Namen und Anzeigen von Wochenwerten sind getrennte Privatsph�
   expect(privacy.visibility).toBe('public');
   expect(privacy.shareWeeklyStats).toBe(false);
 });
+
+test('Gleiche Anzeigenamen sind erlaubt, die interne ID bleibt der eindeutige Schlüssel', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    state.profile.name = 'Alex';
+    state.groups = [{
+      id: 'grp-duplicate-name',
+      name: 'Latein',
+      code: 'ABC-2345',
+      ownerId: 'other-owner',
+      members: [{ id: 'usr-other-unique-id', name: 'Alex', xp: 12, level: 1, badges: 0 }]
+    }];
+    document.getElementById('joinGroupCode').value = 'ABC-2345';
+    joinFriendGroup();
+    return {
+      memberIds: state.groups[0].members.map(member => member.id),
+      memberNames: state.groups[0].members.map(member => member.name)
+    };
+  });
+  expect(result.memberNames).toEqual(['Alex', 'Alex']);
+  expect(new Set(result.memberIds).size).toBe(2);
+});
