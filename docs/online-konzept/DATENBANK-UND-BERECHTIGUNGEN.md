@@ -34,6 +34,9 @@ Die spätere Datenbank soll PostgreSQL verwenden. Falls Supabase als Backend gew
 | `group_weekly_goals` | Wöchentliches Gruppenziel | Gruppe, Wochenbeginn, Wochenende, XP-Ziel, Status. Pro Gruppe und Woche höchstens ein aktives Ziel. |
 | `group_goal_rewards` | Einmalige Gruppenbelohnung | Gruppe, Ziel/Woche, Belohnungstyp und Vergabezeit. Eindeutigkeit pro Gruppe und Woche verhindert doppelte Vergabe. |
 | `user_reward_grants` | Individuelle Zuteilung einer verdienten Belohnung | Nutzer, Gruppenbelohnung, Art und Status. Eindeutigkeit verhindert doppelte Zuteilung. |
+| `user_badges` | Gesammelte Abzeichen | Nutzer, Abzeichen-ID, Herkunft (z. B. Gruppenbelohnung oder Belohnungspfad), Vergabezeit. Doppelte Vergabe desselben Abzeichens wird verhindert. |
+| `xp_boost_inventory` | Noch nicht verwendete XP-Boosts | Nutzer, Herkunft, Status (verfügbar/eingelöst), Vergabe- und Einlösezeit. Jeder Boost ist ein einzeln einlösbarer Gegenstand. |
+| `xp_boost_activations` | Websiteweite Boost-Aktivierungen | Nutzer, Startzeit, Endzeit und lokales Aktivierungsdatum (Europe/Berlin). Serverseitige Begrenzung auf eine Aktivierung pro Nutzer und Kalendertag – unabhängig vom Lernpfad oder Gerät. |
 
 Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach vorkommen. Bei der Suche nach Namen wird nur ein minimaler Suchtreffer zurückgegeben; persönliche Statistiken und interne IDs gehören niemals in Suchergebnisse.
 
@@ -77,11 +80,16 @@ Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach
 - **Belohnungsberechtigt sind ausschließlich Gruppenmitglieder, die im betreffenden Wochenzeitraum seit ihrem tatsächlichen Beitritt mindestens einen gültigen XP-Beitrag zum Gruppenziel geleistet haben.** Mitglieder ohne eigenen Beitrag erhalten keine Belohnung.
 - **Auch nicht beitragende Gruppenmitglieder werden informiert**, sobald das Ziel erreicht und die Belohnung verteilt bzw. abholbar ist. Die Mitteilung enthält genau diesen Satz: **„Ohne Fleiß kein Preis“**. Sie bleiben weiterhin Gruppenmitglieder.
 - Die individuelle Berechtigungsprüfung und Belohnungszuteilung erfolgen serverseitig. Für jedes berechtigte Mitglied darf es höchstens eine Zuteilung geben. Nicht berechtigte Mitglieder erhalten keine Belohnung, aber die beschriebene Statusmitteilung.
-- Für den ersten Start sind genau drei Belohnungsarten vorgesehen:
-  1. **XP-Verdoppler:** Die während des Boosts erspielten XP werden für **30 Minuten verdoppelt**. Die Dauer entspricht dem bereits im Spiel verwendeten XP-Verdoppler.
-  2. **Besonderes Gruppen-Abzeichen:** Ein exklusives Abzeichen als Auszeichnung für das gemeinsam erreichte Wochenziel. Erste Namensideen: **„Gemeinsam unschlagbar“**, **„Ziel erreicht!“** oder **„Lernteam-Legenden“**.
-  3. **Feste XP-Belohnung:** **400 XP** pro berechtigtem Mitglied.
-- Diese drei Belohnungsarten bilden zunächst den vollständigen Startkatalog. Weitere Belohnungen können später ergänzt werden, ohne das Grundmodell neu aufzubauen.
+- Für den ersten Start gibt es genau drei **Belohnungspakete**. Pro erreichtem Gruppenziel wird immer nur **ein** Paket vergeben:
+  1. **XP-Boost-Paket:** Ein XP-Verdoppler-Gegenstand wird dem Konto gutgeschrieben. Er verdoppelt die während seiner Laufzeit erspielten XP für **30 Minuten**, wird aber nicht automatisch gestartet.
+  2. **Abzeichen-Paket:** Das berechtigte Mitglied erhält ein besonderes Gruppen-Abzeichen und zusätzlich **100 XP**. Namensideen für das Abzeichen: **„Gemeinsam unschlagbar“**, **„Ziel erreicht!“** oder **„Lernteam-Legenden“**.
+  3. **XP-Paket:** Das berechtigte Mitglied erhält einmalig **500 XP**.
+- Die drei Pakete sind Alternativen: Bei einem einzelnen Gruppenziel gibt es nicht mehrere Pakete gleichzeitig. Welches Paket bei welchem Gruppenziel ausgewählt wird, ist noch festzulegen.
+- **Abzeichenübersicht:** Alle erhaltenen Abzeichen sollen in einer gemeinsamen Übersicht gesammelt werden. Dort erscheinen sowohl Gruppen-Abzeichen als auch Abzeichen aus dem Belohnungspfad/Pass. Die Übersicht zeigt, welche Abzeichen bereits erhalten wurden; noch nicht erhaltene Abzeichen aus dem Belohnungspfad können dort ebenfalls entsprechend als noch nicht freigeschaltet erkennbar sein.
+- **XP-Boost manuell aktivieren:** Ein gutgeschriebener XP-Boost landet zunächst im verfügbaren Bestand und startet nicht automatisch. Auf den Lernpfaden gibt es ein Stern-Symbol. Durch Anklicken wird die Option **„XP-Boost aktivieren“** angezeigt; erst die bewusste Bestätigung startet den Boost. Nach erfolgreicher Aktivierung läuft er genau **30 Minuten**.
+- **Websiteweite Tagesbegrenzung:** Pro Nutzer darf höchstens **ein XP-Boost pro Kalendertag** aktiviert werden. Diese Regel gilt für die gesamte Website und alle Lernpfade, nicht je Lernpfad oder Gerät. Auch wenn mehrere Boosts im Bestand liegen, kann nach einer Aktivierung am selben Tag kein zweiter Boost gestartet werden – auch nicht nach Ablauf der ersten 30 Minuten. Der verwendete Boost wird beim Aktivieren verbraucht; weitere Boosts bleiben bis zu einem späteren Tag im Bestand.
+- Die Tagesbegrenzung und der Verbrauch werden serverseitig geprüft und gespeichert, damit sie nicht durch einen anderen Browser, ein weiteres Gerät oder mehrere Tabs umgangen werden können.
+- Weitere Belohnungsarten können später ergänzt werden.
 - Der Wochenwechsel startet einen neuen Zeitraum; vergangene Wochen bleiben für die technische Nachvollziehbarkeit erhalten.
 
 **Noch festzulegen:** Ob pro erreichtem Wochenziel eine dieser drei Belohnungen ausgewählt wird oder ob die Gruppe mehrere bzw. alle drei erhalten kann. Beim Abzeichen ist außerdem der endgültige Name noch auszuwählen.
@@ -114,6 +122,13 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Der XP-Verdoppler läuft exakt 30 Minuten und wird nicht versehentlich mehrfach für dieselbe Belohnung aktiviert.
 - Eine feste XP-Belohnung von 400 XP wird pro berechtigtem Mitglied nur einmal gutgeschrieben.
 - Ein besonderes Gruppen-Abzeichen wird nur berechtigten Mitgliedern zugeteilt und nicht doppelt vergeben.
+- Gruppen-Abzeichen und Abzeichen aus dem Belohnungspfad/Pass erscheinen in derselben Abzeichenübersicht.
+- Pro Gruppenziel wird genau ein Belohnungspaket vergeben, niemals mehrere Pakete gleichzeitig.
+- Ein XP-Boost startet erst nach bewusster manueller Aktivierung durch das Stern-Symbol auf einem Lernpfad.
+- Ein XP-Boost dauert genau 30 Minuten; der Boost-Gegenstand wird bei Aktivierung verbraucht.
+- Auch bei mehreren verfügbaren Boost-Gegenständen kann pro Nutzer und Europe/Berlin-Kalendertag nur ein Boost aktiviert werden – selbst wenn der erste Boost bereits abgelaufen ist.
+- Die Tagesbegrenzung gilt websiteweit, über alle Lernpfade, Browser, Tabs und Geräte hinweg.
+- Ein Abzeichen-Paket vergibt genau ein Gruppen-Abzeichen und zusätzlich 100 XP; ein XP-Paket vergibt genau 500 XP.
 - Wochenwechsel und Zeitzonen-/Sommerzeitgrenzen funktionieren korrekt.
 - Nicht berechtigte direkte Datenbank- und API-Anfragen werden abgewiesen.
 
@@ -128,4 +143,4 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 
 ## 8. Entscheidungen für den nächsten Konzeptschritt
 
-Vor der SQL-Migration müssen wir die offenen Produktentscheidungen aus Abschnitt 4 treffen und klären, wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
+Vor der SQL-Migration müssen wir noch festlegen, nach welchem Verfahren eines der drei Belohnungspakete pro Gruppenziel ausgewählt wird und wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
