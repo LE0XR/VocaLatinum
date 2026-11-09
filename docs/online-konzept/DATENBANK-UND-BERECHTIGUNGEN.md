@@ -92,7 +92,10 @@ Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach
   5. Die individuelle Belohnungsberechtigung bleibt davon getrennt: Nur Mitglieder mit mindestens einem gültigen XP-Beitrag erhalten das ausgewählte Paket. Nicht beitragende Mitglieder erhalten stattdessen ausschließlich die festgelegte Mitteilung.
   6. Die Zufallsauswahl, gespeicherten Stimmen, Auszählung und endgültige Paketfestlegung müssen serverseitig erfolgen und gegen Manipulation sowie doppelte Verarbeitung geschützt sein.
 - **Automatische Auswahl, wenn am Montag niemand dreht:** Wenn bis zum Ende des Montags kein Gruppenmitglied das Glücksrad manuell gedreht hat, wählt das System automatisch und zufällig eines der drei Belohnungspakete für diese Gruppenwoche aus. Die Auswahl wird serverseitig gespeichert und gilt als endgültige Gruppenentscheidung.
-- **Noch offen beim Glücksrad:** Was bei einem Gleichstand der Stimmen passiert und wie verfahren wird, wenn mindestens ein Mitglied gedreht hat, aber andere Mitglieder bis zum Abschluss der Abstimmung nicht drehen.
+- **Mindestbeteiligung (50-%-Quorum):** Die manuell abgegebenen Glücksrad-Drehungen zählen nur, wenn mindestens 50 % aller zum Abstimmungsstart stimmberechtigten Gruppenmitglieder gedreht haben. Bei einer ungeraden Mitgliederzahl wird auf die nächste ganze Person aufgerundet (z. B. bei 5 Mitgliedern mindestens 3 Drehungen).
+- Wird das 50-%-Quorum erreicht, zählen die abgegebenen Drehungen; das Paket mit den meisten Stimmen gewinnt.
+- Wird das Quorum bis zum Ende des Montags nicht erreicht, ist die Abstimmung ungültig und das System wählt automatisch zufällig eines der drei Belohnungspakete aus. Die wenigen abgegebenen Drehungen werden dann nicht berücksichtigt.
+- **Noch offen beim Glücksrad:** Was bei einem Gleichstand der Stimmen passiert.
 - **Abzeichenübersicht:** Alle erhaltenen Abzeichen sollen in einer gemeinsamen Übersicht gesammelt werden. Dort erscheinen sowohl Gruppen-Abzeichen als auch Abzeichen aus dem Belohnungspfad/Pass. Die Übersicht zeigt, welche Abzeichen bereits erhalten wurden; noch nicht erhaltene Abzeichen aus dem Belohnungspfad können dort ebenfalls entsprechend als noch nicht freigeschaltet erkennbar sein.
 - **XP-Boost manuell aktivieren:** Ein gutgeschriebener XP-Boost landet zunächst im verfügbaren Bestand und startet nicht automatisch. Auf den Lernpfaden gibt es ein Stern-Symbol. Durch Anklicken wird die Option **„XP-Boost aktivieren“** angezeigt; erst die bewusste Bestätigung startet den Boost. Nach erfolgreicher Aktivierung läuft er genau **30 Minuten**.
 - **Websiteweite Tagesbegrenzung:** Pro Nutzer darf höchstens **ein XP-Boost pro Kalendertag** aktiviert werden. Diese Regel gilt für die gesamte Website und alle Lernpfade, nicht je Lernpfad oder Gerät. Auch wenn mehrere Boosts im Bestand liegen, kann nach einer Aktivierung am selben Tag kein zweiter Boost gestartet werden – auch nicht nach Ablauf der ersten 30 Minuten. Der verwendete Boost wird beim Aktivieren verbraucht; weitere Boosts bleiben bis zu einem späteren Tag im Bestand.
@@ -129,7 +132,8 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Glücksrad-Drehungen werden zufällig und serverseitig erzeugt, gespeichert und können weder wiederholt noch nachträglich geändert werden.
 - Das Belohnungspaket mit den meisten Stimmen wird nach Abschluss aller Drehungen als einziges Paket für die Gruppenwoche ausgewählt.
 - Wenn am Montag niemand manuell dreht, wird eines der drei Pakete automatisch und zufällig serverseitig ausgewählt.
-- Gleichstände sowie teilweise abgeschlossene Abstimmungen werden gemäß einer noch festzulegenden Abschlussregel behandelt.
+- Die manuelle Abstimmung zählt nur bei mindestens 50 % Beteiligung der stimmberechtigten Gruppenmitglieder; bei weniger als 50 % wird sie verworfen und das Paket automatisch zufällig ausgewählt.
+- Bei ungerader Mitgliederzahl wird die erforderliche Mindestzahl aufgerundet.
 - Nur Mitglieder mit mindestens einem gültigen XP-Beitrag im maßgeblichen Zeitraum erhalten eine Belohnung.
 - Nicht beitragende Mitglieder erhalten nach Zielerreichung eine Mitteilung, aber keine Belohnung.
 - Der XP-Verdoppler läuft exakt 30 Minuten und wird nicht versehentlich mehrfach für dieselbe Belohnung aktiviert.
@@ -156,4 +160,4 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 
 ## 8. Entscheidungen für den nächsten Konzeptschritt
 
-Vor der SQL-Migration müssen wir noch festlegen, wie Gleichstände beim Glücksrad und teilweise abgeschlossene Abstimmungen behandelt werden und wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
+Vor der SQL-Migration müssen wir noch festlegen, wie Gleichstände beim Glücksrad behandelt werden und wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
