@@ -61,6 +61,7 @@ test('Service Worker stellt die App-Shell für Offline-Aufrufe bereit', async ({
   await context.setOffline(true);
   await page.reload();
   await expect(page.locator('.home-title')).toContainText('Salve');
+  expect(await page.evaluate(() => typeof XLSX)).toBe('object');
 });
 
 test('Fällige Karten enthalten nur tatsächlich fällige Vokabeln', async ({ page }) => {
