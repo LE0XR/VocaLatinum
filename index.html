@@ -84,6 +84,13 @@
 .stats-view[hidden]{display:none!important}
 @media(max-width:430px){.stats-choice-grid{grid-template-columns:1fr}.stats-choice{display:grid;grid-template-columns:30px 1fr;align-items:center;column-gap:9px}.stats-choice>span{grid-row:span 2}.stats-choice small{grid-column:2}}
 .dark .home-stats-open{background:var(--card);border-color:var(--line)}
+
+/* Darkmode: Startseite und Levelbereich vollständig an das dunkle Farbschema anpassen */
+.dark .home-page{background:linear-gradient(180deg,#151419 0%,#111116 100%)}
+.dark .home-page .roman-columns{opacity:.09}
+.dark .level-page-card{background:linear-gradient(180deg,#211d22 0%,#19191f 100%);border-color:#49343a}
+.dark .home-summary{background:#19191f;border-color:#3a3038;color:var(--text)}
+
 </style><style>
 .srs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.srs-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px;text-align:left}.srs-card b{display:block;font-size:18px}.srs-card span{font-size:12px;color:var(--muted)}.goal-wrap{margin-top:12px}.goal-row{display:flex;justify-content:space-between;gap:10px}.goal-bar{height:10px;background:#e6edf1;border-radius:10px;overflow:hidden;margin-top:8px}.goal-bar i{display:block;height:100%;width:0;background:var(--blue)}.status-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--soft);color:var(--blue);font-size:11px;font-weight:750}.register-meta{margin-top:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.lesson-progress{margin-top:7px}.lesson-progress .bar{margin-top:5px}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.mode-btn{min-height:70px;border:1px solid var(--line);border-radius:15px;background:var(--card);padding:10px;text-align:left}.mode-btn b{display:block}.mode-btn span{font-size:12px;color:var(--muted)}.mode-btn.on{border-color:var(--blue);background:var(--soft)}.session-note{margin-top:10px}.dark .goal-bar{background:#2a363e}
 
