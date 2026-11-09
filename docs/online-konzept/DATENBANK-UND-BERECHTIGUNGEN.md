@@ -68,14 +68,15 @@ Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach
 ## 4. Gemeinsames Wochenziel und XP-Berechnung
 
 - Wochen laufen nach lokaler deutscher Zeit von Montag 00:00 Uhr bis zum folgenden Montag 00:00 Uhr (Europe/Berlin).
-- Beispiel: Gruppenziel 2.500 XP; die Gruppe hat zusammen 1.600 XP gesammelt. Die Gruppenansicht zeigt **1.600 / 2.500 XP**.
+- XP zählen für ein Gruppenwochenziel für jedes Mitglied erst ab dem tatsächlichen Zeitpunkt des Gruppeneintritts. Vor dem Beitritt gesammelte XP werden nicht rückwirkend angerechnet. Der Eintrittszeitpunkt wird serverseitig gespeichert.
+- Beispiel: Gruppenziel 2.500 XP; die Gruppe hat zusammen 1.600 XP seit den jeweiligen Beitritten gesammelt. Die Gruppenansicht zeigt **1.600 / 2.500 XP**.
 - Der Fortschritt wird aus gültigen, serverseitig geprüften Lernereignissen der Gruppenmitglieder aggregiert.
 - Die Gruppenansicht erhält nur die Summe. Einzelbeiträge werden nicht offengelegt.
 - Ein Lernereignis darf nur einmal zählen. Wiederholtes Laden, Synchronisieren oder Senden desselben Ereignisses darf keine zusätzlichen XP erzeugen.
 - Beim Erreichen des Ziels wird die Gruppenbelohnung genau einmal ausgelöst. Datenbank-Eindeutigkeitsregeln müssen doppelte Vergaben verhindern.
 - Der Wochenwechsel startet einen neuen Zeitraum; vergangene Wochen bleiben für die technische Nachvollziehbarkeit erhalten.
 
-**Noch festzulegen:** Ob XP ab dem Zeitpunkt des Gruppeneintritts zählen oder rückwirkend ab Wochenbeginn; wer bei Zielerreichung die Belohnung erhält (alle aktiven Mitglieder oder nur Mitglieder mit eigenem Beitrag); welche Belohnungen zuerst angeboten werden und wie lange ein zeitlich begrenzter XP-Boost gilt.
+**Noch festzulegen:** Wer bei Zielerreichung die Belohnung erhält (alle aktiven Mitglieder oder nur Mitglieder mit eigenem Beitrag); welche Belohnungen zuerst angeboten werden und wie lange ein zeitlich begrenzter XP-Boost gilt.
 
 ## 5. Sicherheitsanforderungen für die spätere Umsetzung
 
