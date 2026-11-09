@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vocalatinum-shell-v1';
+const CACHE_NAME = 'vocalatinum-shell-v2';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './assets/icon.svg'];
 const XLSX_URL = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
 
