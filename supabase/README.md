@@ -27,6 +27,7 @@
 - `search_profiles(text)` sucht ab mindestens drei Zeichen nach dem Anfang eines Anzeigenamens oder exakt nach einem Freundescode.
 - Das eigene Profil wird ausgeschlossen; höchstens 20 Treffer mit Anzeigename und Freundescode werden zurückgegeben.
 - `send_friend_request_by_code(text)` löst den Code serverseitig auf und erstellt die Anfrage, ohne interne Auth-UUIDs an den Client weiterzugeben.
+- Die Profilsuche ist serverseitig auf 20 Suchanfragen je Konto innerhalb von zehn Minuten begrenzt. Der Zähler liegt in einem nicht öffentlich zugänglichen privaten Schema.
 - Die sichtbare Website-Oberfläche ist vorbereitet, aber noch nicht mit einem echten Backend verbunden.
 
 ## Lokale Prüfung
@@ -46,11 +47,13 @@ Die automatisierte GitHub-Prüfung führt dieselben Schritte in einer kurzlebige
 - `002_two_account_access.test.sql`: zwei künstliche Testkonten; jedes Konto darf ausschließlich das eigene Profil und die eigenen Freigaben lesen und nur den eigenen Anzeigenamen ändern.
 - `003_friend_request_workflow.test.sql`: zwei künstliche Testkonten prüfen Senden, eingehende/ausgehende Liste, Empfänger-Annahme, Ablehnung, gespeicherten Freundschaftsstatus und gesperrten direkten Tabellenzugriff.
 - `004_friend_code_search.test.sql`: automatisch erzeugte eindeutige Freundescodes, Suche nach Anzeigenamen, Ausschluss des eigenen Kontos, Mindestlänge der Suche und Anfrageversand per Freundescode.
+- `005_profile_search_rate_limit.test.sql`: 20 erlaubte Suchanfragen und Ablehnung der 21. Anfrage innerhalb des Zeitfensters.
 
 Die Tests verwenden ausschließlich erfundene Konten mit `.invalid`-E-Mail-Adressen. Vor dem Online-Start müssen weitere Zwei-Konten-Tests für Profilfreigaben, Gruppen, Rollen, Chat, Anhänge und Moderation ergänzt und bestanden werden.
 
 ## Noch offen
 
+- Zusätzliche Schutzmaßnahmen gegen automatisierte Freundescode-Abfragen und missbräuchliche Freundschaftsanfragen prüfen und testen.
 - Echtes Supabase-Projekt durch eine erwachsene Kontoverwaltung einrichten.
 - Migrationen kontrolliert auf das Projekt anwenden.
 - Registrierung und Anmeldung in der Website einrichten.
