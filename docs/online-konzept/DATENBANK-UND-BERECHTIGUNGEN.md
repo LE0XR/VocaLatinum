@@ -75,7 +75,7 @@ Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach
 - Ein Lernereignis darf nur einmal zählen. Wiederholtes Laden, Synchronisieren oder Senden desselben Ereignisses darf keine zusätzlichen XP erzeugen.
 - Beim Erreichen des Ziels wird die Gruppenbelohnung genau einmal ausgelöst. Datenbank-Eindeutigkeitsregeln müssen doppelte Vergaben verhindern.
 - **Belohnungsberechtigt sind ausschließlich Gruppenmitglieder, die im betreffenden Wochenzeitraum seit ihrem tatsächlichen Beitritt mindestens einen gültigen XP-Beitrag zum Gruppenziel geleistet haben.** Mitglieder ohne eigenen Beitrag erhalten keine Belohnung.
-- **Auch nicht beitragende Gruppenmitglieder werden informiert**, sobald das Ziel erreicht und die Belohnung verteilt bzw. abholbar ist. Die Mitteilung erklärt freundlich, dass sie diesmal keinen eigenen Beitrag geleistet haben und deshalb keine Belohnung erhalten. Sie bleiben weiterhin Gruppenmitglieder.
+- **Auch nicht beitragende Gruppenmitglieder werden informiert**, sobald das Ziel erreicht und die Belohnung verteilt bzw. abholbar ist. Die Mitteilung enthält genau diesen Satz: **„Ohne Fleiß kein Preis“**. Sie bleiben weiterhin Gruppenmitglieder.
 - Die individuelle Berechtigungsprüfung und Belohnungszuteilung erfolgen serverseitig. Für jedes berechtigte Mitglied darf es höchstens eine Zuteilung geben. Nicht berechtigte Mitglieder erhalten keine Belohnung, aber die beschriebene Statusmitteilung.
 - Der Wochenwechsel startet einen neuen Zeitraum; vergangene Wochen bleiben für die technische Nachvollziehbarkeit erhalten.
 
