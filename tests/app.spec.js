@@ -151,6 +151,7 @@ test('Satztrainer kann eine PC-Konstruktion erzeugen', async ({ page }) => {
   });
   expect(item).toBeTruthy();
   expect(item.construction).toBe('PC');
+  expect(item.deAlternatives.length).toBeGreaterThan(0);
   expect(item.la).toMatch(/[.]$/);
   expect(item.de).toMatch(/[.]$/);
 });
@@ -249,6 +250,7 @@ for (const [construction, tense] of [['PPA', 'Präsens'], ['PPP', 'Perfekt'], ['
     expect(item).toBeTruthy();
     expect(item.construction).toBe(construction);
     expect(item.la).toMatch(/[.]$/);
+    if (construction === 'PPA' || construction === 'PPP') expect(item.deAlternatives.length).toBeGreaterThan(0);
   });
 }
 
