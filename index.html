@@ -693,7 +693,7 @@ h1,h2,h3,.home-title,.home-section-title{font-weight:600!important;letter-spacin
 <p class="muted small">Level &amp; XP und die Sammlung findest du ausschließlich auf dem Home-Bildschirm. Hier gibt es keinen zweiten Einstieg.</p>
 <hr class="divider">
 <div class="stat"><b>🌙 Dark Mode</b><input type="checkbox" id="dark" onchange="setDark(this.checked)"></div>
-<hr class="divider"><b>🎯 Tagesziel</b><div class="row" style="margin-top:8px"><input id="dailyGoal" class="field" type="number" min="1" max="200" step="1" style="margin:0" onchange="setDailyGoal(this.value)" placeholder="20"></div><p class="muted small">Wie viele Vokabeln möchtest du pro Tag bearbeiten?</p><hr class="divider"><b>💾 Lernstand</b><p class="muted small">Vokabeln, Wiederholungsstufen, XP, Richtung und Lektionen werden lokal gespeichert.</p><div class="row"><button class="secondary" onclick="exportBackup()">Backup exportieren</button><label class="secondary">Backup importieren<input id="backup" type="file" accept="application/json,.json" hidden onchange="importBackup(event)"></label></div><p id="storageStatus" class="status"></p><p id="offlineStatus" class="status"></p>
+<hr class="divider"><b>🎯 Tagesziel</b><div class="row" style="margin-top:8px"><input id="dailyGoal" class="field" type="number" min="1" max="200" step="1" style="margin:0" onchange="setDailyGoal(this.value)" placeholder="20"></div><p class="muted small">Wie viele Vokabeln möchtest du pro Tag bearbeiten?</p><hr class="divider"><b>💾 Lernstand</b><p class="muted small">Vokabeln, Wiederholungsstufen, XP, Richtung und Lektionen werden lokal gespeichert.</p><div class="row"><button class="secondary" onclick="exportBackup()">Backup exportieren</button><label class="secondary">Backup importieren<input id="backup" type="file" accept="application/json,.json" hidden onchange="importBackup(event)"></label></div><p id="storageStatus" class="status"></p><p id="offlineStatus" class="status"></p><p id="autoBackupStatus" class="status"></p><div class="row"><button id="restoreAutoBackupBtn" class="secondary" type="button" onclick="restoreLatestAutoBackup()" disabled>Letzte automatische Sicherung wiederherstellen</button></div><p class="muted small">Die automatische Sicherung bleibt auf diesem Gerät. Eine Cloud-Synchronisierung ist technisch vorbereitet, aber noch nicht mit einem Server verbunden.</p><hr class="divider"><b>🛠 Fehlerprotokoll</b><p id="errorLogStatus" class="status">Lokal gespeicherte Fehler: 0 / 30</p><div class="row"><button class="secondary" type="button" onclick="showRuntimeErrors()">Fehler ansehen</button><button class="secondary" type="button" onclick="clearRuntimeErrors()">Protokoll löschen</button></div>
 <hr class="divider"><button class="secondary danger" onclick="resetProgress()">Lernstand zurücksetzen</button>
 </div></section>
 
@@ -734,7 +734,7 @@ let calendarCursor=new Date();
 function ensureActivity(){if(!state.activity||typeof state.activity!=='object'||Array.isArray(state.activity))state.activity={};return state.activity}
 function recordStudyActivity(correct,xp){const log=ensureActivity(),day=todayKey(),entry=log[day]||(log[day]={events:0,correct:0,wrong:0,xp:0,cards:0});entry.events=(Number(entry.events)||0)+1;if(correct)entry.correct=(Number(entry.correct)||0)+1;else entry.wrong=(Number(entry.wrong)||0)+1;entry.xp=(Number(entry.xp)||0)+(Number(xp)||0)}
 function recordCardReview(){const log=ensureActivity(),day=todayKey(),entry=log[day]||(log[day]={events:0,correct:0,wrong:0,xp:0,cards:0});entry.cards=(Number(entry.cards)||0)+1}
-function fresh(){return{vocab:defaultVocab.map(v=>({...v,lessons:[...v.lessons]})),activity:{},xp:0,streak:0,lastDay:null,direction:'de-la',searchDirection:'la-de',dark:false,selectedLessons:[],dailyGoal:20,dailyDate:todayKey(),dailyCount:0,lastBackup:null,xpDoublerUntil:0,antiCheat:{quickStreak:0,lastAnswerAt:0,warned:false,suspiciousXp:0,violations:0},formProgress:{},formSettings:{lessons:[],types:['Substantiv'],cases:['Nominativ','Genitiv','Dativ','Akkusativ','Ablativ','Vokativ'],tenses:['Präsens','Imperfekt','Futur I','Perfekt','Plusquamperfekt','Futur II'],modes:['Indikativ','Konjunktiv'],voices:['Aktiv','Passiv'],extra:false,mode:'select'},badges:{},xpDoubler:0,rewardClaimed:{},quizProgress:{},profile:{id:'usr-'+cryptoRandomId(),name:''},groups:[]}}
+function fresh(){return{vocab:defaultVocab.map(v=>({...v,lessons:[...v.lessons]})),activity:{},syncMeta:{deviceId:'device-'+cryptoRandomId(),schemaVersion:1,lastSyncedAt:null},xp:0,streak:0,lastDay:null,direction:'de-la',searchDirection:'la-de',dark:false,selectedLessons:[],dailyGoal:20,dailyDate:todayKey(),dailyCount:0,lastBackup:null,xpDoublerUntil:0,antiCheat:{quickStreak:0,lastAnswerAt:0,warned:false,suspiciousXp:0,violations:0},formProgress:{},formSettings:{lessons:[],types:['Substantiv'],cases:['Nominativ','Genitiv','Dativ','Akkusativ','Ablativ','Vokativ'],tenses:['Präsens','Imperfekt','Futur I','Perfekt','Plusquamperfekt','Futur II'],modes:['Indikativ','Konjunktiv'],voices:['Aktiv','Passiv'],extra:false,mode:'select'},badges:{},xpDoubler:0,rewardClaimed:{},quizProgress:{},profile:{id:'usr-'+cryptoRandomId(),name:''},groups:[]}}
 function cryptoRandomId(){try{return crypto.getRandomValues(new Uint32Array(2)).map(n=>n.toString(36)).join('').slice(0,10)}catch(e){return Math.random().toString(36).slice(2,12)}}
 function randomInviteCode(){return (Math.random().toString(36).slice(2,5)+'-'+Math.random().toString(36).slice(2,6)).toUpperCase()}
 let state;
@@ -755,7 +755,7 @@ function mergeSourceVocab(){
   }else state.vocab.push({...src,lessons:[...src.lessons]});
  }
 }
-state.vocab=Array.isArray(state.vocab)?state.vocab:[];state.activity=state.activity&&typeof state.activity==='object'&&!Array.isArray(state.activity)?state.activity:{};state.selectedLessons=Array.isArray(state.selectedLessons)?state.selectedLessons:[];mergeSourceVocab();
+state.vocab=Array.isArray(state.vocab)?state.vocab:[];state.activity=state.activity&&typeof state.activity==='object'&&!Array.isArray(state.activity)?state.activity:{};state.syncMeta=state.syncMeta&&typeof state.syncMeta==='object'?state.syncMeta:{deviceId:'device-'+cryptoRandomId(),schemaVersion:1,lastSyncedAt:null};state.syncMeta.deviceId=state.syncMeta.deviceId||'device-'+cryptoRandomId();state.selectedLessons=Array.isArray(state.selectedLessons)?state.selectedLessons:[];mergeSourceVocab();
 // Nach der Register-Datenbereinigung niemals doppelte Quellen-IDs im Lernbestand behalten.
 const _sourceSeen=new Set();state.vocab=state.vocab.filter(v=>{if(!v.source)return true;if(_sourceSeen.has(v.id))return false;_sourceSeen.add(v.id);return true;});
 state.direction=state.direction||'de-la';state.searchDirection=state.searchDirection==='de-la'?'de-la':'la-de';state.xp=Number(state.xp)||0;state.badges=state.badges&&typeof state.badges==='object'?state.badges:{};state.rewardClaimed=state.rewardClaimed&&typeof state.rewardClaimed==='object'?state.rewardClaimed:{};state.xpDoubler=Math.max(0,Number(state.xpDoubler)||0);state.profile=state.profile&&typeof state.profile==='object'?state.profile:{id:'usr-'+cryptoRandomId(),name:''};state.profile.id=state.profile.id||'usr-'+cryptoRandomId();state.profile.name=String(state.profile.name||'');state.groups=Array.isArray(state.groups)?state.groups:[];state.xpDoublerUntil=Number(state.xpDoublerUntil)||0;if(state.xpDoubler>0){state.xpDoublerUntil=Math.max(state.xpDoublerUntil,Date.now()+state.xpDoubler*1800000);state.xpDoubler=0;}if(!state.xpDoublerUntil||state.xpDoublerUntil<=Date.now())state.xpDoublerUntil=0;state.antiCheat=state.antiCheat&&typeof state.antiCheat==='object'?state.antiCheat:{quickStreak:0,lastAnswerAt:0,warned:false,suspiciousXp:0,violations:0};state.antiCheat.quickStreak=Number(state.antiCheat.quickStreak)||0;state.antiCheat.lastAnswerAt=Number(state.antiCheat.lastAnswerAt)||0;state.antiCheat.warned=!!state.antiCheat.warned;state.antiCheat.suspiciousXp=Number(state.antiCheat.suspiciousXp)||0;state.antiCheat.violations=Number(state.antiCheat.violations)||0;state.streak=Number(state.streak)||0;state.dailyGoal=Math.max(1,Math.min(200,Number(state.dailyGoal)||20));state.formProgress=state.formProgress&&typeof state.formProgress==='object'?state.formProgress:{};state.formSettings=state.formSettings&&typeof state.formSettings==='object'?state.formSettings:{};state.formSettings.lessons=Array.isArray(state.formSettings.lessons)?state.formSettings.lessons:[];state.formSettings.types=Array.isArray(state.formSettings.types)&&state.formSettings.types.length?state.formSettings.types:['Substantiv'];state.formSettings.cases=Array.isArray(state.formSettings.cases)&&state.formSettings.cases.length?state.formSettings.cases:['Nominativ','Genitiv','Dativ','Akkusativ','Ablativ','Vokativ'];state.formSettings.tenses=Array.isArray(state.formSettings.tenses)&&state.formSettings.tenses.length?state.formSettings.tenses:['Präsens','Imperfekt','Futur I','Perfekt','Plusquamperfekt','Futur II'];state.formSettings.modes=Array.isArray(state.formSettings.modes)&&state.formSettings.modes.length?state.formSettings.modes:['Indikativ','Konjunktiv'];state.formSettings.voices=Array.isArray(state.formSettings.voices)&&state.formSettings.voices.length?state.formSettings.voices:['Aktiv','Passiv'];state.formSettings.extra=!!state.formSettings.extra;state.formSettings.mode=state.formSettings.mode==='type'?'type':'select';state.quizProgress=state.quizProgress&&typeof state.quizProgress==='object'?state.quizProgress:{};
@@ -764,7 +764,24 @@ if(state.dailyDate!==todayKey()){state.dailyDate=todayKey();state.dailyCount=0}
 state.dailyCount=Number(state.dailyCount)||0;
 let current=0,quizType='',quizIndex=0,quizData=[],answered=false,startY=0;
 let cardsStarted=false,cardMode='lesson',sessionCards=[],sessionErrors=[];
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state));return true}catch(e){showToast('Speichern fehlgeschlagen: Der lokale Speicher ist voll oder nicht verfügbar. Bitte exportiere eine Sicherung.',4200);return false}}
+function save(){
+ try{
+  const backupKey=KEY+'-auto-backups',previous=localStorage.getItem(KEY),today=todayKey();
+  if(previous&&state.lastAutoBackupDate!==today){
+   try{
+    const previousState=JSON.parse(previous);
+    if(previousState&&Array.isArray(previousState.vocab)){
+     let backups=[];try{backups=JSON.parse(localStorage.getItem(backupKey)||'[]')}catch(_){backups=[]}
+     if(!Array.isArray(backups))backups=[];
+     backups.unshift({date:today,savedAt:new Date().toISOString(),data:previousState});
+     localStorage.setItem(backupKey,JSON.stringify(backups.slice(0,5)));
+     state.lastAutoBackupDate=today;
+    }
+   }catch(_){/* Eine defekte alte Sicherung darf das normale Speichern nicht verhindern. */}
+  }
+  localStorage.setItem(KEY,JSON.stringify(state));return true;
+ }catch(e){showToast('Speichern fehlgeschlagen: Der lokale Speicher ist voll oder nicht verfügbar. Bitte exportiere eine Sicherung.',4200);return false}
+}
 function exportBackup(){
  try{
   const payload={app:'VocaLatinum',schemaVersion:1,exportedAt:new Date().toISOString(),data:state};
@@ -1678,7 +1695,7 @@ function renderQuiz(){const q=quizData[quizIndex%quizData.length];answered=false
 function answer(i){if(answered)return;answered=true;const idx=quizIndex%quizData.length,q=quizData[idx],correct=q[2].indexOf(q[1]),opts=document.querySelectorAll('.option');opts[i].classList.add(i===correct?'correct':'bad');if(i!==correct)opts[correct].classList.add('correct');const key=quizType+':'+idx;const qp=state.quizProgress[key]||{correct:0,wrong:0,errorStreak:0};if(i===correct){qp.correct++;qp.errorStreak=0}else{qp.wrong++;qp.errorStreak=(qp.errorStreak||0)+1}state.quizProgress[key]=qp;document.getElementById('quizResult').innerHTML=`<p><b>${i===correct?'✓ Richtig!':'✗ Noch einmal üben.'}</b> ${esc(q[1])}</p><button class="primary" onclick="nextQuiz()">${i===correct?'Nächste Aufgabe →':'🔁 Genau diese Aufgabe noch einmal'}</button>`;addXP(i===correct?2:1,'Quiz',i===correct);updateStreak();save();updateStats()} function nextQuiz(){const idx=quizIndex%quizData.length;const qp=state.quizProgress[quizType+':'+idx]||{};if((qp.errorStreak||0)>0){qp.errorStreak=0;state.quizProgress[quizType+':'+idx]=qp;save();renderQuiz();return}quizIndex++;renderQuiz()}
 function detectTense(form){const f=form.toLowerCase().trim();if(/(eram|eras|erat|eramus|eratis|erant)$/.test(f))return'Plusquamperfekt (von esse)';if(/(bo|bis|bit|bimus|bitis|bunt)$/.test(f)&&!/(ibo|abis|ebis|abit|ebit)$/.test(f))return'Futur I';if(/(bam|bas|bat|bamus|batis|bant)$/.test(f))return'Imperfekt';if(/(ero|eris|erit|erimus|eritis|erint)$/.test(f))return'Futur II / Futur von esse – Kontext nötig';if(/(avi|avisti|avit|avimus|avistis|averunt|ivi|ivisti|ivit|ivimus|ivistis|iverunt)$/.test(f)||/^(fu|fui|fuisti|fuit|fuimus|fuistis|fuerunt)$/.test(f))return'Perfekt';return'Präsens oder unregelmäßige Form – Kontext nötig'}
 function setDark(v){state.dark=v;document.body.classList.toggle('dark',v);save()}
-function updateStorageStatus(){const e=document.getElementById('storageStatus');if(!e)return;try{localStorage.setItem('__vtest','1');localStorage.removeItem('__vtest');e.innerHTML='<span class="ok">● Lokale Speicherung aktiv</span>'}catch(x){e.innerHTML='<span class="warn">● Lokale Speicherung nicht verfügbar</span>'}}
+function updateStorageStatus(){const e=document.getElementById('storageStatus');if(e){try{localStorage.setItem('__vtest','1');localStorage.removeItem('__vtest');e.innerHTML='<span class="ok">● Lokale Speicherung aktiv</span>'}catch(x){e.innerHTML='<span class="warn">● Lokale Speicherung nicht verfügbar</span>'}}updateAutoBackupStatus();updateRuntimeErrorStatus()}
 function updateOfflineStatus(){const e=document.getElementById('offlineStatus');if(!e)return;e.innerHTML='<span class="ok">● Grundfunktionen sind in dieser HTML-Datei offline nutzbar.</span>'}
 
 function changeCalendarMonth(delta){calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()+delta,1);renderLearningInsights()}
@@ -1706,6 +1723,28 @@ function renderWeakVocab(){
  host.innerHTML=weak.map(v=>'<div class="insight-word"><div><b>'+esc(v.l)+'</b><div class="muted small">'+esc(v.g||'')+'</div></div><span>'+(Number(v.wrong)||0)+' Fehler<br>Stufe '+(Number(v.box)||0)+'</span></div>').join('');
 }
 function renderLearningInsights(){renderLearningCalendar();renderDetailedStats();renderLessonMastery();renderWeakVocab()}
+
+function readAutoBackups(){try{const value=JSON.parse(localStorage.getItem(KEY+'-auto-backups')||'[]');return Array.isArray(value)?value:[]}catch(_){return[]}}
+function updateAutoBackupStatus(){
+ const e=document.getElementById('autoBackupStatus'),b=document.getElementById('restoreAutoBackupBtn');if(!e)return;
+ const list=readAutoBackups();e.textContent=list.length?'● '+list.length+' automatische Sicherung(en) vorhanden · letzte: '+(list[0].date||'unbekannt'):'Noch keine automatische Sicherung vorhanden.';
+ if(b)b.disabled=!list.length;
+}
+function restoreLatestAutoBackup(){
+ const list=readAutoBackups(),latest=list[0];if(!latest||!latest.data||!Array.isArray(latest.data.vocab)){showToast('Keine gültige automatische Sicherung gefunden.');return}
+ if(!confirm('Möchtest du die automatische Sicherung vom '+(latest.date||'unbekannten Datum')+' wiederherstellen? Dein aktueller Lernstand wird dabei ersetzt.'))return;
+ try{localStorage.setItem(KEY,JSON.stringify(latest.data));showToast('Sicherung wird wiederhergestellt.');location.reload()}catch(_){showToast('Sicherung konnte nicht wiederhergestellt werden.',3500)}
+}
+function addRuntimeError(message,source,line){
+ try{const key=KEY+'-errors';let entries=[];try{entries=JSON.parse(localStorage.getItem(key)||'[]')}catch(_){entries=[]}if(!Array.isArray(entries))entries=[];entries.push({time:new Date().toISOString(),message:String(message||'Unbekannter Fehler').slice(0,300),source:String(source||'').slice(0,160),line:Number(line)||0});localStorage.setItem(key,JSON.stringify(entries.slice(-30)))}catch(_){}
+}
+function readRuntimeErrors(){try{const value=JSON.parse(localStorage.getItem(KEY+'-errors')||'[]');return Array.isArray(value)?value:[]}catch(_){return[]}}
+function updateRuntimeErrorStatus(){const e=document.getElementById('errorLogStatus');if(e)e.textContent='Lokal gespeicherte Fehler: '+readRuntimeErrors().length+' / 30'}
+function showRuntimeErrors(){
+ const entries=readRuntimeErrors();if(!entries.length){showToast('Keine Fehler protokolliert.');return}
+ alert(entries.slice(-10).reverse().map(x=>new Date(x.time).toLocaleString('de-DE')+' · '+x.message+(x.source?' ('+x.source+')':'')).join('\n\n'));
+}
+function clearRuntimeErrors(){try{localStorage.removeItem(KEY+'-errors')}catch(_){}updateRuntimeErrorStatus();showToast('Fehlerprotokoll gelöscht.')}
 function resetProgress(){if(confirm('Wirklich den gesamten Lernstand zurücksetzen? Die Vokabeln bleiben erhalten.')){state.activity={};state.vocab=state.vocab.map(v=>({...v,box:0,next:0,seen:0,correct:0,wrong:0}));state.formProgress={};state.xp=0;state.xpDoubler=0;state.xpDoublerUntil=0;state.antiCheat={quickStreak:0,lastAnswerAt:0,warned:false,suspiciousXp:0,violations:0};state.badges={};state.rewardClaimed={};state.streak=0;state.lastDay=null;state.dailyDate=todayKey();state.dailyCount=0;save();updateStats();renderVocab();updateCardModeCounts();showToast('Lernstand zurückgesetzt.')}}
 const flash=document.getElementById('flash');
 flash.addEventListener('click',()=>revealCard());
@@ -1714,6 +1753,7 @@ flash.addEventListener('touchend',e=>{const dy=e.changedTouches[0].clientY-start
 save();state.dark&&document.body.classList.add('dark');updateStats();renderCollection();renderLessons();renderVocab();renderFormLessons();syncFormFilters();resetCardSetup();updateStorageStatus();
 document.body.classList.toggle('dark',!!state.dark);
 renderDirectionButton();updateStats();
+window.addEventListener('error',event=>addRuntimeError(event.message,event.filename,event.lineno));window.addEventListener('unhandledrejection',event=>addRuntimeError(event.reason?.message||String(event.reason||'Promise-Fehler'),'unhandledrejection',0));
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){navigator.serviceWorker.register('./service-worker.js').then(()=>{const e=document.getElementById('offlineStatus');if(e)e.innerHTML='<span class="ok">● Offline-Speicherung für die App ist eingerichtet.</span>'}).catch(()=>{const e=document.getElementById('offlineStatus');if(e)e.innerHTML='<span class="warn">● Offline-Modus konnte nicht eingerichtet werden.</span>'})}
 </script>
 </body></html>
