@@ -11,14 +11,18 @@ test('Startseite lädt ohne JavaScript-Ausnahmen', async ({ page }) => {
   await page.reload();
   await expect(page.locator('#home')).toHaveClass(/active/);
   await expect(page.locator('.home-title')).toContainText('Salve');
-  await expect(page.locator('#learningCalendar')).toBeVisible();
+  await expect(page.locator('.home-stats-open')).toBeVisible();
+  await expect(page.locator('#learningCalendar')).toBeHidden();
   expect(errors).toEqual([]);
 });
 
 test('Lernkalender und Auswertungen werden gerendert', async ({ page }) => {
-  await expect(page.locator('#calendarMonth')).not.toBeEmpty();
+  await page.evaluate(() => showPage('stats'));
   await expect(page.locator('#detailStats')).toContainText('Lernaktionen gesamt');
   await expect(page.locator('#lessonMastery')).not.toBeEmpty();
+  await page.getByRole('button', { name: /Lernkalender/ }).click();
+  await expect(page.locator('#learningCalendar')).toBeVisible();
+  await expect(page.locator('#calendarMonth')).not.toBeEmpty();
   await page.getByRole('button', { name: 'Nächster Monat' }).click();
   await expect(page.locator('#calendarMonth')).not.toBeEmpty();
 });
@@ -182,11 +186,7 @@ test('Formenlernen stellt Aufgaben bereit', async ({ page }) => {
   await expect(page.locator('#formLearning')).toBeVisible();
 });
 
-test('Tempora-Quiz zeigt Antwortmöglichkeiten', async ({ page }) => {
-  await page.evaluate(() => startQuiz('tempora'));
-  await expect(page.locator('#quizTitle')).toContainText('Tempora');
-  await expect(page.locator('#options .option')).toHaveCount(4);
-});
+
 
 test('Excel-Import übernimmt eine Arbeitsmappe', async ({ page }) => {
   const base64 = await page.evaluate(() => {
@@ -268,23 +268,14 @@ test('Formenlernen wertet eine eingegebene richtige Form aus', async ({ page }) 
   expect(result).toBe(1);
 });
 
-test('Quiz speichert eine richtige Antwort', async ({ page }) => {
-  const result = await page.evaluate(() => {
-    startQuiz('tempora');
-    const question = quizData[0];
-    const correctIndex = question[2].indexOf(question[1]);
-    answer(correctIndex);
-    return state.quizProgress['tempora:0'].correct;
-  });
-  expect(result).toBe(1);
-});
+
 
 test('Alle App-Bereiche lassen sich ohne Laufzeitfehler öffnen', async ({ page }) => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   const ids = await page.evaluate(() => [...document.querySelectorAll('.page')].map(el => el.id));
   for (const id of ids) await page.evaluate(id => showPage(id), id);
-  expect(ids).toContain('quiz');
+  expect(ids).not.toContain('quiz');
   expect(ids).toContain('sentenceTrainer');
   expect(errors).toEqual([]);
 });
@@ -445,4 +436,24 @@ test('Abgebrochener Backup-Import lässt den vorhandenen Lernstand unverändert'
   await expect.poll(() => page.evaluate(() => state.xp)).toBe(888);
   await page.reload();
   expect(await page.evaluate(() => state.xp)).toBe(888);
+});
+
+test('Grammatik-Quiz ist aus der Oberfläche entfernt, Formenlernen bleibt verfügbar', async ({ page }) => {
+  await expect(page.getByText('Grammatik-Quiz', { exact: true })).toHaveCount(0);
+  await expect(page.locator('#quiz')).toHaveCount(0);
+  await page.evaluate(() => showPage('forms'));
+  await expect(page.locator('#forms')).toHaveClass(/active/);
+});
+
+test('Lernstatistiken sind über drei getrennte Ansichten erreichbar', async ({ page }) => {
+  await page.evaluate(() => showPage('stats'));
+  await expect(page.locator('[data-stat-view="details"]')).toBeVisible();
+  await expect(page.locator('[data-stat-view="calendar"]')).toBeHidden();
+  await expect(page.locator('[data-stat-view="vocab"]')).toBeHidden();
+  await page.getByRole('button', { name: /Lernkalender/ }).click();
+  await expect(page.locator('[data-stat-view="calendar"]')).toBeVisible();
+  await expect(page.locator('[data-stat-view="details"]')).toBeHidden();
+  await page.getByRole('button', { name: /Vokabeln zum Wiederholen/ }).click();
+  await expect(page.locator('[data-stat-view="vocab"]')).toBeVisible();
+  await expect(page.locator('[data-stat-view="calendar"]')).toBeHidden();
 });

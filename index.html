@@ -74,6 +74,16 @@
 /* Lernkalender und vertiefte Lernübersicht */
 .insight-panel{margin-top:14px}.insight-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.insight-head h2{margin:0;font-size:19px}.calendar-nav{display:flex;align-items:center;gap:7px}.calendar-nav button{width:32px;height:32px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text)}.calendar-month{font-size:13px;font-weight:700;min-width:112px;text-align:center}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-top:12px}.calendar-weekday{text-align:center;font-size:10px;color:var(--muted);padding:3px 0}.calendar-day{min-height:38px;border:1px solid var(--line);border-radius:9px;background:var(--card);display:grid;place-items:center;position:relative;font-size:12px;color:var(--text)}.calendar-day.empty{border:0;background:transparent}.calendar-day.today{border-color:var(--blue);font-weight:800}.calendar-day.active-day:after{content:"";position:absolute;bottom:4px;width:5px;height:5px;border-radius:50%;background:var(--green)}.calendar-legend{font-size:11px;color:var(--muted);margin-top:9px}.insight-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}.insight-stat{padding:11px;border:1px solid var(--line);border-radius:13px;background:var(--card)}.insight-stat span{display:block;font-size:11px;color:var(--muted)}.insight-stat b{display:block;font-size:19px;margin-top:3px}.insight-row{padding:10px 0;border-bottom:1px solid var(--line)}.insight-row:last-child{border-bottom:0}.insight-row-top{display:flex;justify-content:space-between;gap:10px;font-size:13px}.insight-row .bar{margin-top:7px}.insight-word{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.insight-word:last-child{border-bottom:0}.insight-word b{font-size:14px}.insight-word span{font-size:12px;color:var(--muted);text-align:right}.dark .calendar-day{background:var(--card)}
 @media(max-width:360px){.calendar-grid{gap:3px}.calendar-day{min-height:33px;font-size:11px}.calendar-month{min-width:95px}}
+
+.home-stats-open{width:100%;display:flex;align-items:center;gap:13px;text-align:left;margin-top:15px;padding:16px 17px;border:1px solid var(--line);border-radius:17px;background:var(--card);color:var(--text);box-shadow:0 3px 12px #00000007}
+.home-stats-open-icon{font-size:25px}.home-stats-open b,.home-stats-open small{display:block}.home-stats-open b{font-size:16px}.home-stats-open small{font-size:12px;color:var(--muted);margin-top:3px}.home-stats-open-arrow{margin-left:auto;font-size:25px;color:var(--muted)}
+.stats-choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:0 0 14px}
+.stats-choice{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:13px 11px;border:1px solid var(--line);border-radius:15px;background:var(--card);color:var(--text);text-align:left}
+.stats-choice>span{font-size:22px}.stats-choice b{font-size:13px;line-height:1.25}.stats-choice small{font-size:11px;line-height:1.3;color:var(--muted)}
+.stats-choice.active{border-color:var(--blue);background:var(--soft)}
+.stats-view[hidden]{display:none!important}
+@media(max-width:430px){.stats-choice-grid{grid-template-columns:1fr}.stats-choice{display:grid;grid-template-columns:30px 1fr;align-items:center;column-gap:9px}.stats-choice>span{grid-row:span 2}.stats-choice small{grid-column:2}}
+.dark .home-stats-open{background:var(--card);border-color:var(--line)}
 </style><style>
 .srs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.srs-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px;text-align:left}.srs-card b{display:block;font-size:18px}.srs-card span{font-size:12px;color:var(--muted)}.goal-wrap{margin-top:12px}.goal-row{display:flex;justify-content:space-between;gap:10px}.goal-bar{height:10px;background:#e6edf1;border-radius:10px;overflow:hidden;margin-top:8px}.goal-bar i{display:block;height:100%;width:0;background:var(--blue)}.status-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--soft);color:var(--blue);font-size:11px;font-weight:750}.register-meta{margin-top:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.lesson-progress{margin-top:7px}.lesson-progress .bar{margin-top:5px}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.mode-btn{min-height:70px;border:1px solid var(--line);border-radius:15px;background:var(--card);padding:10px;text-align:left}.mode-btn b{display:block}.mode-btn span{font-size:12px;color:var(--muted)}.mode-btn.on{border-color:var(--blue);background:var(--soft)}.session-note{margin-top:10px}.dark .goal-bar{background:#2a363e}
 
@@ -417,11 +427,7 @@ h1,h2,h3,.home-title,.home-section-title{font-weight:600!important;letter-spacin
       <b>Vokabel-Satz-Trainer</b>
       <span class="muted">Lateinische Sätze verstehen und übersetzen</span>
     </button>
-    <button class="home-practice-card" onclick="showPage('quiz')">
-      <span class="home-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.5 9a2.8 2.8 0 1 1 4.7 2.1c-1.1 1-2.2 1.4-2.2 3"/><path d="M12 18h.01M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/></svg></span>
-      <b>Grammatik-Quiz</b>
-      <span class="muted">Tempora · KNG · Satzbestimmung</span>
-    </button>
+
 
   </div>
 
@@ -447,13 +453,42 @@ h1,h2,h3,.home-title,.home-section-title{font-weight:600!important;letter-spacin
     <p class="muted small">Bearbeitete Vokabeln heute</p>
   </div>
 
-  <div class="panel insight-panel">
-    <div class="insight-head"><h2>📅 Lernkalender</h2><div class="calendar-nav"><button type="button" onclick="changeCalendarMonth(-1)" aria-label="Vorheriger Monat">‹</button><span class="calendar-month" id="calendarMonth"></span><button type="button" onclick="changeCalendarMonth(1)" aria-label="Nächster Monat">›</button></div></div>
-    <div id="learningCalendar" aria-label="Monatsübersicht der Lernaktivität"></div><div class="calendar-legend">● Tage mit Lernaktivität · Umrandet ist heute</div>
+  <button class="home-stats-open" type="button" onclick="showPage('stats')">
+    <span class="home-stats-open-icon" aria-hidden="true">📊</span>
+    <span><b>Alle Lernstatistiken ansehen</b><small>Details · Lernkalender · Vokabeln zum Wiederholen</small></span>
+    <span class="home-stats-open-arrow" aria-hidden="true">›</span>
+  </button>
+</section>
+
+<section id="stats" class="page">
+  <div class="page-title-wrap"><h1 class="page-title">Lernstatistik</h1></div>
+  <div class="stats-choice-grid" role="group" aria-label="Bereich der Lernstatistik">
+    <button class="stats-choice active" type="button" data-stat-choice="details" aria-pressed="true" onclick="showLearningStat('details')">
+      <span aria-hidden="true">📊</span><b>Detaillierte Statistik</b><small>Fortschritt und Lektionen</small>
+    </button>
+    <button class="stats-choice" type="button" data-stat-choice="calendar" aria-pressed="false" onclick="showLearningStat('calendar')">
+      <span aria-hidden="true">📅</span><b>Lernkalender</b><small>Deine Lerntage im Überblick</small>
+    </button>
+    <button class="stats-choice" type="button" data-stat-choice="vocab" aria-pressed="false" onclick="showLearningStat('vocab')">
+      <span aria-hidden="true">🔁</span><b>Vokabeln zum Wiederholen</b><small>Wörter, die noch Übung brauchen</small>
+    </button>
   </div>
-  <div class="panel insight-panel"><div class="insight-head"><h2>📊 Detaillierte Statistik</h2></div><div id="detailStats"></div></div>
-  <div class="panel insight-panel"><div class="insight-head"><h2>🎯 Lektionen im Überblick</h2></div><div id="lessonMastery"></div></div>
-  <div class="panel insight-panel"><div class="insight-head"><h2>🔁 Diese Vokabeln brauchen Übung</h2></div><div id="weakVocab"></div></div>
+  <div class="panel insight-panel stats-view" data-stat-view="details">
+    <div class="insight-head"><h2>📊 Detaillierte Statistik</h2></div>
+    <div id="detailStats"></div>
+    <hr class="divider">
+    <div class="insight-head"><h2>🎯 Lektionen im Überblick</h2></div>
+    <div id="lessonMastery"></div>
+  </div>
+  <div class="panel insight-panel stats-view" data-stat-view="calendar" hidden>
+    <div class="insight-head"><h2>📅 Lernkalender</h2><div class="calendar-nav"><button type="button" onclick="changeCalendarMonth(-1)" aria-label="Vorheriger Monat">‹</button><span class="calendar-month" id="calendarMonth"></span><button type="button" onclick="changeCalendarMonth(1)" aria-label="Nächster Monat">›</button></div></div>
+    <div id="learningCalendar" aria-label="Monatsübersicht der Lernaktivität"></div>
+    <div class="calendar-legend">● Tage mit Lernaktivität · Umrandet ist heute</div>
+  </div>
+  <div class="panel insight-panel stats-view" data-stat-view="vocab" hidden>
+    <div class="insight-head"><h2>🔁 Diese Vokabeln brauchen Übung</h2></div>
+    <div id="weakVocab"></div>
+  </div>
 </section>
 
 <section id="cards" class="page">
@@ -538,22 +573,7 @@ h1,h2,h3,.home-title,.home-section-title{font-weight:600!important;letter-spacin
 </section>
 
 
-<section id="quiz" class="page">
-  <div class="page-title-wrap"><h1 class="page-title">Grammatik-Quiz</h1></div>
-  <div id="quizSetup" class="step-card">
-    <p class="muted">Wähle einen Bereich und beantworte die Aufgaben. Dein Lernfortschritt wird gespeichert.</p>
-    <button class="option" type="button" onclick="startQuiz('tempora')"><b>⏳ Tempora</b><span class="muted small">Zeitformen erkennen</span></button>
-    <button class="option" type="button" onclick="startQuiz('kng')"><b>🔤 KNG</b><span class="muted small">Kasus, Numerus und Genus bestimmen</span></button>
-    <button class="option" type="button" onclick="startQuiz('sentence')"><b>📝 Satzbestimmung</b><span class="muted small">Satzglieder erkennen</span></button>
-  </div>
-  <div id="quizPlay" class="step-card" style="display:none">
-    <div class="row" style="justify-content:space-between"><h2 id="quizTitle">Quiz</h2><span class="muted small" id="quizProgress"></span></div>
-    <div id="quizQuestion" class="big"></div>
-    <div id="options" class="quizbox"></div>
-    <div id="quizResult"></div>
-    <button class="secondary full-action" type="button" onclick="resetQuizSetup()">Quizbereich wechseln</button>
-  </div>
-</section>
+
 
 <section id="vocab" class="page">
 <div class="page-title-wrap"><h1 class="page-title">Vokabelregister</h1><button class="info-mini" onclick="toggleAreaInfo('vocabInfo')" aria-label="Informationen zum Vokabelregister">i</button></div><div id="vocabInfo" class="info-popover"><b>📖 Vokabelregister</b><p>Hier kannst du Vokabeln suchen, Bedeutungen und Formen ansehen und eigene Vokabeln hinzufügen oder importieren.</p></div>
@@ -1133,7 +1153,7 @@ function checkSentenceAnswer(){if(sentenceAnswered)return;const item=sentenceTra
 function revealSentenceAnswer(){const item=sentenceTrainerItems[sentenceTrainerIndex];if(!item)return;const feedback=document.getElementById('sentenceFeedback'),checkBtn=document.getElementById('sentenceCheckBtn'),revealBtn=document.getElementById('sentenceRevealBtn'),input=document.getElementById('sentenceUserAnswer');if(feedback){feedback.hidden=false;feedback.textContent=`Musterlösung: ${item.de}`}sentenceAnswered=true;if(input)input.disabled=true;if(checkBtn)checkBtn.style.display='none';if(revealBtn)revealBtn.style.display='none'}
 function nextSentence(){if(!sentenceTrainerItems.length)return;if(!sentenceAnswered){showToast('Bitte prüfe deine Übersetzung oder zeige zuerst die Lösung an.');return}const next=generateUniqueSentence();if(!next){showToast('Für diese Einstellungen konnte gerade kein weiterer Satz gebildet werden.');return}sentenceTrainerItems.push(next);sentenceTrainerIndex++;renderSentenceTrainer()}
 function backToSentenceSetup(){sentenceTrainerItems=[];const setup=document.getElementById('sentenceSetup'),learning=document.getElementById('sentenceLearning');if(setup)setup.style.display='block';if(learning)learning.style.display='none';renderSentenceFilters()}
-function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));const p=document.getElementById(id);if(!p)return;p.classList.add('active');document.querySelectorAll('.nav').forEach(x=>{const active=x.dataset.page===id;x.classList.toggle('active',active);if(active)x.setAttribute('aria-current','page');else x.removeAttribute('aria-current')});if(id==='vocab'){renderSearchDirection();renderVocab()}if(id==='vocabTest'){renderVocabTestSetup()}if(id==='sentenceTrainer'){renderSentenceTrainer()}if(id==='cards'){updateCardModeCounts();renderLessons();renderDirectionButton()}if(id==='settings'){updateStorageStatus();updateOfflineStatus();updateGoalSetting();const sn=document.getElementById('settingsFriendName');if(sn)sn.value=state.profile.name||''}if(id==='forms'){renderFormLessons();syncFormFilters();}if(id==='collection'){renderCollection()}if(id==='friends'){renderFriends()}if(id==='level')updateStats();updateStats();window.scrollTo({top:0,behavior:'smooth'})}
+function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));const p=document.getElementById(id);if(!p)return;p.classList.add('active');document.querySelectorAll('.nav').forEach(x=>{const active=x.dataset.page===id;x.classList.toggle('active',active);if(active)x.setAttribute('aria-current','page');else x.removeAttribute('aria-current')});if(id==='stats'){showLearningStat('details');renderLearningInsights()}if(id==='vocab'){renderSearchDirection();renderVocab()}if(id==='vocabTest'){renderVocabTestSetup()}if(id==='sentenceTrainer'){renderSentenceTrainer()}if(id==='cards'){updateCardModeCounts();renderLessons();renderDirectionButton()}if(id==='settings'){updateStorageStatus();updateOfflineStatus();updateGoalSetting();const sn=document.getElementById('settingsFriendName');if(sn)sn.value=state.profile.name||''}if(id==='forms'){renderFormLessons();syncFormFilters();}if(id==='collection'){renderCollection()}if(id==='friends'){renderFriends()}if(id==='level')updateStats();updateStats();window.scrollTo({top:0,behavior:'smooth'})}
 function xpThreshold(level){if(level<=1)return 0;let t=100;for(let l=2;l<level;l++)t+=100+(l-1)*50;return t}
 function levelFromXp(xp){let level=1;while(xpThreshold(level+1)<=xp)level++;return level}
 function xpProgressInfo(xp){const level=levelFromXp(xp);const cur=xpThreshold(level);const next=xpThreshold(level+1);return {level,current:xp-cur,needed:next-cur,percent:Math.max(0,Math.min(100,((xp-cur)/(next-cur))*100))}}
@@ -1722,6 +1742,10 @@ function setDark(v){state.dark=v;document.body.classList.toggle('dark',v);save()
 function updateStorageStatus(){const e=document.getElementById('storageStatus');if(e){try{localStorage.setItem('__vtest','1');localStorage.removeItem('__vtest');e.innerHTML='<span class="ok">● Lokale Speicherung aktiv</span>'}catch(x){e.innerHTML='<span class="warn">● Lokale Speicherung nicht verfügbar</span>'}}updateAutoBackupStatus();updateRuntimeErrorStatus()}
 function updateOfflineStatus(){const e=document.getElementById('offlineStatus');if(!e)return;e.innerHTML='<span class="ok">● Grundfunktionen sind in dieser HTML-Datei offline nutzbar.</span>'}
 
+function showLearningStat(key){
+ document.querySelectorAll('[data-stat-choice]').forEach(button=>{const active=button.dataset.statChoice===key;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active))});
+ document.querySelectorAll('[data-stat-view]').forEach(view=>{view.hidden=view.dataset.statView!==key});
+}
 function changeCalendarMonth(delta){calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()+delta,1);renderLearningInsights()}
 function renderLearningCalendar(){
  const host=document.getElementById('learningCalendar'),label=document.getElementById('calendarMonth');if(!host||!label)return;
