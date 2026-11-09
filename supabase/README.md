@@ -48,3 +48,6 @@ Die Tests verwenden ausschließlich erfundene Konten mit `.invalid`-E-Mail-Adres
 - XP-Boost-Aktivierung
 
 Die Migration ist nur das sichere Grundgerüst, kein fertiges Online-System.
+
+
+Die CI-Prüfung läuft bei jeder Änderung an dieser Supabase-Konfiguration oder den Migrationen automatisch auf GitHub Actions.
