@@ -138,3 +138,18 @@ test('Dark Mode lässt sich aktivieren und speichern', async ({ page }) => {
   await page.reload();
   await expect(page.locator('body')).toHaveClass(/dark/);
 });
+
+test('Satztrainer kann eine PC-Konstruktion erzeugen', async ({ page }) => {
+  const item = await page.evaluate(() => {
+    sentenceFilters.difficulties = ['Schwierig'];
+    sentenceFilters.constructions = ['PC'];
+    sentenceFilters.tenses = ['Präsens'];
+    sentenceFilters.modes = ['Indikativ'];
+    sentenceRecent.clear();
+    return generateUniqueSentence();
+  });
+  expect(item).toBeTruthy();
+  expect(item.construction).toBe('PC');
+  expect(item.la).toMatch(/[.]$/);
+  expect(item.de).toMatch(/[.]$/);
+});
