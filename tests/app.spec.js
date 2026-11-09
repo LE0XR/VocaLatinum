@@ -489,3 +489,46 @@ test('KNG-Quiz ordnet jede richtige Antwort korrekt zu und wertet Fehlversuche o
   expect(result.wrongMarked).toBe(1);
   expect(result.feedback).toContain('Noch einmal üben');
 });
+
+
+test('Wöchentliche Wettbewerbsstatistiken berechnen alle sieben ausgewählten Kategorien korrekt', async ({ page }) => {
+  const stats = await page.evaluate(() => {
+    state.activity = {
+      '2026-11-09': { events: 10, correct: 8, wrong: 2, xp: 40, cards: 4, cardIds: ['v1', 'v2'], units: 1 },
+      '2026-11-10': { events: 5, correct: 4, wrong: 1, xp: 20, cards: 3, cardIds: ['v2', 'v3'], units: 2 },
+      '2026-11-11': { events: 0, correct: 0, wrong: 0, xp: 0, cards: 1, cardIds: ['v4'], units: 0 },
+      '2026-11-08': { events: 20, correct: 20, wrong: 0, xp: 100, cards: 10, cardIds: ['old'], units: 5 }
+    };
+    state.badges = {
+      5: { title: 'Test 1', date: '09.11.2026' },
+      10: { title: 'Test 2', date: '2026-11-10' },
+      15: { title: 'Alt', date: '08.11.2026' }
+    };
+    return getWeeklyCompetitionStats(new Date(2026, 10, 11, 12));
+  });
+  expect(stats.weekStart).toBe('2026-11-09');
+  expect(stats.weekEnd).toBe('2026-11-15');
+  expect(stats.correctAnswers).toBe(12);
+  expect(stats.wrongAnswers).toBe(3);
+  expect(stats.attempts).toBe(15);
+  expect(stats.accuracy).toBe(80);
+  expect(stats.xp).toBe(60);
+  expect(stats.newBadges).toBe(2);
+  expect(stats.learnedCards).toBe(4);
+  expect(stats.longestStreak).toBe(3);
+  expect(stats.completedUnits).toBe(3);
+});
+
+test('Wöchentliche Kartenstatistik zählt jede Karte nur einmal und Lernabschlüsse getrennt', async ({ page }) => {
+  const stats = await page.evaluate(() => {
+    state.activity = {};
+    recordCardReview('vocab-1');
+    recordCardReview('vocab-1');
+    recordCardReview('vocab-2');
+    recordCompletedLearningUnit('Karteikarten');
+    recordCompletedLearningUnit('Quiz');
+    return getWeeklyCompetitionStats(new Date());
+  });
+  expect(stats.learnedCards).toBe(2);
+  expect(stats.completedUnits).toBe(2);
+});
