@@ -54,62 +54,25 @@ select is(
   'Name search returns the matching display name'
 );
 select ok(
-  (select friend_code ~ '^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}
-select throws_ok(
-  $cmd$select * from public.search_profiles('Le')$cmd$,
-  'P0001',
-  'Search query must contain at least 3 characters',
-  'Very short search terms are rejected'
-);
-select set_config(
-  'test.friend_code_request_id',
-  public.send_friend_request_by_code(current_setting('test.friend_code_two'))::text,
-  true
-);
-select is(
-  (select direction from public.list_friend_requests()),
-  'outgoing',
-  'Friend request can be sent using the friend code'
-);
-reset role;
-
-set local role authenticated;
-select set_config(
-  'request.jwt.claims',
-  '{"sub":"40000000-0000-4000-8000-000000000004","role":"authenticated"}',
-  true
-);
-select is(
-  (select direction from public.list_friend_requests()),
-  'incoming',
-  'The recipient receives the request sent by friend code'
-);
-reset role;
-
-select * from finish();
-rollback;
-
+  (select friend_code ~ '^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$'
    from public.search_profiles('Lernkonto')),
   'Search result provides a public friend code, not an internal account ID'
 );
 select throws_ok(
-  $$select * from public.search_profiles('Le')$$,
+  $query$select * from public.search_profiles('Le')$query$,
   'P0001',
   'Search query must contain at least 3 characters',
   'Very short search terms are rejected'
 );
-select set_config(
-  'test.friend_code_request_id',
-  public.send_friend_request_by_code(
-    (select friend_code from public.profiles
-     where user_id = '40000000-0000-4000-8000-000000000004')
-  )::text,
-  true
+select is(
+  public.send_friend_request_by_code(current_setting('test.friend_code_two')) is not null,
+  true,
+  'Friend request can be sent using the friend code'
 );
 select is(
   (select direction from public.list_friend_requests()),
   'outgoing',
-  'Friend request can be sent using the friend code'
+  'Sender sees the outgoing request'
 );
 reset role;
 
