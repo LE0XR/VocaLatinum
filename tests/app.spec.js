@@ -164,10 +164,12 @@ test('Gleichwertige Übersetzungen werden als richtig akzeptiert', async ({ page
     sentenceCorrectCount = 0;
     document.getElementById('sentenceUserAnswer').value = 'Der Junge erblickt das Mädchen';
     checkSentenceAnswer();
-    return { text: document.getElementById('sentenceFeedback').textContent, correct: sentenceCorrectCount };
+    return { text: document.getElementById('sentenceFeedback').textContent, correct: sentenceCorrectCount, xp: state.xp, events: state.activity[todayKey()].events };
   });
   expect(feedback.correct).toBe(1);
   expect(feedback.text).toContain('Richtig');
+  expect(feedback.xp).toBeGreaterThan(0);
+  expect(feedback.events).toBe(1);
 });
 
 test('Formenlernen stellt Aufgaben bereit', async ({ page }) => {
