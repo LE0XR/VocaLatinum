@@ -417,6 +417,11 @@ h1,h2,h3,.home-title,.home-section-title{font-weight:600!important;letter-spacin
       <b>Vokabel-Satz-Trainer</b>
       <span class="muted">Lateinische Sätze verstehen und übersetzen</span>
     </button>
+    <button class="home-practice-card" onclick="showPage('quiz')">
+      <span class="home-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.5 9a2.8 2.8 0 1 1 4.7 2.1c-1.1 1-2.2 1.4-2.2 3"/><path d="M12 18h.01M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/></svg></span>
+      <b>Grammatik-Quiz</b>
+      <span class="muted">Tempora · KNG · Satzbestimmung</span>
+    </button>
 
   </div>
 
@@ -530,6 +535,24 @@ h1,h2,h3,.home-title,.home-section-title{font-weight:600!important;letter-spacin
   <div id="vocabTestRun" hidden></div>
   <div id="vocabTestResult" hidden></div>
   <div id="vocabTestPrint" class="vocab-test-print" hidden></div>
+</section>
+
+
+<section id="quiz" class="page">
+  <div class="page-title-wrap"><h1 class="page-title">Grammatik-Quiz</h1></div>
+  <div id="quizSetup" class="step-card">
+    <p class="muted">Wähle einen Bereich und beantworte die Aufgaben. Dein Lernfortschritt wird gespeichert.</p>
+    <button class="option" type="button" onclick="startQuiz('tempora')"><b>⏳ Tempora</b><span class="muted small">Zeitformen erkennen</span></button>
+    <button class="option" type="button" onclick="startQuiz('kng')"><b>🔤 KNG</b><span class="muted small">Kasus, Numerus und Genus bestimmen</span></button>
+    <button class="option" type="button" onclick="startQuiz('sentence')"><b>📝 Satzbestimmung</b><span class="muted small">Satzglieder erkennen</span></button>
+  </div>
+  <div id="quizPlay" class="step-card" style="display:none">
+    <div class="row" style="justify-content:space-between"><h2 id="quizTitle">Quiz</h2><span class="muted small" id="quizProgress"></span></div>
+    <div id="quizQuestion" class="big"></div>
+    <div id="options" class="quizbox"></div>
+    <div id="quizResult"></div>
+    <button class="secondary full-action" type="button" onclick="resetQuizSetup()">Quizbereich wechseln</button>
+  </div>
 </section>
 
 <section id="vocab" class="page">
@@ -1690,7 +1713,8 @@ function resetVocabTest(){document.getElementById('vocabTestSetup').hidden=false
 function showQuizLockInfo(){showToast('🔒 Vokabeltest: Diese Funktion erscheint nach den Herbstferien.',4200)}
 function showFriendsLockInfo(){showToast('🔒 Freunde & Gruppen: Diese Funktion erscheint nach den Herbstferien.',4200)}
 setInterval(()=>{if(state.xpDoublerUntil&&state.xpDoublerUntil<=Date.now()){state.xpDoublerUntil=0;save();updateStats();}},15000);
-function startQuiz(type){quizType=type;quizData=DATA[type];quizIndex=0;answered=false;showPage('quiz');document.getElementById('quizTitle').textContent=type==='tempora'?'⏳ Tempora':type==='kng'?'🔤 KNG':'📝 Satzbestimmung';renderQuiz()}
+function resetQuizSetup(){const setup=document.getElementById('quizSetup'),play=document.getElementById('quizPlay');if(setup)setup.style.display='block';if(play)play.style.display='none';quizData=[];quizIndex=0;answered=false}
+function startQuiz(type){quizType=type;quizData=DATA[type];quizIndex=0;answered=false;showPage('quiz');document.getElementById('quizSetup').style.display='none';document.getElementById('quizPlay').style.display='block';document.getElementById('quizTitle').textContent=type==='tempora'?'⏳ Tempora':type==='kng'?'🔤 KNG':'📝 Satzbestimmung';renderQuiz()}
 function renderQuiz(){const q=quizData[quizIndex%quizData.length];answered=false;document.getElementById('quizProgress').textContent='Aufgabe '+(quizIndex%quizData.length+1)+' / '+quizData.length;document.getElementById('quizQuestion').textContent=quizType==='sentence'?q[0]:'Bestimme: '+q[0];document.getElementById('options').innerHTML=q[2].map((o,i)=>`<button class="option" onclick="answer(${i})">${esc(o)}</button>`).join('');document.getElementById('quizResult').innerHTML=''}
 function answer(i){if(answered)return;answered=true;const idx=quizIndex%quizData.length,q=quizData[idx],correct=q[2].indexOf(q[1]),opts=document.querySelectorAll('.option');opts[i].classList.add(i===correct?'correct':'bad');if(i!==correct)opts[correct].classList.add('correct');const key=quizType+':'+idx;const qp=state.quizProgress[key]||{correct:0,wrong:0,errorStreak:0};if(i===correct){qp.correct++;qp.errorStreak=0}else{qp.wrong++;qp.errorStreak=(qp.errorStreak||0)+1}state.quizProgress[key]=qp;document.getElementById('quizResult').innerHTML=`<p><b>${i===correct?'✓ Richtig!':'✗ Noch einmal üben.'}</b> ${esc(q[1])}</p><button class="primary" onclick="nextQuiz()">${i===correct?'Nächste Aufgabe →':'🔁 Genau diese Aufgabe noch einmal'}</button>`;addXP(i===correct?2:1,'Quiz',i===correct);updateStreak();save();updateStats()} function nextQuiz(){const idx=quizIndex%quizData.length;const qp=state.quizProgress[quizType+':'+idx]||{};if((qp.errorStreak||0)>0){qp.errorStreak=0;state.quizProgress[quizType+':'+idx]=qp;save();renderQuiz();return}quizIndex++;renderQuiz()}
 function detectTense(form){const f=form.toLowerCase().trim();if(/(eram|eras|erat|eramus|eratis|erant)$/.test(f))return'Plusquamperfekt (von esse)';if(/(bo|bis|bit|bimus|bitis|bunt)$/.test(f)&&!/(ibo|abis|ebis|abit|ebit)$/.test(f))return'Futur I';if(/(bam|bas|bat|bamus|batis|bant)$/.test(f))return'Imperfekt';if(/(ero|eris|erit|erimus|eritis|erint)$/.test(f))return'Futur II / Futur von esse – Kontext nötig';if(/(avi|avisti|avit|avimus|avistis|averunt|ivi|ivisti|ivit|ivimus|ivistis|iverunt)$/.test(f)||/^(fu|fui|fuisti|fuit|fuimus|fuistis|fuerunt)$/.test(f))return'Perfekt';return'Präsens oder unregelmäßige Form – Kontext nötig'}
