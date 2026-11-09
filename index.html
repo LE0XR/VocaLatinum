@@ -732,15 +732,20 @@ h1,h2,h3,.home-title,.home-section-title{font-weight:600!important;letter-spacin
       <div class="muted small">Dein persönlicher Freundescode</div>
       <div class="invite-code" id="onlineFriendCode">Noch nicht verfügbar</div>
       <span class="status-pill" id="onlineFriendsConnectionStatus">Online-Verbindung noch nicht eingerichtet</span>
+      <button id="copyOnlineFriendCode" class="secondary full-action" type="button" disabled>Freundescode kopieren</button>
     </div>
     <label for="onlineFriendSearch" class="friends-note">Person über Anzeigenamen oder Freundescode suchen</label>
     <input id="onlineFriendSearch" class="field" type="search" minlength="3" maxlength="40" placeholder="Anzeigename oder Code" disabled aria-describedby="onlineFriendsHelp">
     <button id="onlineFriendSearchButton" class="primary full-action" type="button" disabled>Online suchen</button>
     <p id="onlineFriendsHelp" class="friends-note">Die Suche wird freigeschaltet, sobald Anmeldung und Datenbankverbindung eingerichtet und getestet sind. Bis dahin werden hier keine Personen vorgetäuscht und keine Daten versendet.</p>
     <hr class="divider">
-    <h3>📨 Freundschaftsanfragen</h3>
-    <p id="onlineFriendRequests" class="friends-note">Noch nicht verfügbar – die Online-Verbindung fehlt.</p>
-  </div>
+    <h3>👥 Deine Online-Freunde</h3>
+    <p id="onlineFriendList" class="friends-note">Noch keine Online-Freunde verfügbar – die Online-Verbindung fehlt.</p>
+    <hr class="divider">
+    <h3>📨 Eingehende Anfragen</h3>
+    <p id="onlineIncomingRequests" class="friends-note">Noch nicht verfügbar – die Online-Verbindung fehlt.</p>
+    <h3>📤 Gesendete Anfragen</h3>
+    <p id="onlineOutgoingRequests" class="friends-note">Noch nicht verfügbar – die Online-Verbindung fehlt.</p>
   <div class="friends-card" id="friendSetupCard">
     <b>Dein Name</b>
     <p class="muted small">Beim ersten Öffnen legst du einmal deinen Namen fest. Danach kannst du ihn nur noch in den Einstellungen ändern.</p>
