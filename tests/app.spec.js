@@ -311,3 +311,26 @@ test('Automatische Sicherung kann mit zusätzlicher Rücksicherung wiederhergest
   expect(result.restoredXp).toBe(50);
   expect(result.rollbackXp).toBe(999);
 });
+
+test('Älterer Lernstand wird migriert, ohne XP oder Vokabelfortschritt zu verlieren', async ({ page }) => {
+  await page.evaluate(() => {
+    const legacy = JSON.parse(JSON.stringify(state));
+    legacy.xp = 456;
+    delete legacy.activity;
+    delete legacy.syncMeta;
+    legacy.vocab.push({ id: 'migration-test', l: 'amare-test', g: 'lieben (Test)', forms: '', lessons: [99], box: 3, next: Date.now() + 86400000, seen: 7, correct: 5, wrong: 2, source: false });
+    localStorage.setItem(KEY, JSON.stringify(legacy));
+  });
+  await page.reload();
+  const result = await page.evaluate(() => {
+    const vocab = state.vocab.find(v => v.id === 'migration-test');
+    return { xp: state.xp, seen: vocab?.seen, correct: vocab?.correct, wrong: vocab?.wrong, box: vocab?.box, activity: !!state.activity, syncDevice: !!state.syncMeta?.deviceId };
+  });
+  expect(result.xp).toBe(456);
+  expect(result.seen).toBe(7);
+  expect(result.correct).toBe(5);
+  expect(result.wrong).toBe(2);
+  expect(result.box).toBe(3);
+  expect(result.activity).toBeTruthy();
+  expect(result.syncDevice).toBeTruthy();
+});
