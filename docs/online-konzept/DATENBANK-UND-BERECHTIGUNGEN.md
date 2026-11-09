@@ -168,13 +168,16 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Mitglieder können eigene Nachrichten nur für sich ausblenden; andere Mitglieder sehen sie weiterhin.
 - Der Gruppenanführer kann Nachrichten und Bilder anderer Mitglieder gruppenweit löschen.
 - Mitglieder können Nachrichten und Bilder melden; eine Meldung löscht den Inhalt nicht automatisch.
-- Ein Moderations-Bot warnt bei erkannten Regelverstößen, entfernt je nach Schwere Nachrichten/Bilder und kann bei wiederholten Verstößen eine mindestens dreitägige Gruppensperre verhängen.
-- Nach einer solchen Sperre darf nur der Gruppenanführer als Gruppenadmin das Mitglied wieder aufnehmen; der Beitritt erfolgt nicht automatisch nach drei Tagen.
+- Der Moderations-Bot verwendet das dreistufige Verfahren: erster Verstoß = Ermahnung, zweiter Verstoß = Verwarnung, dritter Verstoß = Entfernung aus der Gruppe und dreitägige Beitrittssperre. Verstöße werden auch über mehrere Tage hinweg gezählt.
+- Während der Entfernung/Sperre kann das Mitglied keine Gruppeninhalte oder Chatnachrichten lesen, nicht teilnehmen und keine Gruppenbelohnungen erhalten – auch dann nicht, wenn das Gruppenziel währenddessen erreicht wird.
+- Nach Ablauf der drei Tage darf nur der Gruppenanführer als Gruppenadmin das Mitglied wieder aufnehmen; die Wiederaufnahme erfolgt nicht automatisch.
 - Nutzer werden über die automatisierte Prüfung informiert und können eine Fehlentscheidung überprüfen lassen.
 - Mitglieder können andere Mitglieder blockieren; die Blockierung beeinflusst nur die eigene Ansicht und direkte Kontaktmöglichkeiten, nicht die Ansichten der übrigen Gruppe.
 - Gruppenmitglieder können Textnachrichten und Bilder austauschen, Umfragen erstellen und Ankündigungen der Gruppenleitung sehen.
-- Der Moderations-Bot erkennt Regelverstöße in Texten und Bildern, warnt Nutzer und entfernt bei Bedarf Inhalte automatisch.
-- Wiederholte Verstöße können eine automatische Entfernung aus der Gruppe mit mindestens drei Tagen Beitrittssperre auslösen; danach kann nur der Gruppenanführer als Gruppenadmin das Mitglied wieder aufnehmen.
+- Der Moderations-Bot erkennt Regelverstöße in Texten und Bildern und entfernt bei Bedarf Inhalte automatisch.
+- Beim ersten Verstoß erhält das Testkonto eine Ermahnung, beim zweiten eine Verwarnung und beim dritten wird es aus der Gruppe entfernt und für drei Tage gesperrt.
+- Während der Sperre sind Gruppenchat, Nachrichten und Bilder nicht zugänglich und es werden keine Gruppenbelohnungen vergeben – auch nicht bei zwischenzeitlicher Zielerreichung.
+- Nach drei Tagen kann ausschließlich der Gruppenanführer als Gruppenadmin das Mitglied wieder aufnehmen.
 - Moderationshinweise, Einspruch und Schutz vor Fehlentscheidungen werden getestet.
 - Der Moderations-Bot erkennt Testfälle mit Beleidigungen, Belästigung und unzulässigen privaten/ungeeigneten Bildern, hält Inhalte zurück bzw. entfernt sie und zeigt eine Warnung.
 - Wiederholte Regelverstöße können zu einer automatischen Gruppensperre führen; nur Gruppenanführer oder Vize-Anführer können die Sperre aufheben.
