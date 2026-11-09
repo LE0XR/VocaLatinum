@@ -649,5 +649,9 @@ test('Online-Freundesbereich zeigt ehrlich den noch nicht verbundenen Status', a
   await expect(page.locator('#onlineFriendsConnectionStatus')).toContainText('noch nicht eingerichtet');
   await expect(page.locator('#onlineFriendSearch')).toBeDisabled();
   await expect(page.locator('#onlineFriendSearchButton')).toBeDisabled();
-  await expect(page.locator('#onlineFriendRequests')).toContainText('Online-Verbindung fehlt');
+  await expect(page.locator('#copyOnlineFriendCode')).toBeDisabled();
+  await expect(page.locator('#onlineFriendList')).toContainText('Online-Verbindung fehlt');
+  await expect(page.locator('#onlineIncomingRequests')).toContainText('Online-Verbindung fehlt');
+  await expect(page.locator('#onlineOutgoingRequests')).toContainText('Online-Verbindung fehlt');
+  await expect(page.locator('#onlineFriendRequests')).toHaveCount(0);
 });
