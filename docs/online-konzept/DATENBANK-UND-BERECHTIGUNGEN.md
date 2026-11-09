@@ -84,7 +84,14 @@ Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach
   1. **XP-Boost-Paket:** Ein XP-Verdoppler-Gegenstand wird dem Konto gutgeschrieben. Er verdoppelt die während seiner Laufzeit erspielten XP für **30 Minuten**, wird aber nicht automatisch gestartet.
   2. **Abzeichen-Paket:** Das berechtigte Mitglied erhält ein besonderes Gruppen-Abzeichen und zusätzlich **100 XP**. Namensideen für das Abzeichen: **„Gemeinsam unschlagbar“**, **„Ziel erreicht!“** oder **„Lernteam-Legenden“**.
   3. **XP-Paket:** Das berechtigte Mitglied erhält einmalig **500 XP**.
-- Die drei Pakete sind Alternativen: Bei einem einzelnen Gruppenziel gibt es nicht mehrere Pakete gleichzeitig. Welches Paket bei welchem Gruppenziel ausgewählt wird, ist noch festzulegen.
+- Die drei Pakete sind Alternativen: Bei einem einzelnen Gruppenziel gibt es nicht mehrere Pakete gleichzeitig. Die Auswahl erfolgt über ein **wöchentliches Glücksrad-Prinzip**:
+  1. Zu Beginn jeder neuen Gruppenwoche wird jedes Gruppenmitglied beim Öffnen der Website auf das noch ausstehende Glücksrad hingewiesen. Das Glücksrad wird pro Gruppe und Woche durchgeführt.
+  2. Jedes Gruppenmitglied muss das Glücksrad selbst manuell drehen. Der Dreh liefert zufällig genau eines der drei Belohnungspakete als Stimme für die Gruppenentscheidung.
+  3. Ein Mitglied kann in derselben Gruppenwoche nur einmal drehen. Das Ergebnis wird gespeichert; erneutes Laden oder ein anderes Gerät ermöglicht keinen zweiten Dreh.
+  4. Sobald alle Mitglieder der Gruppe ihren Dreh abgeschlossen haben, werden die Stimmen ausgezählt. Das Paket mit den meisten Stimmen wird als einzige Gruppenbelohnung dieser Woche festgelegt.
+  5. Die individuelle Belohnungsberechtigung bleibt davon getrennt: Nur Mitglieder mit mindestens einem gültigen XP-Beitrag erhalten das ausgewählte Paket. Nicht beitragende Mitglieder erhalten stattdessen ausschließlich die festgelegte Mitteilung.
+  6. Die Zufallsauswahl, gespeicherten Stimmen, Auszählung und endgültige Paketfestlegung müssen serverseitig erfolgen und gegen Manipulation sowie doppelte Verarbeitung geschützt sein.
+- **Noch offen beim Glücksrad:** Was passieren soll, wenn zwei oder drei Pakete gleich viele Stimmen erhalten. Außerdem muss für den Fall, dass ein Gruppenmitglied längere Zeit nicht dreht, noch eine Abschlussregel festgelegt werden.
 - **Abzeichenübersicht:** Alle erhaltenen Abzeichen sollen in einer gemeinsamen Übersicht gesammelt werden. Dort erscheinen sowohl Gruppen-Abzeichen als auch Abzeichen aus dem Belohnungspfad/Pass. Die Übersicht zeigt, welche Abzeichen bereits erhalten wurden; noch nicht erhaltene Abzeichen aus dem Belohnungspfad können dort ebenfalls entsprechend als noch nicht freigeschaltet erkennbar sein.
 - **XP-Boost manuell aktivieren:** Ein gutgeschriebener XP-Boost landet zunächst im verfügbaren Bestand und startet nicht automatisch. Auf den Lernpfaden gibt es ein Stern-Symbol. Durch Anklicken wird die Option **„XP-Boost aktivieren“** angezeigt; erst die bewusste Bestätigung startet den Boost. Nach erfolgreicher Aktivierung läuft er genau **30 Minuten**.
 - **Websiteweite Tagesbegrenzung:** Pro Nutzer darf höchstens **ein XP-Boost pro Kalendertag** aktiviert werden. Diese Regel gilt für die gesamte Website und alle Lernpfade, nicht je Lernpfad oder Gerät. Auch wenn mehrere Boosts im Bestand liegen, kann nach einer Aktivierung am selben Tag kein zweiter Boost gestartet werden – auch nicht nach Ablauf der ersten 30 Minuten. Der verwendete Boost wird beim Aktivieren verbraucht; weitere Boosts bleiben bis zu einem späteren Tag im Bestand.
@@ -116,7 +123,11 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Nicht-Freunde können nicht eingeladen werden; Einladungen müssen angenommen werden.
 - Gruppenansichten enthalten nur gemeinsamen XP-Fortschritt, niemals persönliche Ranglisten.
 - Ein Lernereignis wird auch bei wiederholter Übertragung nur einmal gezählt.
-- Das Wochenziel und die Belohnung werden bei parallelen Anfragen nicht doppelt verarbeitet.
+- Das Wochenziel, die Glücksrad-Auswertung und die Belohnung werden bei parallelen Anfragen nicht doppelt verarbeitet.
+- Jedes Gruppenmitglied sieht zu Wochenbeginn das Glücksrad für die jeweilige Gruppe und kann pro Gruppenwoche genau einmal manuell drehen.
+- Glücksrad-Drehungen werden zufällig und serverseitig erzeugt, gespeichert und können weder wiederholt noch nachträglich geändert werden.
+- Das Belohnungspaket mit den meisten Stimmen wird nach Abschluss aller Drehungen als einziges Paket für die Gruppenwoche ausgewählt.
+- Gleichstände und über längere Zeit ausstehende Drehungen werden gemäß einer noch festzulegenden Abschlussregel behandelt.
 - Nur Mitglieder mit mindestens einem gültigen XP-Beitrag im maßgeblichen Zeitraum erhalten eine Belohnung.
 - Nicht beitragende Mitglieder erhalten nach Zielerreichung eine Mitteilung, aber keine Belohnung.
 - Der XP-Verdoppler läuft exakt 30 Minuten und wird nicht versehentlich mehrfach für dieselbe Belohnung aktiviert.
@@ -143,4 +154,4 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 
 ## 8. Entscheidungen für den nächsten Konzeptschritt
 
-Vor der SQL-Migration müssen wir noch festlegen, nach welchem Verfahren eines der drei Belohnungspakete pro Gruppenziel ausgewählt wird und wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
+Vor der SQL-Migration müssen wir noch festlegen, wie Gleichstände beim Glücksrad und über längere Zeit ausstehende Drehungen behandelt werden und wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
