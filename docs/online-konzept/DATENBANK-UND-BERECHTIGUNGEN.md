@@ -40,7 +40,9 @@ Die spätere Datenbank soll PostgreSQL verwenden. Falls Supabase als Backend gew
 | `group_message_hidden_for_users` | Persönliches Ausblenden/Löschen | Nachricht, Nutzer, Zeitstempel. Entfernt eine Nachricht nur aus der eigenen Ansicht; andere Gruppenmitglieder sehen sie weiterhin. |
 | `group_message_reports` | Meldungen zu Nachrichten und Bildern | Meldender Nutzer, Nachricht/Anhang, Grund, Status, Zeitstempel und Bearbeitung. Meldungen sind nur für berechtigte Moderation sichtbar. |
 | `group_user_blocks` | Blockierte Mitspieler | Blockierender Nutzer, blockierter Nutzer, Zeitstempel. Blockieren wirkt für das eigene Konto und kann aufgehoben werden. |
-| `group_moderation_actions` | Moderationsnachweise | Gruppe, moderierende Person, betroffener Inhalt, Aktion (z. B. gruppenweit gelöscht), Zeitstempel und optionaler Grund. Nur notwendige Nachweisdaten speichern. |
+| `group_moderation_actions` | Moderationsnachweise | Gruppe, moderierende Person oder automatisches System, betroffener Inhalt, Aktion (z. B. Warnung, gruppenweit gelöscht, temporär gesperrt), Zeitstempel und optionaler Grund. Nur notwendige Nachweisdaten speichern. |
+| `group_member_warnings` | Verwarnungen bei Chat-Regelverstößen | Gruppe, Nutzer, Regelkategorie, Zeitpunkt, Status und knapper Hinweis. Keine unnötigen Inhalte der beanstandeten Nachricht dauerhaft kopieren. |
+| `group_member_suspensions` | Automatische Gruppensperren | Gruppe, Nutzer, Grundkategorie, Beginn, Status und aufhebende Gruppenleitung. Wiederaufnahme nur durch Gruppenleitung (Gruppenanführer oder Vize-Anführer). |
 | `learning_events` | Serverseitig geprüfte Lernereignisse | Eindeutige Ereignis-ID, Nutzer, XP-Änderung, Ereigniszeit. Deduplizierung über eindeutige Event-ID. |
 | `group_weekly_goals` | Wöchentliches Gruppenziel | Gruppe, Wochenbeginn, Wochenende, XP-Ziel, Status. Pro Gruppe und Woche höchstens ein aktives Ziel. |
 | `group_goal_rewards` | Einmalige Gruppenbelohnung | Gruppe, Ziel/Woche, Belohnungstyp und Vergabezeit. Eindeutigkeit pro Gruppe und Woche verhindert doppelte Vergabe. |
@@ -82,7 +84,11 @@ Die interne Auth-ID ist die technische Identität. Ein Anzeigename darf mehrfach
 - Chat, Bilder, Umfragen und Ankündigungen sind nur für aktuelle Gruppenmitglieder sichtbar. Nach dem Austritt oder Entfernen aus einer Gruppe endet der Zugriff auf neue und bisherige Gruppeninhalte; die genaue Aufbewahrung und Sichtbarkeit alter Nachrichten muss vor der Umsetzung festgelegt werden.
 - **Eigene Nachrichten für sich löschen:** Jedes Mitglied darf Nachrichten aus der eigenen Ansicht entfernen. Das ist ein persönliches Ausblenden und löscht die Nachricht nicht für andere Mitglieder. Bei Bildern bleiben die Bilddateien für die übrigen berechtigten Gruppenmitglieder verfügbar.
 - **Gruppenweite Moderation:** Der Gruppenanführer darf jede Nachricht und jedes Bild in seiner Gruppe für alle Mitglieder löschen, insbesondere bei Beleidigungen, Belästigung, Spam oder ungeeigneten Inhalten. Der Inhalt wird dann für die Gruppe unzugänglich; die Moderationsaktion wird mit minimalen Nachweisdaten protokolliert.
-- **Melden:** Mitglieder können Nachrichten und Bilder an die Gruppenmoderation melden. Eine Meldung entfernt den Inhalt nicht automatisch. Der Gruppenanführer kann den gemeldeten Inhalt prüfen und bei Bedarf gruppenweit löschen.
+- **Automatische Chat-Moderation:** Ein Moderationssystem („Mega-Bot“) prüft Gruppenchat-Nachrichten und hochgeladene Bilder auf Beleidigungen, schwere Schimpfwörter, Belästigung sowie das Teilen privater oder ungeeigneter Fotos. Es gilt nur innerhalb der jeweiligen Gruppe und muss vor dem Senden bzw. Anzeigen über die Prüfung informieren.
+- Erkennt das System einen möglichen Regelverstoß, kann es die Nachricht oder das Bild zunächst zurückhalten bzw. automatisch aus dem Chat entfernen und dem Mitglied eine verständliche Warnung anzeigen. Die Warnung nennt die verletzte Regel, ohne den beanstandeten Inhalt erneut öffentlich zu verbreiten.
+- Automatische Erkennung kann Fehler machen. Deshalb müssen Gruppenanführer und Vize-Anführer eine Moderationsentscheidung überprüfen und korrigieren können; Mitglieder müssen eine Möglichkeit haben, eine Fehlentscheidung zu melden.
+- **Wiederholte Verstöße:** Bei wiederholten Verstößen kann das System das Mitglied automatisch aus der Gruppe sperren (Gruppen-Bann). Eine gesperrte Person kann nicht selbst wieder beitreten. Die Wiederaufnahme darf ausschließlich durch die Gruppenleitung erfolgen – also durch Gruppenanführer oder Vize-Anführer.
+- **Melden:** Mitglieder können Nachrichten und Bilder zusätzlich an die Gruppenmoderation melden. Eine Meldung entfernt den Inhalt nicht automatisch; die automatische Moderation kann ihn unabhängig davon zurückhalten.
 - **Blockieren:** Mitglieder können andere Mitspieler blockieren und die Blockierung später wieder aufheben. Blockieren ist eine persönliche Schutzfunktion und löscht keine Inhalte für andere Gruppenmitglieder. Für das blockierende Mitglied werden Inhalte des blockierten Kontos im Chat ausgeblendet; außerdem wird eine direkte Kontaktaufnahme zwischen diesen Konten unterbunden. Gruppenweite Moderation bleibt Aufgabe des Gruppenanführers.
 - Es sollen nur notwendige Daten gespeichert werden. Nutzer sollen keine privaten Kontaktdaten oder sensiblen persönlichen Informationen im Gruppenchat teilen müssen.
 
@@ -164,6 +170,9 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Mitglieder können Nachrichten und Bilder melden; eine Meldung löscht den Inhalt nicht automatisch.
 - Mitglieder können andere Mitglieder blockieren; die Blockierung beeinflusst nur die eigene Ansicht und direkte Kontaktmöglichkeiten, nicht die Ansichten der übrigen Gruppe.
 - Gruppenmitglieder können Textnachrichten und Bilder austauschen, Umfragen erstellen und Ankündigungen der Gruppenleitung sehen.
+- Der Moderations-Bot erkennt Testfälle mit Beleidigungen, Belästigung und unzulässigen privaten/ungeeigneten Bildern, hält Inhalte zurück bzw. entfernt sie und zeigt eine Warnung.
+- Wiederholte Regelverstöße können zu einer automatischen Gruppensperre führen; nur Gruppenanführer oder Vize-Anführer können die Sperre aufheben.
+- Fehlalarme können von der Gruppenleitung überprüft und korrigiert werden.
 - Gruppenleitung kann die automatische Aufbewahrungsdauer ändern; abgelaufene Nachrichten und Bilder sind für alle nicht mehr sichtbar.
 - Der Vize-Anführer besitzt dieselben Verwaltungsrechte wie der Gruppenanführer und kann bei dessen missbräuchlicher Nutzung eingreifen.
 - Wenn kein Vize-Anführer vorhanden ist, wird nach zwei Tagen ohne Ersatzwahl die Gruppe automatisch gelöscht.
@@ -171,7 +180,7 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Bei einem Gleichstand der Glücksrad-Stimmen kann der Gruppenanführer nach optionaler Beratung und Chat-Umfrage die endgültige Auswahl treffen.
 - Nicht-Freunde können nicht eingeladen werden; Einladungen müssen angenommen werden.
 - Gruppenansichten enthalten nur gemeinsamen XP-Fortschritt, niemals persönliche Ranglisten.
-- Eine Gruppe ohne Vize-Anführer wird nach zwei Tagen automatisch gelöscht, wenn bis dahin kein Ersatz gewählt wird.
+- Eine Gruppe ohne Vize-Anführer wird nach zwei Tagen automatisch gelöscht, wenn bis dahin kein Ersatz gewählt wird. Verlässt der Vize-Anführer die Gruppe oder wird er entfernt, beginnt die 48-Stunden-Frist erneut.
 - Ein Lernereignis wird auch bei wiederholter Übertragung nur einmal gezählt.
 - Das Wochenziel, die Glücksrad-Auswertung und die Belohnung werden bei parallelen Anfragen nicht doppelt verarbeitet.
 - Jedes Gruppenmitglied sieht zu Wochenbeginn das Glücksrad für die jeweilige Gruppe und kann pro Gruppenwoche genau einmal manuell drehen.
@@ -201,10 +210,10 @@ Die spätere Online-Implementierung gilt erst dann als bereit für eine Freigabe
 - Keine Online-Datenbank erstellt oder verbunden.
 - Keine Freundschaftsanfragen oder Online-Freundesuche aktiviert.
 - Keine Online-Gruppen, Einladungen oder Gruppenchats aktiviert.
-- Keine Chat-Nachrichten, Bildanhänge, Umfragen, Gruppenankündigungen, Melde-/Blockierfunktionen, Moderationswerkzeuge, automatische Chat-Aufbewahrung oder Vize-Anführer-Verwaltung aktiviert.
+- Keine Chat-Nachrichten, Bildanhänge, Umfragen, Gruppenankündigungen, Melde-/Blockierfunktionen, Moderations-Bot, automatische Gruppensperren, automatische Chat-Aufbewahrung oder Vize-Anführer-Verwaltung aktiviert.
 - Keine XP-Synchronisierung oder Belohnungsautomatik aktiviert.
 - Keine Änderung an `main` und keine Veröffentlichung.
 
 ## 8. Entscheidungen für den nächsten Konzeptschritt
 
-Vor der SQL-Migration müssen wir noch festlegen, wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben, und welche festen Auswahlwerte für die vom Gruppenanführer einstellbare Chat-Aufbewahrungsdauer angeboten werden sollen. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
+Vor der SQL-Migration müssen wir noch festlegen, wie doppelte Anzeigenamen in Suchergebnissen unterscheidbar angezeigt werden sollen, ohne interne IDs preiszugeben, und welche festen Auswahlwerte für die vom Gruppenanführer einstellbare Chat-Aufbewahrungsdauer angeboten werden sollen. Außerdem müssen die genauen Schwellenwerte für Warnungen und automatische Gruppensperren festgelegt werden. Danach kann die konkrete Datenbankmigration samt RLS-Regeln entworfen und zunächst isoliert getestet werden.
