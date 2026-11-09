@@ -746,6 +746,36 @@ state.dailyCount=Number(state.dailyCount)||0;
 let current=0,quizType='',quizIndex=0,quizData=[],answered=false,startY=0;
 let cardsStarted=false,cardMode='lesson',sessionCards=[],sessionErrors=[];
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));return true}catch(e){showToast('Speichern fehlgeschlagen: Der lokale Speicher ist voll oder nicht verfügbar. Bitte exportiere eine Sicherung.',4200);return false}}
+function exportBackup(){
+ try{
+  const payload={app:'VocaLatinum',schemaVersion:1,exportedAt:new Date().toISOString(),data:state};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='VocaLatinum-Backup-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  showToast('Backup wurde erstellt.');
+ }catch(e){showToast('Backup konnte nicht erstellt werden.',3500)}
+}
+function importBackup(event){
+ const input=event?.target,file=input?.files?.[0];if(!file)return;
+ if(file.size>20*1024*1024){showToast('Die Backup-Datei ist größer als 20 MB.',3500);input.value='';return}
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const parsed=JSON.parse(String(reader.result||''));
+   const incoming=parsed?.app==='VocaLatinum'?parsed.data:parsed;
+   if(!incoming||typeof incoming!=='object'||!Array.isArray(incoming.vocab))throw new Error('Ungültiges Backup');
+   if(!confirm('Möchtest du diesen Lernstand importieren? Der aktuelle Lernstand wird vorher lokal als Rücksicherung gespeichert.')){input.value='';return}
+   try{localStorage.setItem(KEY+'-pre-import-backup',JSON.stringify({app:'VocaLatinum',schemaVersion:1,exportedAt:new Date().toISOString(),data:state}))}catch(e){if(!confirm('Die lokale Rücksicherung konnte nicht gespeichert werden. Trotzdem fortfahren?')){input.value='';return}}
+   localStorage.setItem(KEY,JSON.stringify(incoming));
+   showToast('Backup importiert. VocaLatinum wird neu geladen.');
+   setTimeout(()=>location.reload(),500);
+  }catch(e){showToast('Backup ungültig oder konnte nicht gelesen werden. Dein bisheriger Lernstand bleibt erhalten.',4500)}
+  input.value='';
+ };
+ reader.onerror=()=>{showToast('Die Backup-Datei konnte nicht gelesen werden.',3500);input.value=''};
+ reader.readAsText(file);
+}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function showToast(t,duration=2200){const e=document.getElementById('toast');if(!e)return;e.textContent=t;e.style.display='block';clearTimeout(window._toast);window._toast=setTimeout(()=>e.style.display='none',duration)}
 function saveFriendName(){const el=document.getElementById('friendName');const name=String(el?.value||'').trim();if(name.length<2){showToast('Bitte wähle einen Namen mit mindestens 2 Zeichen.');return}if(!isNameAvailable(name)){showToast('Dieser Name ist in deinen Gruppen bereits vergeben. Bitte wähle einen anderen Namen.');return}state.profile.name=name;save();renderFriends();updateHomeProfileName();showToast('Name gespeichert.')}
