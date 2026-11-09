@@ -1629,7 +1629,7 @@ const flash=document.getElementById('flash');
 flash.addEventListener('click',()=>revealCard());
 flash.addEventListener('touchstart',e=>startY=e.touches[0].clientY,{passive:true});
 flash.addEventListener('touchend',e=>{const dy=e.changedTouches[0].clientY-startY;if(Math.abs(dy)>70){if(document.getElementById('flash').dataset.open==='1')rate(dy<0);else revealCard()}},{passive:true});
-state.dark&&document.body.classList.add('dark');updateStats();renderCollection();renderLessons();renderVocab();renderFormLessons();syncFormFilters();resetCardSetup();updateStorageStatus();
+save();state.dark&&document.body.classList.add('dark');updateStats();renderCollection();renderLessons();renderVocab();renderFormLessons();syncFormFilters();resetCardSetup();updateStorageStatus();
 document.body.classList.toggle('dark',!!state.dark);
 renderDirectionButton();updateStats();
 </script>
