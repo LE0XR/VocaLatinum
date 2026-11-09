@@ -1,6 +1,6 @@
 # VocaLatinum – Online-Konzept: Datenbank und Berechtigungen
 
-**Status:** Supabase ist ausgewählt. Die erste Datenbankmigration und grundlegende Rechteprüfungen liegen auf Branch `test`. Noch keine produktive Datenbank, keine aktiven Online-Funktionen und keine Änderung an `main`.
+**Status (Branch `test`):** Supabase ist ausgewählt. Die Grundmigration, sichere RPC-Funktionen für Freundschaftsanfragen und zugehörige pgTAP-Tests liegen auf `test`. Der CI-Lauf für die Grundmigration und Zwei-Konten-Tests ist erfolgreich. Noch keine produktive Datenbank, keine Website-Anbindung und keine Änderung an `main`.
 
 Dieses Dokument beschreibt die geplante Grundlage für spätere Online-Funktionen. Es ist eine fachliche und technische Spezifikation, keine bereits ausgeführte Datenbankmigration.
 
@@ -250,3 +250,17 @@ Vor der SQL-Migration müssen wir noch festlegen, wie doppelte Anzeigenamen in S
 - `supabase/tests/002_two_account_access.test.sql` prüft mit zwei künstlichen Testkonten, dass jedes Konto nur das eigene Profil und die eigenen Freigaben lesen und nur den eigenen Anzeigenamen ändern kann.
 - Für diese automatisierten Prüfungen sind keine echten Nutzerkonten, Supabase-Projekt-Schlüssel oder Zugangsdaten erforderlich.
 - Ein erfolgreicher CI-Lauf belegt nur die geprüften Datenbankregeln in der lokalen Testumgebung. Er ersetzt keine späteren Tests der Online-Funktionen und keine Sicherheitsprüfung vor einem öffentlichen Start.
+
+
+## 10. Umgesetzte Freundschaftsanfragen auf Branch `test`
+
+Die Migration `supabase/migrations/20261109195000_friend_request_rpcs.sql` ergänzt den ersten sicheren Ablauf serverseitig:
+
+- `send_friend_request(recipient_id)`: sendet eine Anfrage an ein anderes existierendes Konto; Selbstanfragen, bereits bestehende Freundschaften und doppelte offene Anfragen werden abgewiesen.
+- `list_friend_requests()`: zeigt dem angemeldeten Konto ausschließlich eigene offene Anfragen mit Richtung (eingehend/ausgehend), Anzeigename der anderen Person und Anfragezeit. Es werden keine Profilstatistiken oder Auth-IDs ausgegeben.
+- `accept_friend_request(request_id)`: nur der Empfänger darf annehmen; erst dann wird die Freundschaft gespeichert.
+- `reject_friend_request(request_id)`: nur der Empfänger darf ablehnen.
+- Direkte Tabellenrechte auf `friend_requests` und `friendships` bleiben gesperrt. Angemeldete Clients erhalten nur Ausführungsrechte für die ausdrücklich freigegebenen RPC-Funktionen.
+- Die neue Testdatei `supabase/tests/003_friend_request_workflow.test.sql` prüft die Abläufe mit zwei künstlichen Konten und prüft, dass der Absender seine eigene Anfrage nicht annehmen kann.
+
+**Noch nicht umgesetzt:** Profilsuche, Unterscheidung gleicher Anzeigenamen, Freundesliste/Entfernen einer Freundschaft und die sichtbare Website-Oberfläche. Vor der Suche muss festgelegt werden, wie Personen mit identischen Anzeigenamen sicher unterschieden werden, ohne interne Auth-IDs offenzulegen. Die RPCs sind noch nicht mit einem echten Supabase-Projekt oder der Website verbunden.
