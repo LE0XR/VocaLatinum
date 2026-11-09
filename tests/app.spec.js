@@ -640,3 +640,14 @@ test('Gleiche Anzeigenamen sind erlaubt, die interne ID bleibt der eindeutige Sc
   expect(result.memberNames).toEqual(['Alex', 'Alex']);
   expect(new Set(result.memberIds).size).toBe(2);
 });
+
+
+test('Online-Freundesbereich zeigt ehrlich den noch nicht verbundenen Status', async ({ page }) => {
+  await page.evaluate(() => showPage('friends'));
+  await expect(page.locator('#onlineFriendsCard')).toBeVisible();
+  await expect(page.locator('#onlineFriendCode')).toHaveText('Noch nicht verfügbar');
+  await expect(page.locator('#onlineFriendsConnectionStatus')).toContainText('noch nicht eingerichtet');
+  await expect(page.locator('#onlineFriendSearch')).toBeDisabled();
+  await expect(page.locator('#onlineFriendSearchButton')).toBeDisabled();
+  await expect(page.locator('#onlineFriendRequests')).toContainText('Online-Verbindung fehlt');
+});
