@@ -29,7 +29,7 @@
 - `send_friend_request_by_code(text)` löst den Code serverseitig auf und erstellt die Anfrage, ohne interne Auth-UUIDs an den Client weiterzugeben.
 - Die Profilsuche ist serverseitig auf 20 Suchanfragen je Konto innerhalb von zehn Minuten begrenzt. Der Zähler liegt in einem nicht öffentlich zugänglichen privaten Schema.
 - Ausgehende Freundschaftsanfragen sind serverseitig auf zehn Anfragen je Konto innerhalb einer Stunde begrenzt. Auch dieser Zähler liegt ausschließlich im privaten Schema.
-- Die sichtbare Website-Oberfläche ist vorbereitet, aber noch nicht mit einem echten Backend verbunden.
+- `list_friends()` liefert ausschließlich bestätigte Freunde mit Anzeigename, Freundescode zur Unterscheidung gleicher Namen und Bestätigungszeitpunkt; interne Auth-UUIDs werden nicht ausgegeben.\n- `remove_friend(uuid)` beendet nur eine bestehende Freundschaft des angemeldeten Kontos. Die Beziehung verschwindet anschließend für beide Konten aus der Freundesliste.\n- Beide Funktionen sind ausschließlich als freigegebene serverseitige RPC-Funktionen erreichbar; direkte Tabellenrechte bleiben gesperrt.\n- Die sichtbare Website-Oberfläche ist vorbereitet, aber noch nicht mit einem echten Backend verbunden.
 
 ## Lokale Prüfung
 
@@ -49,13 +49,13 @@ Die automatisierte GitHub-Prüfung führt dieselben Schritte in einer kurzlebige
 - `003_friend_request_workflow.test.sql`: zwei künstliche Testkonten prüfen Senden, eingehende/ausgehende Liste, Empfänger-Annahme, Ablehnung, gespeicherten Freundschaftsstatus und gesperrten direkten Tabellenzugriff.
 - `004_friend_code_search.test.sql`: automatisch erzeugte eindeutige Freundescodes, Suche nach Anzeigenamen, Ausschluss des eigenen Kontos, Mindestlänge der Suche und Anfrageversand per Freundescode.
 - `005_profile_search_rate_limit.test.sql`: 20 erlaubte Suchanfragen und Ablehnung der 21. Anfrage innerhalb des Zeitfensters.
-- `006_friend_request_rate_limit.test.sql`: zehn erlaubte ausgehende Freundschaftsanfragen und Ablehnung der 11. Anfrage innerhalb einer Stunde.
+- `006_friend_request_rate_limit.test.sql`: zehn erlaubte ausgehende Freundschaftsanfragen und Ablehnung der 11. Anfrage innerhalb einer Stunde.\n- `007_friend_list_and_removal.test.sql`: nur bestätigte Freunde werden angezeigt, gleiche Anzeigenamen sind über Freundescodes unterscheidbar, direkte Tabellenabfragen bleiben gesperrt und eine Freundschaft kann sicher beendet werden.
 
 Die Tests verwenden ausschließlich erfundene Konten mit `.invalid`-E-Mail-Adressen. Vor dem Online-Start müssen weitere Zwei-Konten-Tests für Profilfreigaben, Gruppen, Rollen, Chat, Anhänge und Moderation ergänzt und bestanden werden.
 
 ## Noch offen
 
-- Weitere Schutzmaßnahmen gegen automatisierte Freundescode-Abfragen und missbräuchliche Freundschaftsanfragen prüfen und testen.
+- Weitere Schutzmaßnahmen gegen automatisierte Freundescode-Abfragen und missbräuchliche Freundschaftsanfragen prüfen und testen.\n- Website-Oberfläche für Freundesliste und Entfernen einer Freundschaft an die neuen RPC-Funktionen anschließen.
 - Echtes Supabase-Projekt durch eine erwachsene Kontoverwaltung einrichten.
 - Migrationen kontrolliert auf das Projekt anwenden.
 - Registrierung und Anmeldung in der Website einrichten.
