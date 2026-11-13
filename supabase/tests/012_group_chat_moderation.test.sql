@@ -1,6 +1,6 @@
 begin;
 
-select plan(9);
+select plan(8);
 
 insert into auth.users (
   id, email, aud, role, email_confirmed_at,
@@ -33,7 +33,7 @@ select set_config('request.jwt.claims',
   '{"sub":"e2000000-0000-4000-8000-000000000002","role":"authenticated"}', true);
 select is((select count(*)::integer from public.list_group_messages(current_setting('test.chat_group_id')::uuid)), 1,
   'Deputy can read group messages');
-select ok(public.report_group_message(current_setting('test.chat_message_id')::uuid, 'Bitte prüfen'),
+select ok(public.report_group_message(current_setting('test.chat_message_id')::uuid, 'Bitte prüfen') is not null,
   'Member can report another member message');
 select ok(public.block_group_member(
   current_setting('test.chat_group_id')::uuid,
