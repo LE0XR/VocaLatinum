@@ -655,3 +655,36 @@ test('Online-Freundesbereich zeigt ehrlich den noch nicht verbundenen Status', a
   await expect(page.locator('#onlineOutgoingRequests')).toContainText('Online-Verbindung fehlt');
   await expect(page.locator('#onlineFriendRequests')).toHaveCount(0);
 });
+
+
+test('Gruppen zeigen die Wochenziel-Vorschau ohne erfundene Online-Werte', async ({ page }) => {
+  await page.evaluate(() => {
+    state.profile.name = 'Lernfuchs';
+    state.groups = [{
+      id: 'grp-goal-preview',
+      name: 'Latein-Team',
+      code: 'TEAM-123',
+      ownerId: state.profile.id,
+      members: [{ id: state.profile.id, name: 'Lernfuchs', xp: 40, level: 1, badges: 0 }]
+    }];
+    save();
+    showPage('friends');
+  });
+  const goal = page.locator('.group-goal-panel');
+  await expect(goal).toHaveCount(1);
+  await expect(goal).toContainText('Wochenziel');
+  await expect(goal).toContainText('Online noch nicht verbunden');
+  await expect(goal).toContainText('— / — XP');
+  await expect(goal).toContainText('Ohne Fleiß kein Preis');
+  await expect(goal).toContainText('30-Minuten-XP-Boost');
+  await expect(goal).toContainText('Abzeichen +100 XP');
+});
+
+test('Wochenziel-Vorschau erscheint nicht ohne eine vorhandene Gruppe', async ({ page }) => {
+  await page.evaluate(() => {
+    state.groups = [];
+    save();
+    showPage('friends');
+  });
+  await expect(page.locator('.group-goal-panel')).toHaveCount(0);
+});
