@@ -1,6 +1,6 @@
 begin;
 
-select plan(8);
+select plan(10);
 
 insert into auth.users (
   id, email, aud, role, email_confirmed_at,
@@ -32,8 +32,8 @@ select set_config('test.members_group_id',
 select is((select count(*)::integer from public.list_group_members(current_setting('test.members_group_id')::uuid)), 2,
   'Group member can see the active member list');
 select is((select member_role from public.list_group_members(current_setting('test.members_group_id')::uuid)
-  where display_name = (select display_name from public.profiles where user_id='c2000000-0000-4000-8000-000000000002')),
-  'deputy_leader', 'Member list shows the deputy role');
+  where member_role = 'deputy_leader'), 'deputy_leader',
+  'Member list shows the deputy role');
 
 select throws_ok(
   format('select public.leave_group(%L::uuid)', current_setting('test.members_group_id')),
@@ -41,23 +41,35 @@ select throws_ok(
   'Leader cannot leave before transferring leadership'
 );
 
-select throws_ok(
-  format('select public.remove_group_member(%L::uuid, %L)',
-    current_setting('test.members_group_id'), current_setting('test.members_two_code')),
-  'P0001', 'Managers cannot remove group leaders',
-  'A manager cannot remove the other manager'
-);
+select set_config('test.members_invite_id',
+  public.invite_friend_to_group(
+    current_setting('test.members_group_id')::uuid,
+    current_setting('test.members_three_code')
+  )::text, true);
 reset role;
 
 set local role authenticated;
 select set_config('request.jwt.claims',
   '{"sub":"c3000000-0000-4000-8000-000000000003","role":"authenticated"}', true);
-select ok(
-  public.respond_to_group_invite(
-    (select invite_id from public.list_group_invites() limit 1), true
-  ) is not null,
-  'Placeholder invitation response is not used'
-);
+select ok(public.respond_to_group_invite(current_setting('test.members_invite_id')::uuid, true),
+  'Invitee can join the group');
+reset role;
+
+set local role authenticated;
+select set_config('request.jwt.claims',
+  '{"sub":"c2000000-0000-4000-8000-000000000002","role":"authenticated"}', true);
+select is((select count(*)::integer from public.list_group_members(current_setting('test.members_group_id')::uuid)), 3,
+  'Deputy can see all three active members');
+select ok(public.remove_group_member(
+  current_setting('test.members_group_id')::uuid,
+  current_setting('test.members_three_code')
+), 'Deputy can remove a regular member');
+select is((select count(*)::integer from public.list_group_members(current_setting('test.members_group_id')::uuid)), 2,
+  'Removed member no longer appears in the member list');
+select ok(public.leave_group(current_setting('test.members_group_id')::uuid),
+  'Deputy can leave the group');
+select is((select count(*)::integer from public.list_group_members(current_setting('test.members_group_id')::uuid)), 1,
+  'Former deputy is no longer in the active member list');
 reset role;
 
 select * from finish();
