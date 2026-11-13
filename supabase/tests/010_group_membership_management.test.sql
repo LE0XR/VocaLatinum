@@ -68,6 +68,11 @@ select is((select count(*)::integer from public.list_group_members(current_setti
   'Removed member no longer appears in the member list');
 select ok(public.leave_group(current_setting('test.members_group_id')::uuid),
   'Deputy can leave the group');
+reset role;
+
+set local role authenticated;
+select set_config('request.jwt.claims',
+  '{"sub":"c1000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
 select is((select count(*)::integer from public.list_group_members(current_setting('test.members_group_id')::uuid)), 1,
   'Former deputy is no longer in the active member list');
 reset role;
