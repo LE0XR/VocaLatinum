@@ -1,70 +1,82 @@
 # Supabase-Datenbank für VocaLatinum
 
-## Status
+## Aktueller Stand auf Branch `test`
 
-- Supabase ist als Backend ausgewählt.
-- Die Datenbankmigrationen liegen unter `supabase/migrations/`.
-- Die lokale CLI-Konfiguration liegt in `supabase/config.toml`.
-- GitHub Actions startet für Änderungen an `supabase/**` eine isolierte lokale Supabase-Instanz und führt Migrationen sowie pgTAP-Tests aus.
-- Die Datenbankgrundlage, Freundschaftsanfragen, Freundescodes, Profilsuche und deren bisherige Schutztests wurden in der isolierten CI-Umgebung erfolgreich getestet.
-- Die Migrationen wurden noch **nicht** auf ein echtes Supabase-Projekt angewendet.
-- Es wurden keine Zugangsdaten oder Schlüssel im Repository gespeichert.
-- Die Website ist noch nicht mit Supabase verbunden.
-- Gruppen, Chat und Uploads sind noch nicht online nutzbar.
+Die Datenbank-Grundlage für den Online-Bereich ist vorbereitet und die automatisierten Prüfungen für den aktuellen Commit sind erfolgreich:
+
+- Supabase-Migrationen werden in GitHub Actions in einer isolierten lokalen Datenbank ausgeführt.
+- Datenbanktests (pgTAP): erfolgreich.
+- Browser-Tests: erfolgreich.
+- Playwright-Tests: erfolgreich.
+- Der aktuelle Teststand ist auf Branch `test`; `main` wurde nicht verändert.
+
+**Wichtig:** Das ist noch kein gestarteter Online-Dienst. Es gibt noch kein eingerichtetes echtes Supabase-Projekt, die Migrationen wurden dort noch nicht ausgeführt und die Website ist noch nicht mit Supabase verbunden. Die Online-Funktionen sind deshalb auf der veröffentlichten Lernseite noch nicht nutzbar.
+
+## Bereits vorbereitete Datenbankfunktionen
+
+### Datenschutz und Freundschaften
+- Private Profileinstellungen mit standardmäßig ausgeschalteten Freigaben.
+- Eindeutiger sechsstelliger Freundescode; Anzeigenamen dürfen mehrfach vorkommen.
+- Profilsuche ab drei Zeichen bzw. exakter Freundescode-Suche.
+- Serverseitige Begrenzung der Profilsuche (20 Suchanfragen je zehn Minuten).
+- Serverseitige Begrenzung ausgehender Freundschaftsanfragen (10 je Stunde).
+- Freundschaftsanfragen senden, auflisten, annehmen und ablehnen.
+- Bestätigte Freundschaften auflisten und Freundschaften beenden.
+- Profilfreigaben verwalten und die Freigabeeinstellungen bestätigter Freunde abrufen.
+
+### Gruppen
+- Gruppen mit Gruppenleitung und Stellvertretung erstellen.
+- Gruppen auflisten und bestätigte Freunde einladen.
+- Gruppeneinladungen auflisten und annehmen/ablehnen.
+- Gruppenmitglieder auflisten, austreten und durch die Gruppenleitung entfernen.
+- Stellvertretung wechseln und Gruppenleitung übertragen.
+
+### Gruppenchat und Umfragen
+- Textnachrichten senden und auflisten.
+- Eigene Nachrichten löschen; Gruppenleitung/Stellvertretung kann Nachrichten moderieren.
+- Nachrichten melden sowie Mitglieder individuell blockieren/entblockieren.
+- Umfragen erstellen, abstimmen, auflisten und schließen.
+- Aufbewahrungsdauer für Chatnachrichten konfigurieren.
 
 ## Sicherheitsprinzipien
 
-- Profile und Freigaben sind standardmäßig privat.
-- Anzeigenamen müssen nicht eindeutig sein.
-- Interne Auth-UUIDs werden nicht über Such- oder Gruppenlisten an andere Nutzer ausgegeben.
-- Freundschafts- und Gruppentabellen haben keine direkten Client-Rechte; Freundschaftsanfragen laufen über geprüfte RPC-Funktionen.
-- Jede Tabelle hat Row Level Security (RLS); für Clientrollen gelten ausdrücklich minimale Grants.
-- Noch nicht implementierte Abläufe werden erst nach sicheren serverseitigen RPC-Funktionen freigeschaltet.
+- Profile und persönliche Freigaben sind standardmäßig privat.
+- Interne Auth-UUIDs werden nicht in Freundes- oder Gruppenlisten ausgegeben.
+- Anzeigenamen werden nicht als eindeutige Kontokennung verwendet.
+- Datenbanktabellen sind mit Row Level Security (RLS) geschützt; Clientrollen erhalten nur ausdrücklich notwendige Rechte.
+- Kritische Abläufe werden über serverseitig geprüfte RPC-Funktionen ausgeführt.
+- Die CI-Tests verwenden künstliche Konten und benötigen keine echten Nutzerkonten oder Projekt-Schlüssel.
 
-## Freundescodes und Profilsuche
+## Noch nicht umgesetzt bzw. nicht live
 
-- Jedes Profil erhält automatisch einen eindeutigen sechsstelligen Freundescode aus einem Zeichensatz, der leicht verwechselbare Zeichen vermeidet.
-- `search_profiles(text)` sucht ab mindestens drei Zeichen nach dem Anfang eines Anzeigenamens oder exakt nach einem Freundescode.
-- Das eigene Profil wird ausgeschlossen; höchstens 20 Treffer mit Anzeigename und Freundescode werden zurückgegeben.
-- `send_friend_request_by_code(text)` löst den Code serverseitig auf und erstellt die Anfrage, ohne interne Auth-UUIDs an den Client weiterzugeben.
-- Die Profilsuche ist serverseitig auf 20 Suchanfragen je Konto innerhalb von zehn Minuten begrenzt. Der Zähler liegt in einem nicht öffentlich zugänglichen privaten Schema.
-- Ausgehende Freundschaftsanfragen sind serverseitig auf zehn Anfragen je Konto innerhalb einer Stunde begrenzt. Auch dieser Zähler liegt ausschließlich im privaten Schema.
-- `list_friends()` liefert ausschließlich bestätigte Freunde mit Anzeigename, Freundescode zur Unterscheidung gleicher Namen und Bestätigungszeitpunkt; interne Auth-UUIDs werden nicht ausgegeben.\n- `remove_friend(uuid)` beendet nur eine bestehende Freundschaft des angemeldeten Kontos. Die Beziehung verschwindet anschließend für beide Konten aus der Freundesliste.\n- Beide Funktionen sind ausschließlich als freigegebene serverseitige RPC-Funktionen erreichbar; direkte Tabellenrechte bleiben gesperrt.\n- Die sichtbare Website-Oberfläche ist vorbereitet, aber noch nicht mit einem echten Backend verbunden.
+1. Echtes Supabase-Projekt einrichten und sicher verwalten.
+2. Migrationen nach Prüfung kontrolliert auf das echte Projekt anwenden.
+3. Registrierung, Anmeldung und Sitzungsverwaltung in der Website integrieren.
+4. Website mit Supabase verbinden und die Oberfläche an die RPC-Funktionen anschließen.
+5. Tatsächliche Lernstände/XP mit Profilfreigaben verbinden.
+6. Gruppen-XP, Wochenziele, Teilnahmeprüfung und Belohnungsvergabe umsetzen.
+7. Glücksrad und XP-Boost-Inventar/Aktivierung umsetzen.
+8. Private Bild-Uploads mit Dateiprüfung und Zugriffsregeln ergänzen.
+9. Automatische Moderation, Verwarnungs-/Sperrabläufe und Überprüfung von Fehlentscheidungen ergänzen.
+10. Automatische Ausführung der Chat-Aufbewahrung/gelöschten Nachrichten einrichten und testen.
+11. Gruppenfrist ohne Stellvertretung mit automatischer Gruppenlöschung umsetzen.
+12. Weitere Tests für alle Online-Abläufe und eine abschließende Sicherheitsprüfung durchführen.
+
+Einige Datenbankgrundlagen für Gruppenchat und Umfragen sind vorhanden; die dazugehörigen Website-Oberflächen, Bild-Uploads und vollständigen Moderationsabläufe fehlen noch. Die Chat-Aufbewahrungsfunktion ist konfigurierbar, die automatische regelmäßige Bereinigung muss aber noch eingerichtet werden.
 
 ## Lokale Prüfung
 
-Voraussetzungen: Docker und die Supabase CLI.
+Voraussetzungen: Docker und Supabase CLI.
 
-1. `supabase start -x studio,edge-runtime,logflare,vector,imgproxy`
-2. `supabase db reset` – baut die Datenbank frisch auf und spielt alle Migrationen ein.
-3. `supabase test db` – führt die pgTAP-Prüfungen aus.
-4. `supabase stop --no-backup`
+```bash
+supabase start -x studio,edge-runtime,logflare,vector,imgproxy
+supabase db reset
+supabase test db
+supabase stop --no-backup
+```
 
-Die automatisierte GitHub-Prüfung führt dieselben Schritte in einer kurzlebigen CI-Umgebung aus. Sie benötigt keine Projekt-URL, keinen Supabase-API-Schlüssel und keine echten Nutzerkonten.
+GitHub Actions führt die Migrationen und Datenbanktests in einer kurzlebigen CI-Umgebung aus. Dafür werden keine Zugangsdaten eines echten Supabase-Projekts benötigt.
 
-## Tests
+## Veröffentlichung
 
-- `001_privacy_foundation.test.sql`: RLS-Aktivierung, RLS-Erzwingung und minimale Rollen-/Spaltenrechte.
-- `002_two_account_access.test.sql`: zwei künstliche Testkonten; jedes Konto darf ausschließlich das eigene Profil und die eigenen Freigaben lesen und nur den eigenen Anzeigenamen ändern.
-- `003_friend_request_workflow.test.sql`: zwei künstliche Testkonten prüfen Senden, eingehende/ausgehende Liste, Empfänger-Annahme, Ablehnung, gespeicherten Freundschaftsstatus und gesperrten direkten Tabellenzugriff.
-- `004_friend_code_search.test.sql`: automatisch erzeugte eindeutige Freundescodes, Suche nach Anzeigenamen, Ausschluss des eigenen Kontos, Mindestlänge der Suche und Anfrageversand per Freundescode.
-- `005_profile_search_rate_limit.test.sql`: 20 erlaubte Suchanfragen und Ablehnung der 21. Anfrage innerhalb des Zeitfensters.
-- `006_friend_request_rate_limit.test.sql`: zehn erlaubte ausgehende Freundschaftsanfragen und Ablehnung der 11. Anfrage innerhalb einer Stunde.\n- `007_friend_list_and_removal.test.sql`: nur bestätigte Freunde werden angezeigt, gleiche Anzeigenamen sind über Freundescodes unterscheidbar, direkte Tabellenabfragen bleiben gesperrt und eine Freundschaft kann sicher beendet werden.
-
-Die Tests verwenden ausschließlich erfundene Konten mit `.invalid`-E-Mail-Adressen. Vor dem Online-Start müssen weitere Zwei-Konten-Tests für Profilfreigaben, Gruppen, Rollen, Chat, Anhänge und Moderation ergänzt und bestanden werden.
-
-## Noch offen
-
-- Weitere Schutzmaßnahmen gegen automatisierte Freundescode-Abfragen und missbräuchliche Freundschaftsanfragen prüfen und testen.\n- Website-Oberfläche für Freundesliste und Entfernen einer Freundschaft an die neuen RPC-Funktionen anschließen.
-- Echtes Supabase-Projekt durch eine erwachsene Kontoverwaltung einrichten.
-- Migrationen kontrolliert auf das Projekt anwenden.
-- Registrierung und Anmeldung in der Website einrichten.
-- Website sicher mit Supabase verbinden.
-- Profilsuche und Freundschaftsanfragen live aktivieren.
-- Profilfreigaben an bestätigte Freunde ergänzen.
-- Gruppenerstellung, Einladungen und Mitgliedschaften umsetzen.
-- Gruppenchat, Bilder, Moderation und Umfragen umsetzen.
-- XP-Synchronisierung, Wochenziele, Glücksrad und Belohnungen umsetzen.
-- XP-Boost-Aktivierung umsetzen.
-
-**Wichtig:** Erfolgreiche CI-Tests belegen die lokale Datenbanklogik. Sie bedeuten nicht, dass ein echtes Online-Projekt eingerichtet oder die Website bereits verbunden ist.
+Erst nach Einrichtung des echten Backends, Verbindung der Website, Tests mit getrennten Testkonten und einer Sicherheitsprüfung darf der Online-Bereich freigeschaltet werden. Änderungen bleiben bis zu einer ausdrücklichen Freigabe auf Branch `test`; `main` wird nicht automatisch geändert.
