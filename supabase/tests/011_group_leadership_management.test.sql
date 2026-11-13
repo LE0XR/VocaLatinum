@@ -29,12 +29,13 @@ select set_config('request.jwt.claims',
 select set_config('test.leadership_group_id',
   public.create_group('Leitungswechsel', current_setting('test.leadership_two_code'))::text, true);
 
-select ok(public.invite_friend_to_group(
-  current_setting('test.leadership_group_id')::uuid,
-  current_setting('test.leadership_three_code')
-) is not null, 'Leader can invite a confirmed friend');
 select set_config('test.leadership_invite_id',
-  (select invite_id::text from public.list_group_invites() limit 1), true);
+  public.invite_friend_to_group(
+    current_setting('test.leadership_group_id')::uuid,
+    current_setting('test.leadership_three_code')
+  )::text, true);
+select ok(current_setting('test.leadership_invite_id') <> '',
+  'Leader can invite a confirmed friend');
 reset role;
 
 set local role authenticated;
