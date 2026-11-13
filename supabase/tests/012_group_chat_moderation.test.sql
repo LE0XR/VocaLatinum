@@ -16,6 +16,8 @@ values ('e1000000-0000-4000-8000-000000000001','e2000000-0000-4000-8000-00000000
 
 select set_config('test.chat_two_code',
   (select friend_code from public.profiles where user_id='e2000000-0000-4000-8000-000000000002'), true);
+select set_config('test.chat_one_code',
+  (select friend_code from public.profiles where user_id='e1000000-0000-4000-8000-000000000001'), true);
 
 set local role authenticated;
 select set_config('request.jwt.claims',
@@ -37,13 +39,13 @@ select ok(public.report_group_message(current_setting('test.chat_message_id')::u
   'Member can report another member message');
 select ok(public.block_group_member(
   current_setting('test.chat_group_id')::uuid,
-  (select friend_code from public.profiles where user_id='e1000000-0000-4000-8000-000000000001')
+  current_setting('test.chat_one_code')
 ), 'Member can block another group member in their own chat view');
 select is((select count(*)::integer from public.list_group_messages(current_setting('test.chat_group_id')::uuid)), 0,
   'Blocked member messages are hidden from the blocker');
 select ok(public.unblock_group_member(
   current_setting('test.chat_group_id')::uuid,
-  (select friend_code from public.profiles where user_id='e1000000-0000-4000-8000-000000000001')
+  current_setting('test.chat_one_code')
 ), 'Member can unblock a group member');
 reset role;
 
