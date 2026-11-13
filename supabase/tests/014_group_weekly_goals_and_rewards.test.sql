@@ -1,5 +1,5 @@
 begin;
-select plan(7);
+select plan(12);
 
 insert into auth.users (
   id, email, aud, role, email_confirmed_at, raw_app_meta_data, raw_user_meta_data
@@ -60,6 +60,36 @@ select throws_ok(
  current_setting('test.goal_group_id'), 'xp_bonus'),
  'P0001', 'Weekly XP target must be between 1 and 1000000',
  'Invalid XP targets are rejected');
+
+reset role;
+
+-- Nur ein aktiver Gruppenbeitraeger sammelt 500 XP; der Stellvertreter bleibt ohne Beitrag.
+set local role service_role;
+select ok(public.record_group_learning_event(
+ 'a9000000-0000-4000-8000-000000000009',
+ current_setting('test.goal_group_id')::uuid,
+ 'a1000000-0000-4000-8000-000000000001',
+ 500), 'Trusted backend can record a verified learning event');
+
+select throws_ok(
+ format('select public.record_group_learning_event(%L::uuid,%L::uuid,%L::uuid,500)',
+ 'a9000000-0000-4000-8000-000000000009',
+ current_setting('test.goal_group_id'),
+ 'a1000000-0000-4000-8000-000000000001'),
+ 'P0001', 'Learning event was already recorded',
+ 'Duplicate learning events cannot add XP twice');
+
+select is(public.award_group_weekly_goal(
+ current_setting('test.goal_group_id')::uuid), 1,
+ 'Only the member who contributed receives a reward');
+
+select is((select count(*)::integer from public.user_group_reward_grants), 1,
+ 'Exactly one reward grant is created for the contributor');
+
+select ok(not exists(
+ select 1 from public.user_group_reward_grants
+ where user_id = 'a2000000-0000-4000-8000-000000000002'),
+ 'A group member without a contribution receives no reward');
 
 reset role;
 select * from finish();
