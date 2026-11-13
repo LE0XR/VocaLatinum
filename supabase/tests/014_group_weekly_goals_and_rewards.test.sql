@@ -1,5 +1,5 @@
 begin;
-select plan(9);
+select plan(7);
 
 insert into auth.users (
   id, email, aud, role, email_confirmed_at, raw_app_meta_data, raw_user_meta_data
@@ -51,8 +51,9 @@ select throws_ok(
  '42501', null,
  'Authenticated clients cannot grant rewards');
 
-select ok(public.list_group_weekly_goal(current_setting('test.goal_group_id')::uuid)
-  is not null, 'Goal status can be queried without exposing private account IDs');
+select ok(exists(select 1 from public.list_group_weekly_goal(
+ current_setting('test.goal_group_id')::uuid)),
+ 'Goal status can be queried without exposing private account IDs');
 
 select throws_ok(
  format('select public.set_group_weekly_goal(%L::uuid, 0, %L, 400)',
