@@ -65,8 +65,11 @@ select ok(not has_table_privilege('authenticated', 'public.friend_requests', 'se
   'Friend request rows are not exposed directly to clients yet');
 select ok(not has_table_privilege('authenticated', 'public.group_members', 'select'),
   'Group membership UUIDs are not exposed directly to clients yet');
-select ok(to_regclass('public.group_messages') is null,
-  'The group chat table is intentionally not created in this initial migration');
+select ok(
+  (select c.relrowsecurity from pg_class c join pg_namespace n on n.oid = c.relnamespace
+   where n.nspname = 'public' and c.relname = 'group_messages'),
+  'Group chat messages are protected by row-level security'
+);
 
 select * from finish();
 rollback;
