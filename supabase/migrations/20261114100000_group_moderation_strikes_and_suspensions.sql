@@ -221,9 +221,9 @@ begin
   if p_accept and exists (
     select 1 from public.group_member_suspensions s
     where s.group_id = v_group_id and s.user_id = auth.uid()
-      and s.reinstated_at is null and s.suspended_until > now()
+      and s.reinstated_at is null
   ) then
-    raise exception 'Three-day group suspension is active' using errcode = 'P0001';
+    raise exception 'Group leader must reinstate this member' using errcode = 'P0001';
   end if;
 
   if p_accept then
