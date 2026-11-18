@@ -54,13 +54,17 @@ begin
     raise exception 'Valid group, member and violation category required' using errcode = 'P0001';
   end if;
 
-  if not exists (
-    select 1 from public.group_members gm
-    join public.groups g on g.id = gm.group_id
-    where gm.group_id = p_group_id and gm.user_id = p_user_id
-      and gm.left_at is null and gm.role = 'member'
-      and g.archived_at is null
-  ) then
+  -- Sperrt die Mitgliedschaftszeile, damit gleichzeitige Meldungen
+  -- fuer dieselbe Person nacheinander gezaehlt werden und keine Stufe ueberspringen.
+  perform 1
+  from public.group_members gm
+  join public.groups g on g.id = gm.group_id
+  where gm.group_id = p_group_id and gm.user_id = p_user_id
+    and gm.left_at is null and gm.role = 'member'
+    and g.archived_at is null
+  for update of gm;
+
+  if not found then
     raise exception 'Active ordinary group member required' using errcode = 'P0001';
   end if;
 
