@@ -761,3 +761,36 @@ test('Moderationsvorschau erscheint nicht ohne Gruppe', async ({ page }) => {
   });
   await expect(page.locator('.group-moderation-preview')).toHaveCount(0);
 });
+
+
+test('Melden- und Blockieren-Vorschau ist sichtbar, aber bis zur Online-Verbindung deaktiviert', async ({ page }) => {
+  await page.evaluate(() => {
+    state.profile.name = 'Lernfuchs';
+    state.groups = [{
+      id: 'grp-safety-preview',
+      name: 'Latein-Team',
+      code: 'TEAM-123',
+      ownerId: state.profile.id,
+      members: [{ id: state.profile.id, name: 'Lernfuchs', xp: 40, level: 1, badges: 0 }]
+    }];
+    save();
+    showPage('friends');
+  });
+  const safety = page.locator('.group-safety-preview');
+  await expect(safety).toHaveCount(1);
+  await expect(safety).toContainText('Melden & Blockieren');
+  await expect(safety).toContainText('keine Meldungen verschickt');
+  await expect(safety.locator('select')).toBeDisabled();
+  await expect(safety.getByRole('button', { name: 'Nachricht melden' })).toBeDisabled();
+  await expect(safety.getByRole('button', { name: 'Mitglied blockieren' })).toBeDisabled();
+  await expect(safety).toContainText('getrennte Funktionen');
+});
+
+test('Melden- und Blockieren-Vorschau erscheint nicht ohne Gruppe', async ({ page }) => {
+  await page.evaluate(() => {
+    state.groups = [];
+    save();
+    showPage('friends');
+  });
+  await expect(page.locator('.group-safety-preview')).toHaveCount(0);
+});
