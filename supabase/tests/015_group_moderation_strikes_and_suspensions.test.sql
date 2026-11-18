@@ -77,7 +77,8 @@ select throws_ok(
 reset role;
 
 update public.group_member_suspensions
-set suspended_until = now() - interval '1 minute'
+set suspended_at = now() - interval '3 days',
+    suspended_until = now() - interval '1 minute'
 where group_id=current_setting('test.mod_group_id')::uuid
   and user_id='a3000000-0000-4000-8000-000000000003';
 
