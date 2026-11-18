@@ -724,3 +724,40 @@ test('Gruppenchat-Vorschau erscheint nicht ohne Gruppe', async ({ page }) => {
   });
   await expect(page.locator('.group-chat-preview')).toHaveCount(0);
 });
+
+test('Moderationsvorschau zeigt Regeln und bleibt bis zur Online-Verbindung deaktiviert', async ({ page }) => {
+  await page.evaluate(() => {
+    state.profile.name = 'Lernfuchs';
+    state.groups = [{
+      id: 'grp-moderation-preview',
+      name: 'Latein-Team',
+      code: 'TEAM-123',
+      ownerId: state.profile.id,
+      members: [{ id: state.profile.id, name: 'Lernfuchs', xp: 40, level: 1, badges: 0 }]
+    }];
+    save();
+    showPage('friends');
+  });
+  const moderation = page.locator('.group-moderation-preview');
+  await expect(moderation).toHaveCount(1);
+  await expect(moderation).toContainText('Leitungsvorschau');
+  await expect(moderation).toContainText('1. Verstoß');
+  await expect(moderation).toContainText('Ermahnung');
+  await expect(moderation).toContainText('2. Verstoß');
+  await expect(moderation).toContainText('Verwarnung');
+  await expect(moderation).toContainText('3. Verstoß');
+  await expect(moderation).toContainText('3 Tage Gruppensperre');
+  await expect(moderation).toContainText('Noch keine synchronisierten Moderationseinträge');
+  await expect(moderation.locator('select')).toBeDisabled();
+  await expect(moderation.getByRole('button', { name: 'Wiederaufnahme prüfen' })).toBeDisabled();
+  await expect(moderation).toContainText('nur die Gruppenleitung');
+});
+
+test('Moderationsvorschau erscheint nicht ohne Gruppe', async ({ page }) => {
+  await page.evaluate(() => {
+    state.groups = [];
+    save();
+    showPage('friends');
+  });
+  await expect(page.locator('.group-moderation-preview')).toHaveCount(0);
+});
