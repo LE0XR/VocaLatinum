@@ -688,3 +688,39 @@ test('Wochenziel-Vorschau erscheint nicht ohne eine vorhandene Gruppe', async ({
   });
   await expect(page.locator('.group-goal-panel')).toHaveCount(0);
 });
+
+
+test('Gruppenchat und Umfragen sind sichtbar, aber bis zur Online-Verbindung deaktiviert', async ({ page }) => {
+  await page.evaluate(() => {
+    state.profile.name = 'Lernfuchs';
+    state.groups = [{
+      id: 'grp-chat-preview',
+      name: 'Latein-Team',
+      code: 'TEAM-123',
+      ownerId: state.profile.id,
+      members: [{ id: state.profile.id, name: 'Lernfuchs', xp: 40, level: 1, badges: 0 }]
+    }];
+    save();
+    showPage('friends');
+  });
+  const chat = page.locator('.group-chat-preview');
+  await expect(chat).toHaveCount(1);
+  await expect(chat).toContainText('Gruppenchat');
+  await expect(chat).toContainText('noch nicht online verbunden');
+  await expect(chat.locator('textarea')).toBeDisabled();
+  await expect(chat.getByRole('button', { name: 'Nachricht senden' })).toBeDisabled();
+  await expect(chat).toContainText('Umfrage');
+  await expect(chat.locator('input[type="text"], input:not([type])')).toBeDisabled();
+  await expect(chat.getByRole('button', { name: 'Umfrage erstellen' })).toBeDisabled();
+  await expect(chat.locator('input[type="radio"]')).toHaveCount(2);
+  await expect(chat.locator('input[type="radio"]').first()).toBeDisabled();
+});
+
+test('Gruppenchat-Vorschau erscheint nicht ohne Gruppe', async ({ page }) => {
+  await page.evaluate(() => {
+    state.groups = [];
+    save();
+    showPage('friends');
+  });
+  await expect(page.locator('.group-chat-preview')).toHaveCount(0);
+});
