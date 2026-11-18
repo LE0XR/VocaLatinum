@@ -89,11 +89,12 @@ select ok(public.reinstate_suspended_group_member(
   current_setting('test.mod_group_id')::uuid,
   current_setting('test.mod_member_code')),
   'Group leader can reinstate the member after the three-day period');
+reset role;
+
 select ok((select left_at is null from public.group_members
   where group_id=current_setting('test.mod_group_id')::uuid
     and user_id='a3000000-0000-4000-8000-000000000003'),
   'Reinstated member is active again');
-reset role;
 
 select * from finish();
 rollback;
