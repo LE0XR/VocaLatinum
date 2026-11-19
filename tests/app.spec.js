@@ -794,3 +794,35 @@ test('Melden- und Blockieren-Vorschau erscheint nicht ohne Gruppe', async ({ pag
   });
   await expect(page.locator('.group-safety-preview')).toHaveCount(0);
 });
+
+
+test('Nachrichten-Aufbewahrung wird erklärt und bleibt bis zur Online-Verbindung deaktiviert', async ({ page }) => {
+  await page.evaluate(() => {
+    state.profile.name = 'Lernfuchs';
+    state.groups = [{
+      id: 'grp-retention-preview',
+      name: 'Latein-Team',
+      code: 'TEAM-123',
+      ownerId: state.profile.id,
+      members: [{ id: state.profile.id, name: 'Lernfuchs', xp: 40, level: 1, badges: 0 }]
+    }];
+    save();
+    showPage('friends');
+  });
+  const retention = page.locator('.group-retention-preview');
+  await expect(retention).toHaveCount(1);
+  await expect(retention).toContainText('Nachrichten-Aufbewahrung');
+  await expect(retention).toContainText('automatisch ausgeblendet');
+  await expect(retention).toContainText('keine Einstellung');
+  await expect(retention.locator('select')).toBeDisabled();
+  await expect(retention).toContainText('Noch nicht festgelegt');
+});
+
+test('Nachrichten-Aufbewahrung erscheint nicht ohne Gruppe', async ({ page }) => {
+  await page.evaluate(() => {
+    state.groups = [];
+    save();
+    showPage('friends');
+  });
+  await expect(page.locator('.group-retention-preview')).toHaveCount(0);
+});
