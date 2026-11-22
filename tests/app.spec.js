@@ -826,3 +826,37 @@ test('Nachrichten-Aufbewahrung erscheint nicht ohne Gruppe', async ({ page }) =>
   });
   await expect(page.locator('.group-retention-preview')).toHaveCount(0);
 });
+
+
+test('Wochen-Glücksrad erklärt Teilnahme und Regeln, bleibt aber deaktiviert', async ({ page }) => {
+  await page.evaluate(() => {
+    state.profile.name = 'Lernfuchs';
+    state.groups = [{
+      id: 'grp-wheel-preview',
+      name: 'Latein-Team',
+      code: 'TEAM-123',
+      ownerId: state.profile.id,
+      members: [{ id: state.profile.id, name: 'Lernfuchs', xp: 40, level: 1, badges: 0 }]
+    }];
+    save();
+    showPage('friends');
+  });
+  const wheel = page.locator('.group-wheel-preview');
+  await expect(wheel).toHaveCount(1);
+  await expect(wheel).toContainText('Wochen-Glücksrad');
+  await expect(wheel).toContainText('montags selbst drehen');
+  await expect(wheel).toContainText('mindestens die Hälfte');
+  await expect(wheel).toContainText('zufällig gewählt');
+  await expect(wheel).toContainText('Bei Gleichstand');
+  await expect(wheel.getByRole('button', { name: 'Am Montag drehen' })).toBeDisabled();
+  await expect(wheel).toContainText('Noch keine Stimmen');
+});
+
+test('Wochen-Glücksrad erscheint nicht ohne Gruppe', async ({ page }) => {
+  await page.evaluate(() => {
+    state.groups = [];
+    save();
+    showPage('friends');
+  });
+  await expect(page.locator('.group-wheel-preview')).toHaveCount(0);
+});
