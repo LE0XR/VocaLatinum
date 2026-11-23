@@ -1,6 +1,6 @@
 begin;
 
-select plan(10);
+select plan(12);
 
 insert into auth.users (
   id, email, aud, role, email_confirmed_at,
@@ -89,6 +89,13 @@ select ok((select archived_at is not null
 select is((select count(*)::integer from public.group_members
   where group_id = current_setting('test.deputy_group_archive')::uuid), 2,
   'Archiving preserves group membership history');
+
+select is((select count(*)::integer from cron.job
+  where jobname = 'vocalatinum-archive-groups-missing-deputy'), 1,
+  'Automatic deputy-deadline archive job is installed exactly once');
+select is((select schedule from cron.job
+  where jobname = 'vocalatinum-archive-groups-missing-deputy'),
+  '*/15 * * * *', 'Automatic archive job runs every 15 minutes');
 
 select * from finish();
 rollback;
