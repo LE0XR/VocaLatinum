@@ -1,6 +1,6 @@
 begin;
 
-select plan(11);
+select plan(10);
 
 insert into auth.users (
   id, email, aud, role, email_confirmed_at,
@@ -48,14 +48,14 @@ select set_config('request.jwt.claims',
   '{"sub":"e2000000-0000-4000-8000-000000000002","role":"authenticated"}', true);
 select ok(public.leave_group(current_setting('test.deputy_group_replace')::uuid),
   'Deputy can leave the group');
-select ok((select deputy_required from public.get_group_deputy_status(
-  current_setting('test.deputy_group_replace')::uuid)),
-  'Leaving deputy starts the replacement requirement');
 reset role;
 
 set local role authenticated;
 select set_config('request.jwt.claims',
   '{"sub":"e1000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
+select ok((select deputy_required from public.get_group_deputy_status(
+  current_setting('test.deputy_group_replace')::uuid)),
+  'Leaving deputy starts the replacement requirement');
 select ok(public.change_group_deputy(
   current_setting('test.deputy_group_replace')::uuid,
   current_setting('test.deputy_three_code')
