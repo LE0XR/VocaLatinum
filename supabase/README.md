@@ -59,10 +59,10 @@ Die Datenbank-Grundlage für den Online-Bereich ist vorbereitet und die automati
 8. Private Bild-Uploads mit Dateiprüfung und Zugriffsregeln ergänzen.
 9. Automatische Moderation, Verwarnungs-/Sperrabläufe und Überprüfung von Fehlentscheidungen ergänzen.
 10. Automatische Ausführung der Chat-Aufbewahrung/gelöschten Nachrichten einrichten und testen.
-11. Gruppenfrist ohne Stellvertretung mit automatischer Gruppenlöschung umsetzen.
+11. Gruppenfrist ohne Stellvertretung automatisch überwachen und Gruppen nach zwei Tagen archivieren (Cron-Lauf alle 15 Minuten; keine physische Löschung).
 12. Weitere Tests für alle Online-Abläufe und eine abschließende Sicherheitsprüfung durchführen.
 
-Einige Datenbankgrundlagen für Gruppenchat und Umfragen sind vorhanden; die dazugehörigen Website-Oberflächen, Bild-Uploads und vollständigen Moderationsabläufe fehlen noch. Die Chat-Aufbewahrungsfunktion ist konfigurierbar, die automatische regelmäßige Bereinigung muss aber noch eingerichtet werden.
+Einige Datenbankgrundlagen für Gruppenchat und Umfragen sind vorhanden; die dazugehörigen Website-Oberflächen, Bild-Uploads und vollständigen Moderationsabläufe fehlen noch. Die Chat-Aufbewahrungsfunktion ist konfigurierbar, die automatische regelmäßige Bereinigung muss aber noch eingerichtet werden. Für fehlende Gruppen-Stellvertretungen ist auf `test` jetzt ein Supabase-Cron-Job vorbereitet, der alle 15 Minuten abgelaufene Gruppen archiviert; er wird erst mit einem echten Supabase-Projekt live ausgeführt.
 
 ## Lokale Prüfung
 
