@@ -7,7 +7,9 @@ create extension if not exists pg_cron with schema pg_catalog;
 grant usage on schema cron to postgres;
 grant all privileges on all tables in schema cron to postgres;
 
-create or replace function private.archive_groups_missing_deputy_cron()
+create or replace function private.archive_groups_missing_deputy_cron(
+  p_now timestamptz default now()
+)
 returns integer
 language plpgsql
 security definer
@@ -17,11 +19,11 @@ declare
   v_archived_count integer;
 begin
   update public.groups g
-  set archived_at = now(),
+  set archived_at = p_now,
       archive_reason = 'deputy_missing_timeout'
   where g.archived_at is null
     and g.deputy_deadline_at is not null
-    and g.deputy_deadline_at <= now()
+    and g.deputy_deadline_at <= p_now
     and not exists (
       select 1 from public.group_members gm
       where gm.group_id = g.id
@@ -34,9 +36,9 @@ begin
 end;
 $$;
 
-revoke all on function private.archive_groups_missing_deputy_cron()
+revoke all on function private.archive_groups_missing_deputy_cron(timestamptz)
   from public, anon, authenticated;
-grant execute on function private.archive_groups_missing_deputy_cron()
+grant execute on function private.archive_groups_missing_deputy_cron(timestamptz)
   to postgres;
 
 create or replace function public.archive_groups_missing_deputy(
@@ -52,7 +54,7 @@ begin
     raise exception 'Service role required' using errcode = '42501';
   end if;
 
-  return private.archive_groups_missing_deputy_cron();
+  return private.archive_groups_missing_deputy_cron(p_now);
 end;
 $$;
 
